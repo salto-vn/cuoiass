@@ -1,5 +1,5 @@
 #FROM php:7.1.16-apache-jessie
-FROM rockerbom/cuoiass
+FROM rockerbom/cuoiass-base
 ARG SRC_DIR=./cuoiass-api
 ARG CONF_DIR=./docker/api/conf
 
