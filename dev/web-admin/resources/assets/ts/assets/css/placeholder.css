@@ -1,0 +1,76 @@
+.is-loadding:hover {
+    background: #fff !important;
+}
+
+.is-loadding td {
+    padding: 18px 0 !important;
+}
+
+.timeline-item {
+    background: #fff;
+    border: 1px solid;
+    border-color: #fff;
+    margin: 0 auto;
+    min-height: 320px;
+    min-width: 290px;
+}
+
+@keyframes placeHolderShimmer{
+    0%{
+        background-position: -468px 0
+    }
+    100%{
+        background-position: 468px 0
+    }
+}
+
+.animated-background {
+    animation-duration: .8s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    height: 300px;
+    position: relative;
+}
+
+.background-masker {
+    background: #fff;
+    position: absolute;
+}
+
+.background-masker.line-1, .background-masker.line-2, .background-masker.line-3,
+.background-masker.line-4, .background-masker.line-5, .background-masker.line-6 {
+    left: 0;
+    right: 0;
+    height: 15px;
+}
+
+.background-masker.line-1 {
+    top: 30px;
+}
+
+.background-masker.line-2 {
+    top: 75px;
+}
+.background-masker.line-3 {
+    top: 120px;
+}
+
+.background-masker.line-4 {
+    top: 165px;
+}
+
+.background-masker.line-5 {
+    top: 210px;
+    left: 0;
+    right: 0;
+}
+
+.background-masker.line-6 {
+    top: 255px;
+    left: 0;
+    right: 0;
+}
