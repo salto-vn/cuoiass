@@ -1,12 +1,6 @@
-
-// Variables
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
-
-// Bootstrap
-//@import '~bootstrap/scss/bootstrap';
-
-.navbar-laravel {
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import 'fonts/font-awesome.min';
+@import 'fonts/style';
+@import 'vendor/metrotheme';
+@import 'vendor/placeholder';
+@import 'vendor/custom';

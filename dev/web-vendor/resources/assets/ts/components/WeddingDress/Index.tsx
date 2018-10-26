@@ -38,7 +38,7 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
     }
 
     public render() {
-        const { weddingGrid, isShowModal, totalItem } = this.state;
+        const { weddingGrid, isShowModal, isError } = this.state;
 
         return (
             <>
@@ -51,10 +51,7 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
                             <div className="panel panel-white">
                                 <div className="panel-heading flex justify-content-between align-items-center">
                                     <h4 className="panel-title">Danh sách áo cưới</h4>
-                                    {
-                                        totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> : this.paginate()
-                                    }
-
+                                    {this.paginate(isError)}
                                 </div>
                                 <div className="panel-body">
                                     <button type="button" className="btn btn-success m-b-sm" onClick={this.onToggleModal}>Add new row</button>
@@ -69,7 +66,7 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
                                             <div className="flex justify-content-center flex-1 grid-header">Giá bán</div>
                                             <div className="flex justify-content-center w-xs grid-header">Actions</div>
                                         </div>
-                                        {this.makeGrid(weddingGrid)}
+                                        {this.makeGrid(weddingGrid, isError)}
                                     </div>
                                 </div>
                             </div>
@@ -93,8 +90,8 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
         );
     }
 
-    private makeGrid = (data: any) => {
-        const { isError, errorInfo, isLoading, itemRepeat } = this.state;
+    private makeGrid = (data: any, isError: boolean) => {
+        const { errorInfo, isLoading, itemRepeat } = this.state;
 
         if (isError) {
             return <div>{errorInfo}</div>;
@@ -152,14 +149,20 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
         });
     }
 
-    private paginate = () => {
+    private paginate = (isError: boolean) => {
         const { activePage, totalItem, limit } = this.state;
-        return <Pagination
-            pageRangeDisplayed={limit}
-            activePage={activePage}
-            totalItemsCount={totalItem}
-            onChange={this.handlePageChange}
-        />;
+
+        if (isError) {
+            return null;
+        }
+
+        return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
+            <Pagination
+                pageRangeDisplayed={limit}
+                activePage={activePage}
+                totalItemsCount={totalItem}
+                onChange={this.handlePageChange}
+            />;
     };
 
     private getListWeddingDress = async () => {

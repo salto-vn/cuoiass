@@ -1,6 +1,6 @@
 version: '2'
 services:
-  db:
+  cuoi-db:
       build:
         dockerfile: docker/db/Dockerfile
         context: .
@@ -34,7 +34,7 @@ services:
       LOG_CHANNEL: stack
 
       DB_CONNECTION: mysql
-      DB_HOST: db
+      DB_HOST: cuoi-db
       DB_PORT: 3306
       DB_DATABASE: cass
       DB_USERNAME: cass_admin
@@ -60,7 +60,7 @@ services:
       - ./cuoiass-api:/var/www/laravel
       - ./cuoiass-api/storage/logs:/var/www/storage/logs
 
-  web-admin:
+  cuoi-admin:
       build:
         dockerfile: docker/admin/Dockerfile
         context: .
@@ -87,7 +87,7 @@ services:
         - ./web-admin:/var/www/web-admin
         - ./web-admin/storage/logs:/var/www/storage/logs
 
-  web-front:
+  cuoi-front:
         build:
           dockerfile: docker/front/Dockerfile
           context: .
@@ -114,7 +114,7 @@ services:
           - ./web-front:/var/www/web-front
           - ./web-front/storage/logs:/var/www/storage/logs
 
-  web-vendor:
+  cuoi-vendor:
           build:
             dockerfile: docker/vendor/Dockerfile
             context: .
