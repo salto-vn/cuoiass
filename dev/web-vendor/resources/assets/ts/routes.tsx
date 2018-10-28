@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Layout } from './share/Layout';
 import { WeddingDress } from './components/WeddingDress/Index';
+import { Feedback } from './components/Feedback/Index'
 // import { WeddingInvitation } from './components/WeddingInvitation/Index';
 
 const WeddingAlbum = () => (
@@ -45,6 +46,7 @@ export const Routes = () => (
             <Route path='/wedding-ring' component={WeddingRing} />
             <Route path='/wedding-car' component={WeddingCar} />
             <Route path='/booking' component={Booking} />
+            <Route path='/feedback' component={Feedback} />
         </Layout>
     </Router>
 );

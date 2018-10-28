@@ -24,6 +24,8 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
         activePage: CONSTANT.CURRENT_PAGE
     };
 
+    
+
     public async componentDidMount() {
         document.title = 'Áo cưới';
         this.getListWeddingDress();
