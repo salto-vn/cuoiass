@@ -89,6 +89,15 @@
     transition: all .2s ease-in-out;
 }
 
+.custom-table>thead>tr>th>input {
+    // color: #999;
+    // padding:5px;
+    // width:100%;
+    // margin:2px;
+    // height:25px;
+
+}
+
 .custom-table>thead>tr>th:hover {
     cursor: pointer;
 }

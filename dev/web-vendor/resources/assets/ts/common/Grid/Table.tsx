@@ -30,7 +30,7 @@ export interface ISourceProp {
     totalItem?: number;
     activePage?: number;
     pageClicked?: any;
-    sortBy?: string;
+    filterFlag?:boolean;
 }
 
 /**
@@ -43,7 +43,7 @@ export interface ISourceProp {
 export interface ITh {
     title: string;
     className: string;
-    ariaLabel?: string;
+    dataType?: string;
 }
 
 /**
@@ -87,41 +87,67 @@ export interface IRowState {
  * properties:IHeader
  * state:N/A
  */
-export class Header extends React.Component<IHeader, { ariaLabel: string }>{
+export class Header extends React.Component<IHeader>{
 
-    public state = {
-        ariaLabel: ''
-    }
 
     /**
      * Change Page click event
      * call event via properties
      */
-    handleSortClicked = (event: React.SyntheticEvent<HTMLElement>) => {
-        debugger;
+    handleSortClicked = (event: React.SyntheticEvent<HTMLElement> ) => {
         const { onSort } = this.props;
+
+        //Call event onSort if have set
         if (typeof onSort !== "undefined") {
             this.props.onSort(event);
         }
 
         // const icon = event.currentTarget.firstChild;
-        const elem = ReactDOM.findDOMNode(event.currentTarget);
-        console.log(elem);
+        const elem: any = ReactDOM.findDOMNode(event.currentTarget);
+        
+        let className = elem.firstElementChild.className;
+        if (className.indexOf("fa fa-sort-up") >= 0) {
+            className = className.replace('fa fa-sort-up', 'fa fa-sort-down');
+        } else if (className.indexOf("fa-sort-down") >= 0) {
+            className = className.replace('fa fa-sort-down', 'fa fa-sort-up');
+        } else {
+            className = "fa fa-sort-down"; //default is down
+        }
+        elem.firstElementChild.className = className;
     }
 
     public render() {
         const { className, dataSet } = this.props;
-        const { ariaLabel } = this.state;
         return (<thead>
             <tr role="row" className={className}>
                 {dataSet.map((thdata, key) => (
-                    <th key={key} aria-label={ariaLabel} onClick={this.handleSortClicked} ><i className={thdata.className}></i> {thdata.title}</th>
+                    <th key={key} >
+                        <div onClick={this.handleSortClicked} >
+                        <i className={thdata.className}></i> 
+                        {thdata.title}</div>
+                        {key ===0 || key=== dataSet.length-1 ?'':
+                        <input 
+                            className={'form-control ' + thdata.dataType} 
+                            type='text' 
+                            id={thdata.title} 
+                            name={thdata.title} />}
+                        
+                    </th>
                 ))}
             </tr>
-        </thead >);
+        </thead>);
     }
 }
 
+
+private setClassName(dataType:string) {
+    const className = 'form-control ';
+    if (dataType === "date") {
+        return className + 'date-picker';
+    } else if (dataType === "list") {
+        return className + 'date-picker';
+    }
+}
 
 /**
  * Body Class

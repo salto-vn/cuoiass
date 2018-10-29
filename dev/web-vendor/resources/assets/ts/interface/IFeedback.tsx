@@ -24,5 +24,4 @@ export interface IFeedbackState {
     errorInfo: null | string,
     activePage: number,
     feedbacHeader: ITh[],
-    sortBy: string
 }

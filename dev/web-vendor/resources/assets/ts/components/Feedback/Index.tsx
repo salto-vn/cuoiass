@@ -28,7 +28,6 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
         errorInfo: '',
         feedbacHeader: [],
         activePage: CONSTANT.CURRENT_PAGE,
-        sortBy:''
     };
 
 
@@ -47,7 +46,7 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
      * Render view
      */
     public render() {
-        const { feedbackGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, feedbacHeader, sortBy } = this.state;
+        const { feedbackGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
         const listdata: Array<string[]> = new Array();
         for (let i: number = 0; i < feedbackGrid.length; i++) {
             let item: IFeedback = feedbackGrid[i];
@@ -69,7 +68,7 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                                 </div>
                                 <div className="panel-body">
                                     <button type="button" className="btn btn-success m-b-sm" >Add new row</button>
-                                    <Table sortBy={sortBy} pageClicked={this.handlePageChange} headers={feedbacHeader} activePage={activePage} totalItem={totalItem} dataSet={listdata} limit={limit} isError={isError} isLoading={isLoading} errorInfo={errorInfo} desc='Feedback data' />
+                                    <Table pageClicked={this.handlePageChange} headers={feedbacHeader} activePage={activePage} totalItem={totalItem} dataSet={listdata} limit={limit} isError={isError} isLoading={isLoading} errorInfo={errorInfo} desc='Feedback data' />
                                 </div>
                             </div>
                         </div>
@@ -92,14 +91,14 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
         // const sortIconDown: string = 'fas fa-sort-down';
         // const sortIconUp: string = 'fas fa-sort-up';
         const header = [
-            { title: '#', className: '' },
+            { title: '#', className: ''},
             { title: 'MSP', className: sortIcon },
             { title: 'Tên sản phẩm', className: sortIcon },
             { title: 'Tên người dùng', className: sortIcon },
-            { title: 'Ngày', className: sortIcon },
+            { title: 'Ngày', className: sortIcon ,dataType:'date'},
             { title: 'Nội dung', className: sortIcon },
             { title: 'Tỷ lệ', className: sortIcon },
-            { title: 'Actions', className: '' }
+            { title: 'Actions', className: '' ,dataType:'none'}
         ];
 
 
@@ -244,20 +243,6 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
             ...prevState, activePage: pageNumber, offset: (pageNumber - 1) * limit
         }), () => {
 
-            //TODO
-            const sortIcon: string = 'fa fa-sort';
-            const sortIconDown: string = 'fa fa-sort-down';
-            // const sortIconUp: string = 'fas fa-sort-up';
-            const header = [
-                { title: '#', className: '' },
-                { title: 'MSP', className: sortIcon },
-                { title: 'Tên sản phẩm', className: sortIconDown },
-                { title: 'Tên người dùng', className: sortIcon },
-                { title: 'Ngày', className: sortIcon },
-                { title: 'Nội dung', className: sortIcon },
-                { title: 'Tỷ lệ', className: sortIcon },
-                { title: 'Actions', className: '' }
-            ];
             //TODO: Hard data waiting for api with request limit, offset, reponse
             if (pageNumber === 1) {
                 this.getListFeedback();
@@ -290,14 +275,12 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                     feedbackGrid: responses,
                     totalItem: 30,
                     isLoading: false,
-                    feedbacHeader:header
                 });
             } else {
                 this.setState({
                     feedbackGrid: [],
                     totalItem: 30,
                     isLoading: true,
-                    feedbacHeader: header
                 });
             }
         });
