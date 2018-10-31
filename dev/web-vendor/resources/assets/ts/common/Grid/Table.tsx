@@ -30,7 +30,7 @@ export interface ISourceProp {
     totalItem?: number;
     activePage?: number;
     pageClicked?: any;
-    filterFlag?:boolean;
+    filterFlag?: boolean;
 }
 
 /**
@@ -58,7 +58,6 @@ export interface IHeader {
     onSort?: any;
 }
 
-
 /**
  * Interface
  * Row <tr><td>></td</tr>
@@ -79,7 +78,6 @@ export interface IRowState {
     limit: number;
 }
 
-
 /**
  * Header Class
  * Display Header on Table
@@ -89,12 +87,11 @@ export interface IRowState {
  */
 export class Header extends React.Component<IHeader>{
 
-
     /**
      * Change Page click event
      * call event via properties
      */
-    handleSortClicked = (event: React.SyntheticEvent<HTMLElement> ) => {
+    handleSortClicked = (event: React.SyntheticEvent<HTMLElement>) => {
         const { onSort } = this.props;
 
         //Call event onSort if have set
@@ -102,9 +99,8 @@ export class Header extends React.Component<IHeader>{
             this.props.onSort(event);
         }
 
-        // const icon = event.currentTarget.firstChild;
         const elem: any = ReactDOM.findDOMNode(event.currentTarget);
-        
+
         let className = elem.firstElementChild.className;
         if (className.indexOf("fa fa-sort-up") >= 0) {
             className = className.replace('fa fa-sort-up', 'fa fa-sort-down');
@@ -113,6 +109,7 @@ export class Header extends React.Component<IHeader>{
         } else {
             className = "fa fa-sort-down"; //default is down
         }
+
         elem.firstElementChild.className = className;
     }
 
@@ -123,15 +120,15 @@ export class Header extends React.Component<IHeader>{
                 {dataSet.map((thdata, key) => (
                     <th key={key} >
                         <div onClick={this.handleSortClicked} >
-                        <i className={thdata.className}></i> 
-                        {thdata.title}</div>
-                        {key ===0 || key=== dataSet.length-1 ?'':
-                        <input 
-                            className={'form-control ' + thdata.dataType} 
-                            type='text' 
-                            id={thdata.title} 
-                            name={thdata.title} />}
-                        
+                            <i className={thdata.className}></i>
+                            {thdata.title}</div>
+                        {key === 0 || key === dataSet.length - 1 ? '' :
+                            <input
+                                className={'form-control ' + thdata.dataType}
+                                type='text'
+                                id={thdata.title}
+                                name={thdata.title} />}
+
                     </th>
                 ))}
             </tr>
@@ -139,15 +136,14 @@ export class Header extends React.Component<IHeader>{
     }
 }
 
-
-private setClassName(dataType:string) {
-    const className = 'form-control ';
-    if (dataType === "date") {
-        return className + 'date-picker';
-    } else if (dataType === "list") {
-        return className + 'date-picker';
-    }
-}
+// private setClassName(dataType: string) {
+//     const className = 'form-control ';
+//     if (dataType === "date") {
+//         return className + 'date-picker';
+//     } else if (dataType === "list") {
+//         return className + 'date-picker';
+//     }
+// }
 
 /**
  * Body Class
@@ -160,16 +156,8 @@ private setClassName(dataType:string) {
  */
 export class Body extends React.Component<IRowState> {
 
-
     public render() {
         const { dataSet, isError, isLoading, errorInfo, colsNo } = this.props;
-        if (isError) {
-            return <tbody><tr><td>{errorInfo}</td></tr></tbody>;
-        }
-
-        if (isLoading) {
-            return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid itemRepeat={1} /></td></tr></tbody>;
-        }
 
         const actionElement = <>
             <a className="action-icon">
@@ -179,21 +167,29 @@ export class Body extends React.Component<IRowState> {
                 <i className="fa fa-trash-o" />
             </a>
         </>;
-        return (<tbody>
-            {
-                dataSet.map((rows, key) => (
-                    <tr role="row" key={key} className={key % 2 ? 'odd' : 'even'} >
-                        {rows.map((d, k) => <td key={k}>{d}</td>)}
-                        <td key={rows.length + 1}>{actionElement}</td>
-                    </tr>
-                )
-                )
-            }
-        </tbody>);
+
+        if (isError) {
+            return <tbody><tr><td>{errorInfo}</td></tr></tbody>;
+        }
+
+        if (isLoading) {
+            return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid itemRepeat={1} /></td></tr></tbody>;
+        }
+
+        return (
+            <tbody>
+                {
+                    dataSet.map((rows, key) => (
+                        <tr role="row" key={key} className={key % 2 ? 'odd' : 'even'} >
+                            {rows.map((d, k) => <td key={k}>{d}</td>)}
+                            <td key={rows.length + 1}>{actionElement}</td>
+                        </tr>
+                    ))
+                }
+            </tbody>
+        );
     }
 }
-
-
 
 /**
  * Table Class
@@ -216,7 +212,6 @@ export class Table extends React.Component<ISourceProp, {}> {
         const errorInfo: string = String(this.props.errorInfo);
         const limit: number = Number(this.props.limit);
 
-
         return (<div>
             <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
                 <Header dataSet={headers} />
@@ -227,10 +222,9 @@ export class Table extends React.Component<ISourceProp, {}> {
         )
     }
 
-
     /**
      * Change Page click event
-     * call event via properties
+     * Call event via properties
      */
     private handlePageClicked = (event: any) => {
         this.props.pageClicked(event);
@@ -240,7 +234,7 @@ export class Table extends React.Component<ISourceProp, {}> {
      * Render Pagination
      */
     private paginate = () => {
-        const activePage: number = Number(this.props.activePage);
+        const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
         const limit: number = Number(this.props.limit);
         const isError: boolean = Boolean(this.props.isError);
@@ -248,6 +242,7 @@ export class Table extends React.Component<ISourceProp, {}> {
         if (isError) {
             return null;
         }
+
         return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
             <Pagination
                 pageRangeDisplayed={limit}
@@ -256,6 +251,4 @@ export class Table extends React.Component<ISourceProp, {}> {
                 onChange={this.handlePageClicked}
             />;
     };
-
 }
-
