@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBookedMenuFoodsTable extends Migration
+class CreateBookedFoodTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateBookedMenuFoodsTable extends Migration
      */
     public function up()
     {
-        Schema::create('booked_menu_foods', function (Blueprint $table) {
+        Schema::create('booked_food', function (Blueprint $table) {
             $table->increments('booked_food_id');
             $table->string('booked_menu');
             $table->char('service_code');

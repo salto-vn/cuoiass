@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBookedOptionsTable extends Migration
+class CreateProReviewTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateBookedOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('booked_options', function (Blueprint $table) {
-            $table->increments('booked_opt_id');
-            $table->integer('booked_id');
-            $table->string('option_name');
-            $table->integer('option_quality');
-            $table->float('option_price');
-            $table->integer('option_id');
+        Schema::create('pro_review', function (Blueprint $table) {
+            $table->increments('review_id');
+            $table->string('review_content');
+            $table->date('review_date');
+            $table->float('review_rate');
+            $table->string('review_imgs');
             $table->integer('prd_id');
-            $table->integer('vendor_service_id');
+            $table->integer('booked_id');
+            $table->integer('customer_id');
             $table->string('create_user');
             $table->string('update_user')->nullable();
             $table->timestamps();
@@ -35,6 +35,6 @@ class CreateBookedOptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('booked_options');
+        Schema::dropIfExists('review');
     }
 }

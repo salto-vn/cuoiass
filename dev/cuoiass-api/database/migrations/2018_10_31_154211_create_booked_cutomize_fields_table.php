@@ -18,7 +18,7 @@ class CreateBookedCutomizeFieldsTable extends Migration
             $table->integer('booked_id');
             $table->string('customize_field_answer')->nullable();
             $table->integer('customize_field_id');
-            $table->integer('pro_id');
+            $table->integer('prd_id');
             $table->string('create_user');
             $table->string('update_user')->nullable();
             $table->string('create_user');

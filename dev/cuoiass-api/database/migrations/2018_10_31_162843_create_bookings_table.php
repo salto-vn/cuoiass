@@ -37,7 +37,7 @@ class CreateBookingsTable extends Migration
             $table->float('gross_price');
             $table->string('invoice_url')->nullable();
             $table->char('plan_id');
-            $table->integer('pro_id');
+            $table->integer('prd_id');
             $table->integer('vendor_service_id');
             $table->string('create_user');
             $table->string('update_user')->nullable();
