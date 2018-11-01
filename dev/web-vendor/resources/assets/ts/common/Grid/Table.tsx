@@ -106,7 +106,6 @@ export interface IHeader {
     onFilter?: any
 }
 
-
 /**
  * Interface
  * Row <tr><td>></td</tr>
@@ -132,7 +131,6 @@ export interface IRowState {
     onView?: any;
     onDelete?: any;
 }
-
 
 /**
  * Header Class
@@ -307,7 +305,6 @@ export class Body extends React.Component<IRowState> {
 }
 
 
-
 /**
  * Table Class
  * Display Table
@@ -343,10 +340,9 @@ export class Table extends React.Component<ISourceProp, {}> {
         )
     }
 
-
     /**
      * Change Page click event
-     * call event via properties
+     * Call event via properties
      */
     private handlePageClicked = (event: any) => {
         this.props.pageClicked(event);
@@ -356,7 +352,7 @@ export class Table extends React.Component<ISourceProp, {}> {
      * Render Pagination
      */
     private paginate = () => {
-        const activePage: number = Number(this.props.activePage);
+        const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
         const limit: number = Number(this.props.limit);
         const isError: boolean = Boolean(this.props.isError);
@@ -364,6 +360,7 @@ export class Table extends React.Component<ISourceProp, {}> {
         if (isError) {
             return null;
         }
+
         return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
             <Pagination
                 pageRangeDisplayed={limit}
@@ -372,6 +369,4 @@ export class Table extends React.Component<ISourceProp, {}> {
                 onChange={this.handlePageClicked}
             />;
     };
-
 }
-

@@ -8332,6 +8332,13 @@ exports.default = LoadingGrid;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(3);
 var React = tslib_1.__importStar(__webpack_require__(0));
+/**
+ * LoadingPaginate Class
+ * Display loading pladeholder before display pagination
+ * Display loading if isLoading === true
+ * <LoadingPaginate width={} height={} />
+ * properties:IProp
+ */
 var LoadingPaginate = /** @class */ (function (_super) {
     tslib_1.__extends(LoadingPaginate, _super);
     function LoadingPaginate() {
@@ -34378,10 +34385,19 @@ exports.default = WeddingDressModal;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(3);
 var React = tslib_1.__importStar(__webpack_require__(0));
+/**
+ * Select class
+ * <Select name={} options={} value={} placeholder={} getValue={} label={} addClass={} />
+ * Props: ISourceProp
+ */
 var Select = /** @class */ (function (_super) {
     tslib_1.__extends(Select, _super);
     function Select() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /**
+         * Click change option on select
+         * Call event via properties: getValue
+         */
         _this.handleChange = function (event) {
             _this.props.getValue(parseInt(event.target.value, 10));
         };
@@ -35016,7 +35032,7 @@ var Table = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /**
          * Change Page click event
-         * call event via properties
+         * Call event via properties
          */
         _this.handlePageClicked = function (event) {
             _this.props.pageClicked(event);
