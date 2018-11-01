@@ -3,6 +3,10 @@ import { IFeedbackState, IFeedback } from '../../interface/IFeedback';
 import { FeedbackModel } from '../../model/FeedbackModel';
 import CONSTANT from '../../bootstrap/Constant';
 import { Table } from '../../common/Grid/Table';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSortUp } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faSortUp)
 
 const subjectPage = 'Phản hồi của người dùng'; //Header Content page
 
@@ -48,9 +52,12 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
     public render() {
         const { feedbackGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
         const listdata: Array<string[]> = new Array();
+
+        //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < feedbackGrid.length; i++) {
             let item: IFeedback = feedbackGrid[i];
-            let data: string[] = [String(i + 1), item.productId, item.productName, item.name, item.date, item.content, String(item.rate)];
+            //last index is PK KEY, assign to Action on row
+            let data: string[] = [String(i + 1), item.productId, item.productName, item.name, item.date, item.content, String(item.rate), item.feedbackId];
             listdata.push(data);
         }
 
@@ -67,8 +74,20 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                                     <h4 className="panel-title">Danh sách phản hồi</h4>
                                 </div>
                                 <div className="panel-body">
-                                    <button type="button" className="btn btn-success m-b-sm" >Add new row</button>
-                                    <Table pageClicked={this.handlePageChange} headers={feedbacHeader} activePage={activePage} totalItem={totalItem} dataSet={listdata} limit={limit} isError={isError} isLoading={isLoading} errorInfo={errorInfo} desc='Feedback data' />
+                                    <Table
+                                        pageClicked={this.handlePageChange}
+                                        headers={feedbacHeader}
+                                        activePage={activePage}
+                                        totalItem={totalItem}
+                                        dataSet={listdata}
+                                        limit={limit} isError={isError}
+                                        isLoading={isLoading} errorInfo={errorInfo}
+                                        desc='Feedback data' onSort={this.handleSort}
+                                        canView={true}
+                                        onView={this.handleView}
+                                        filterFlag={true}
+                                        onFilter={this.handleFilter}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -76,6 +95,20 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 </div>
             </>
         );
+    }
+
+    private handleSort = () => {
+        console.log('Call API Sort');
+    }
+
+    private handleView = (feedbackId: number) => {
+        console.log('redirect view and answer ' + feedbackId);
+    }
+
+    private handleFilter = async (value: string) => {
+        const sleep = (msec:number) => new Promise(resolve => setTimeout(resolve, msec));
+        await sleep(3000)
+        console.log('filter ' + value);
     }
 
     /**
@@ -87,18 +120,16 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
         this.setState({ isLoading: true });
 
         //TODO
-        const sortIcon: string = 'fa fa-sort';
-        // const sortIconDown: string = 'fas fa-sort-down';
-        // const sortIconUp: string = 'fas fa-sort-up';
+        const sortIcon: string = 'sort';
         const header = [
-            { title: '#', className: ''},
-            { title: 'MSP', className: sortIcon },
-            { title: 'Tên sản phẩm', className: sortIcon },
-            { title: 'Tên người dùng', className: sortIcon },
-            { title: 'Ngày', className: sortIcon ,dataType:'date'},
-            { title: 'Nội dung', className: sortIcon },
-            { title: 'Tỷ lệ', className: sortIcon },
-            { title: 'Actions', className: '' ,dataType:'none'}
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
+            { id: 'msp', title: 'MSP', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
+            { id: 'tsp', title: 'Tên sản phẩm', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
+            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'col-sm-2', sortClass: sortIcon },
+            { id: 'ngay', title: 'Ngày', className: 'col-sm-1', dataType: 'date', sortClass: sortIcon },
+            { id: 'nd', title: 'Nội dung', className: 'col-md-auto', dataType: 'text', sortClass: sortIcon },
+            { id: 'tl', title: 'Tỷ lệ', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
+            { id: '', title: 'Actions', className: 'col-md-auto', dataType: 'none', sortClass: sortIcon }
         ];
 
 
@@ -116,7 +147,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '1',
             },
 
             {
@@ -128,7 +160,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '2',
             },
             {
                 name: 'Ngo Tuan Anh2',
@@ -139,7 +172,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '3',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -150,7 +184,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '4',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -161,7 +196,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '5',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -172,7 +208,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '6',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -183,7 +220,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '7',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -194,7 +232,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '8',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -205,7 +244,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '9',
             },
             {
                 name: 'Ngo Tuan Anh3',
@@ -216,7 +256,8 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                 rate: 4.5,
                 productId: '00001',
                 productName: 'Product Name A',
-                customerId: '00002'
+                customerId: '00002',
+                feedbackId: '10'
             }
         ];
 
@@ -249,7 +290,7 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
             } else if (pageNumber === 2) {
                 const responses = [
                     {
-                        name: 'Ngo Tuan Anh',
+                        name: 'Ngo Tuan Anh3',
                         email: 'ngoanh@mulodo.com',
                         date: '2018-12-12',
                         content: 'Review content, Good Job!,',
@@ -257,10 +298,11 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                         rate: 4.5,
                         productId: '00001',
                         productName: 'Product Name A',
-                        customerId: '00002'
+                        customerId: '00002',
+                        feedbackId: '11',
                     },
                     {
-                        name: 'Ngo Tuan Anh2',
+                        name: 'Ngo Tuan Anh3',
                         email: 'ngoanh@mulodo.com',
                         date: '2018-12-12',
                         content: 'Review content, Good Job!,',
@@ -268,8 +310,9 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
                         rate: 4.5,
                         productId: '00001',
                         productName: 'Product Name A',
-                        customerId: '00002'
-                    },
+                        customerId: '00002',
+                        feedbackId: '12',
+                    }
                 ];
                 this.setState({
                     feedbackGrid: responses,

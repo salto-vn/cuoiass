@@ -9,4 +9,5 @@ export class FeedbackModel implements IFeedback {
     public productId: string = '';
     public productName: string = '';
     public customerId: string = '';
+    public feedbackId: string = '';
 }

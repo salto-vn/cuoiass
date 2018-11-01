@@ -90,12 +90,7 @@
 }
 
 .custom-table>thead>tr>th>input {
-    // color: #999;
-    // padding:5px;
-    // width:100%;
-    // margin:2px;
-    // height:25px;
-
+    width: 100%;
 }
 
 .custom-table>thead>tr>th:hover {
@@ -148,13 +143,13 @@
 }
 
 .action-icon {
-    padding: 0 10px;
+    padding: 0 5px;
     cursor: pointer;
+    font-size: 12px;
+    color: #646464;
 }
 
-
 /* css for form */
-
 
 .form-input {
     display: block;
@@ -477,4 +472,9 @@
     padding: 20px;
     font-size: 12px;
     text-align: center;
+}
+
+// only for react-date-picker header filter
+.react-date-picker-header>div {
+    border: none !important;
 }

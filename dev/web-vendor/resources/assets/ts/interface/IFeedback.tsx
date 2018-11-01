@@ -10,6 +10,7 @@ export interface IFeedback {
     productId: string;
     productName: string;
     customerId: string;
+    feedbackId: string;
 }
 
 export interface IFeedbackState {
