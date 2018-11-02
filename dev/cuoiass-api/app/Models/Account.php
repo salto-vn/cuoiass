@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
@@ -24,7 +24,7 @@ class Account extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'role_id', 'name', 'email', 'password', 'staff_id', 'vendor_id', 'created_user'
     ];
 
     /**

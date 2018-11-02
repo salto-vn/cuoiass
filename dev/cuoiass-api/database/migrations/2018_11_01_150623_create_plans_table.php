@@ -23,8 +23,8 @@ class CreatePlansTable extends Migration
             $table->char('phone');
             $table->float('total_price');
             $table->integer('customer_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

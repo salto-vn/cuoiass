@@ -18,8 +18,8 @@ class CreatePackagesTable extends Migration
             $table->string('package_name');
             $table->float('package_price');
             $table->integer('pub_user')->unsigned();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

@@ -24,8 +24,8 @@ class CreateCreditTable extends Migration
             $table->integer('vendor_id');
             $table->integer('prd_id');
             $table->integer('booked_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

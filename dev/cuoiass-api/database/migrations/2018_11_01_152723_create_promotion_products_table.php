@@ -14,15 +14,15 @@ class CreatePromotionProductsTable extends Migration
     public function up()
     {
         Schema::create('promotion_products', function (Blueprint $table) {
-            $table->integer('promotion_product_id');
-            $table->integer('promotion_id');
+            $table->integer('pro_prd_id');
+            $table->integer('pro_id');
             $table->integer('prd_id');
-            $table->integer('vendor_service_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->integer('vendor_sv_id');
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
 
-            $table->primary(['promotion_product_id', 'promotion_id', 'prd_id', 'vendor_service_id']);
+            $table->primary(['pro_prd_id', 'pro_id', 'prd_id', 'vendor_sv_id']);
         });
     }
 

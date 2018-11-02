@@ -19,8 +19,8 @@ class CreateStaffsTable extends Migration
             $table->string('staff_name');
             $table->char('phone');
             $table->string('address');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

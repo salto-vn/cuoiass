@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBookedCutomizeFieldsTable extends Migration
+class CreateBookedCustomizeFieldsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,15 +14,13 @@ class CreateBookedCutomizeFieldsTable extends Migration
     public function up()
     {
         Schema::create('booked_customize_fields', function (Blueprint $table) {
-            $table->increments('booked_customize_field_id');
+            $table->increments('booked_ct_field_id');
             $table->integer('booked_id');
             $table->string('customize_field_answer')->nullable();
-            $table->integer('customize_field_id');
+            $table->integer('customize_id');
             $table->integer('prd_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

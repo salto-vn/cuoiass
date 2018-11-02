@@ -17,8 +17,8 @@ class CreatePackageProductsTable extends Migration
             $table->increments('id');
             $table->integer('prd_id');
             $table->integer('package_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

@@ -18,8 +18,8 @@ class CreateFoodTable extends Migration
             $table->string('food_name');
             $table->integer('image_ids');
             $table->integer('menu_id')->unsigned();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

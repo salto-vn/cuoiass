@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateHoneyMoonTable extends Migration
+class CreateHoneyMoonInfoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateHoneyMoonTable extends Migration
      */
     public function up()
     {
-        Schema::create('honey_moon', function (Blueprint $table) {
+        Schema::create('honey_moon_info', function (Blueprint $table) {
             $table->increments('honey_id');
-            $table->string('honey_id');
             $table->string('honey_title')->nullable();
             $table->string('hotel_name')->nullable();
             $table->string('hotel_address')->nullable();
@@ -27,8 +26,8 @@ class CreateHoneyMoonTable extends Migration
             $table->char('status')->nullable();
             $table->string('memo')->nullable();
             $table->integer('booked_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

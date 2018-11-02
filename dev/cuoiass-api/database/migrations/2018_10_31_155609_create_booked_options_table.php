@@ -21,9 +21,9 @@ class CreateBookedOptionsTable extends Migration
             $table->float('option_price');
             $table->integer('option_id');
             $table->integer('prd_id');
-            $table->integer('vendor_service_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->integer('vendor_sv_id');
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

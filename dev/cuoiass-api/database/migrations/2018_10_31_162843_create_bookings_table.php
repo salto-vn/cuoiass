@@ -38,9 +38,9 @@ class CreateBookingsTable extends Migration
             $table->string('invoice_url')->nullable();
             $table->char('plan_id');
             $table->integer('prd_id');
-            $table->integer('vendor_service_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->integer('vendor_sv_id');
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

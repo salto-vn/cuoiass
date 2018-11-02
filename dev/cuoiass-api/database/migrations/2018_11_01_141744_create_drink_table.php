@@ -18,8 +18,8 @@ class CreateDrinkTable extends Migration
             $table->string('drink_name');
             $table->integer('image_ids');
             $table->integer('menu_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

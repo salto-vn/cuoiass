@@ -21,8 +21,8 @@ class CreateCustomersTable extends Migration
             $table->char('phone')->nullable();
             $table->char('fb')->nullable();
             $table->tinyInteger('member_flag')->default(1);
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

@@ -21,8 +21,8 @@ class CreateAnalysisTable extends Migration
             $table->char('user_ip');
             $table->string('user_fb')->nullable();
             $table->integer('customer_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

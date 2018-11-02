@@ -21,8 +21,8 @@ class CreatePromotionsTable extends Migration
             $table->date('end_date')->nullable();
             $table->char('promotion_type');
             $table->integer('promotion_amount');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

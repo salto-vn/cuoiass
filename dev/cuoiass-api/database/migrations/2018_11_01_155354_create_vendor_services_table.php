@@ -14,7 +14,7 @@ class CreateVendorServicesTable extends Migration
     public function up()
     {
         Schema::create('vendor_services', function (Blueprint $table) {
-            $table->increments('vendor_service_id');
+            $table->increments('vendor_sv_id');
             $table->integer('vendor_id');
             $table->char('service_code');
             $table->string('ven_service_name');
@@ -22,8 +22,8 @@ class CreateVendorServicesTable extends Migration
             $table->string('city');
             $table->char('phone_service');
             $table->char('fax_service')->nullable();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

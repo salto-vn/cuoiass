@@ -20,8 +20,8 @@ class CreateTravelProductsTable extends Migration
             $table->char('honey_api_client')->nullable();
             $table->char('honey_api_key')->nullable();
             $table->string('honey_api_acc');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

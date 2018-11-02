@@ -19,8 +19,8 @@ class CreateFeeTable extends Migration
             $table->integer('fee_amount')->unsigned();
             $table->string('memo');
             $table->integer('vendor_id')->unsigned();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

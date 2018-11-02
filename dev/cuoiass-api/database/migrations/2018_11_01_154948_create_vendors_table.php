@@ -24,8 +24,8 @@ class CreateVendorsTable extends Migration
             $table->char('phone');
             $table->integer('credit_balance');
             $table->char('fax')->nullable();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

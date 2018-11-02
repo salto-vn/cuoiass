@@ -16,8 +16,8 @@ class CreateMasterServiceTable extends Migration
         Schema::create('master_service', function (Blueprint $table) {
             $table->char('service_code')->primary();
             $table->string('service_name')->nullable();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

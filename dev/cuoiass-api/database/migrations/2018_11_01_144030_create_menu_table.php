@@ -18,8 +18,8 @@ class CreateMenuTable extends Migration
             $table->string('menu_name');
             $table->float('unit_price');
             $table->integer('prd_id')->unsigned();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

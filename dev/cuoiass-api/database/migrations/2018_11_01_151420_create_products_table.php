@@ -28,10 +28,10 @@ class CreateProductsTable extends Migration
             $table->string('prd_party_photo_size')->nullable();
             $table->string('prd_times')->nullable();
             $table->string('prd_images');
-            $table->integer('vendor_service_id');
+            $table->integer('vendor_sv_id');
             $table->char('service_code');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

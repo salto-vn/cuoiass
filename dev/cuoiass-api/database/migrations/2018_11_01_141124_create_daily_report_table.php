@@ -23,8 +23,8 @@ class CreateDailyReportTable extends Migration
             $table->integer('total_booking_cancelled')->default(0);
             $table->float('total_price');
             $table->float('total_price_canceled');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

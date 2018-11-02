@@ -23,8 +23,8 @@ class CreateBookedFoodTable extends Migration
             $table->float('drink_unit_price')->nullable();
             $table->integer('booked_id');
             $table->integer('menu_id');
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }

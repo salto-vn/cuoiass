@@ -22,8 +22,9 @@ class CreateAccountsTable extends Migration
             $table->integer('staff_id');
             $table->integer('vendor_id');
             $table->rememberToken();
-            $table->string('create_user');
-            $table->string('update_user')->nullable();
+            $table->softDeletes();
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
             $table->timestamps();
         });
     }
