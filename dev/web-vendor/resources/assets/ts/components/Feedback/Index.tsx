@@ -16,7 +16,7 @@ const subjectPage = 'Phản hồi của người dùng'; //Header Content page
  * Properties: N/A
  * State: Required IFeedbackState , Optional another variale 
  */
-export class Feedback extends React.Component<{}, IFeedbackState> {
+export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
 
     // inital state varialble using in this Component, 
     public state = {
@@ -102,11 +102,11 @@ export class Feedback extends React.Component<{}, IFeedbackState> {
     }
 
     private handleView = (feedbackId: number) => {
-        console.log('redirect view and answer ' + feedbackId);
+        this.props.history.push("/feedback/"+feedbackId);
     }
 
     private handleFilter = async (value: string) => {
-        const sleep = (msec:number) => new Promise(resolve => setTimeout(resolve, msec));
+        const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec));
         await sleep(3000)
         console.log('filter ' + value);
     }

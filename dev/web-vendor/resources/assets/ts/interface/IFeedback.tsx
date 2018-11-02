@@ -26,3 +26,8 @@ export interface IFeedbackState {
     activePage: number,
     feedbacHeader: ITh[],
 }
+
+export interface INFeedbackState {
+    model: IFeedback;
+
+}

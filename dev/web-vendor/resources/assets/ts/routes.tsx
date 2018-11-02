@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Layout } from './share/Layout';
 import { WeddingDress } from './components/WeddingDress/Index';
 import { Feedback } from './components/Feedback/Index'
+import { ViewDetailFeedback } from './components/Feedback/ViewDetail'
+
 // import { WeddingInvitation } from './components/WeddingInvitation/Index';
 
 const WeddingAlbum = () => (
@@ -46,7 +48,8 @@ export const Routes = () => (
             <Route path='/wedding-ring' component={WeddingRing} />
             <Route path='/wedding-car' component={WeddingCar} />
             <Route path='/booking' component={Booking} />
-            <Route path='/feedback' component={Feedback} />
+            <Route path='/feedback' exact={true} component={Feedback} />
+            <Route path='/feedback/:id' exact={true} component={ViewDetailFeedback} />
         </Layout>
     </Router>
 );
