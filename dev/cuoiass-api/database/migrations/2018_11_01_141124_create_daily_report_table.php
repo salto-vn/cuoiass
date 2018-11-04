@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateDailyReportTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('daily_report', function (Blueprint $table) {
+            $table->increments('report_date');
+            $table->char('report_type')->nullable();
+            $table->integer('report_id');
+            $table->integer('total_view')->default(0);
+            $table->integer('total_booking')->default(0);
+            $table->integer('total_booking_finished')->default(0);
+            $table->integer('total_booking_cancelled')->default(0);
+            $table->float('total_price');
+            $table->float('total_price_canceled');
+            $table->string('created_user');
+            $table->string('updated_user')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('daily_report');
+    }
+}
