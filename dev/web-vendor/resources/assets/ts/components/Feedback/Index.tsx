@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IFeedbackState, IFeedback } from '../../interface/IFeedback';
+import { IFeedbackState, IFeedbackList } from '../../interface/IFeedback';
 import { FeedbackModel } from '../../model/FeedbackModel';
 import CONSTANT from '../../bootstrap/Constant';
 import { Table } from '../../common/Grid/Table';
@@ -16,7 +16,7 @@ const subjectPage = 'Phản hồi của người dùng'; //Header Content page
  * Properties: N/A
  * State: Required IFeedbackState , Optional another variale 
  */
-export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
+export class Feedback extends React.Component<{ history: any }, IFeedbackState> {
 
     // inital state varialble using in this Component, 
     public state = {
@@ -55,9 +55,9 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
 
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < feedbackGrid.length; i++) {
-            let item: IFeedback = feedbackGrid[i];
+            let item: IFeedbackList = feedbackGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.productId, item.productName, item.name, item.date, item.content, String(item.rate), item.feedbackId];
+            let data: string[] = [String(i + 1), item.productCode, item.productName, item.name, item.date, item.content, String(item.rate), item.feedbackId];
             listdata.push(data);
         }
 
@@ -102,7 +102,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
     }
 
     private handleView = (feedbackId: number) => {
-        this.props.history.push("/feedback/"+feedbackId);
+        this.props.history.push("/feedback/" + feedbackId);
     }
 
     private handleFilter = async (value: string) => {
@@ -145,7 +145,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '1',
@@ -158,7 +158,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '2',
@@ -170,7 +170,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '3',
@@ -182,7 +182,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '4',
@@ -194,7 +194,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '5',
@@ -206,7 +206,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '6',
@@ -218,7 +218,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '7',
@@ -230,7 +230,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '8',
@@ -242,7 +242,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '9',
@@ -254,7 +254,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                 content: 'Review content, Good Job!,',
                 images: ['', ''],
                 rate: 4.5,
-                productId: '00001',
+                productCode: '00001',
                 productName: 'Product Name A',
                 customerId: '00002',
                 feedbackId: '10'
@@ -296,7 +296,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                         content: 'Review content, Good Job!,',
                         images: ['', ''],
                         rate: 4.5,
-                        productId: '00001',
+                        productCode: '00001',
                         productName: 'Product Name A',
                         customerId: '00002',
                         feedbackId: '11',
@@ -308,7 +308,7 @@ export class Feedback extends React.Component<{ history:any}, IFeedbackState> {
                         content: 'Review content, Good Job!,',
                         images: ['', ''],
                         rate: 4.5,
-                        productId: '00001',
+                        productCode: '00001',
                         productName: 'Product Name A',
                         customerId: '00002',
                         feedbackId: '12',

@@ -478,3 +478,28 @@
 .react-date-picker-header>div {
     border: none !important;
 }
+
+//only for star rating
+.rate-checked {
+    color: rgb(236, 219, 65);
+}
+
+.rate-star-hover:hover {
+    color: rgb(236, 219, 65);
+    cursor: pointer;
+}
+.f-size-50 {
+    font-size: 50px
+}
+
+.f-size-20 {
+    font-size: 20px
+}
+
+.f-size-30 {
+    font-size: 30px
+}
+
+.f-size-40 {
+    font-size: 40px
+}
