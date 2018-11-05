@@ -15,6 +15,7 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->increments('booked_id');
+            $table->char('booked_code')->unique();
             $table->string('booked_pro_name')->nullable();
             $table->integer('booked_size')->default(0);
             $table->char('booked_color')->nullable();
