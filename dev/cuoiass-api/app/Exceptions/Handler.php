@@ -50,26 +50,4 @@ class Handler extends ExceptionHandler
     {
         return parent::render($request, $exception);
     }
-
-    /**
-     * @inheritdoc
-     */
-    protected function invalidJson($request, ValidationException $exception)
-    {
-        return response()->json($exception->getMessage(), 400);
-    }
-
-    /**
-     * Convert an authentication exception into a response.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Illuminate\Auth\AuthenticationException $exception
-     * @return \Illuminate\Http\Response
-     */
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
-        return $request->expectsJson()
-            ? response()->json($exception->getMessage(), 401)
-            : response($exception->getMessage(), 401);
-    }
 }

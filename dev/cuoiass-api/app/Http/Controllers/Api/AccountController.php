@@ -38,43 +38,37 @@ class AccountController extends Controller
         $search = $request->get('search');
         $model = $this->accountRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
 
-        return new AccountCollection($model);
-    }
-
-
-    public function store(StoreAccount $request)
-    {
-        $input = [
-            'role_id' => 1,
-            'name' => 'duy',
-            'email' => 'abc@gmail.com',
-            'staff_id' => 1,
-            'vendor_id' => 1,
-            'created_user' => '123123',
-            'password' => '23234234'
-        ];
-        $model = $this->accountRepo->create($input);
-        dd($model);
-        //$input = $request->all();
-        ////$input['password'] = bcrypt($input['password']);
-        //$input['created_user'] = 'test@gmail.com';
-        //
-        ////dd($input);
-        //$model = new Account($input);
-        //$model->save();
-        //
-        return response()->json(['type' => $model]);
+        return (new AccountCollection($model));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Create Account and return model
      *
-     * @param  \App\Account  $account
-     * @return \Illuminate\Http\Response
+     * @param StoreAccount $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(Account $account)
+    public function store(StoreAccount $request)
     {
-        //
+        $input = $request->validated();
+        $input['password'] = bcrypt($input['password']);
+        $input['created_user'] = 'test@gmail.com';
+
+        $model = $this->accountRepo->create($input);
+
+        return response()->json([
+            'message' => 'create success',
+            'data' => $model
+        ]);
+    }
+
+    /**
+     * @param Account $account
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit(Request $request)
+    {
+        dd($request->get('id'));
+        return response()->json(['data' => $account], 200);
     }
 
     /**
@@ -86,7 +80,7 @@ class AccountController extends Controller
      */
     public function update(Request $request, Account $account)
     {
-        //
+        dd($account);
     }
 
     /**
