@@ -36,6 +36,7 @@ class AccountController extends Controller
         $orderBy = $request->get('orderBy', null);
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
+
         $model = $this->accountRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
 
         return (new AccountCollection($model));
@@ -55,19 +56,11 @@ class AccountController extends Controller
 
         $model = $this->accountRepo->create($input);
 
-        return response()->json([
-            'message' => 'create success',
-            'data' => $model
-        ]);
+        return response()->json(['data' => $model], 200);
     }
 
-    /**
-     * @param Account $account
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function edit(Request $request)
+    public function edit(Account $account)
     {
-        dd($request->get('id'));
         return response()->json(['data' => $account], 200);
     }
 
@@ -80,7 +73,17 @@ class AccountController extends Controller
      */
     public function update(Request $request, Account $account)
     {
-        dd($account);
+        $input = array_filter($request->validated());
+
+        $input['update_user'] = auth()->user()->email;
+
+        if (isset($input['password'])) {
+            $input['password'] = bcrypt($input['password']);
+        }
+
+        $account->update($input);
+
+        return response()->json(['type' => 'success']);
     }
 
     /**
@@ -91,6 +94,8 @@ class AccountController extends Controller
      */
     public function destroy(Account $account)
     {
-        //
+        $account->delete();
+
+        return response()->json(null, 200);
     }
 }
