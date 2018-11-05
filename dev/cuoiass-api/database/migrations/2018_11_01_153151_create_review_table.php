@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProReviewTable extends Migration
+class CreateReviewTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateProReviewTable extends Migration
      */
     public function up()
     {
-        Schema::create('pro_review', function (Blueprint $table) {
+        Schema::create('review', function (Blueprint $table) {
             $table->increments('review_id');
             $table->string('review_content');
             $table->date('review_date');
