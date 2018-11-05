@@ -16,7 +16,17 @@ export interface ISourceProp {
     getValue: any;
 }
 
+/**
+ * Select class
+ * <Select name={} options={} value={} placeholder={} getValue={} label={} addClass={} />
+ * Props: ISourceProp
+ */
 export class Select extends React.Component<ISourceProp> {
+
+    /**
+     * Click change option on select
+     * Call event via properties: getValue
+     */
     public handleChange = (event: any) => {
         this.props.getValue(parseInt(event.target.value, 10));
     }

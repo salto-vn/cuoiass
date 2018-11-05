@@ -57,6 +57,11 @@ export class NavMenu extends React.Component<{}, {}> {
                                 <i className="menu-icon icon-info_outline" /><span>Travel, Resort, Hotel</span>
                             </NavLink>
                         </li>
+                        <li>
+                            <NavLink to="/feedback" activeClassName="active-page">
+                                <i className="menu-icon icon-info_outline" /><span>Feedback</span>
+                            </NavLink>
+                        </li>
                     </ul>
                 </div>
             </div>
