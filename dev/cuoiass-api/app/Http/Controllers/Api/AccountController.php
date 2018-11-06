@@ -18,7 +18,7 @@ class AccountController extends Controller
 
     /**
      * AccountController constructor.
-     * @param AccountRepo $accountRepo
+     * @param AccountRepo
      */
     public function __construct(AccountRepo $accountRepo)
     {
@@ -39,6 +39,7 @@ class AccountController extends Controller
 
         $model = $this->accountRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
 
+        abort(500);
         return (new AccountCollection($model));
     }
 
@@ -67,8 +68,8 @@ class AccountController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Account  $account
+     * @param  \Illuminate\Http\Request $request
+     * @param Account $account
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Account $account)
@@ -83,13 +84,13 @@ class AccountController extends Controller
 
         $account->update($input);
 
-        return response()->json(['type' => 'success']);
+        return response()->json(['data' => $account], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Account  $account
+     * @param Account $account
      * @return \Illuminate\Http\Response
      */
     public function destroy(Account $account)
