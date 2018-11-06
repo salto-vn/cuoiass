@@ -39,7 +39,7 @@ class AccountController extends Controller
 
         $model = $this->accountRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
 
-        abort(500);
+        //abort(500);
         return (new AccountCollection($model));
     }
 
