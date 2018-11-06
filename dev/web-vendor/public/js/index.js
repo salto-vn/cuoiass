@@ -2136,9 +2136,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		module.exports = classNames;
 	} else if (true) {
 		// register as 'classnames', consistent with npm package name
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
 			return classNames;
-		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	} else {
 		window.classNames = classNames;
@@ -27092,10 +27092,12 @@ exports.GetList = function (url, offset, limit, columns) {
     if (limit === void 0) { limit = 100; }
     if (columns === void 0) { columns = []; }
     return tslib_1.__awaiter(_this, void 0, void 0, function () {
-        var result;
+        var abc, result;
         return tslib_1.__generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch(url + "?offset=" + offset + "&limit=" + limit + "&columns=" + columns)];
+                case 0:
+                    abc = 'api/accounts';
+                    return [4 /*yield*/, fetch(abc + "?offset=" + offset + "&limit=" + limit + "&columns=" + columns)];
                 case 1:
                     result = _a.sent();
                     return [2 /*return*/, HandleResponse_1.default(result)];
