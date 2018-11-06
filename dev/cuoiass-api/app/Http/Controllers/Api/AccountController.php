@@ -18,7 +18,7 @@ class AccountController extends Controller
 
     /**
      * AccountController constructor.
-     * @param AccountRepo
+     * @param AccountRepo sss
      */
     public function __construct(AccountRepo $accountRepo)
     {
