@@ -10,30 +10,30 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Role
+ * Class PackageProduct
  * 
- * @property int $role_id
- * @property string $role_name
- * @property string $role_code
- * @property string $system_code
+ * @property int $id
+ * @property int $prd_id
+ * @property int $package_id
  * @property string $create_by
  * @property \Carbon\Carbon $create_at
  * @property string $update_by
  * @property \Carbon\Carbon $update_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
- * @property \Illuminate\Database\Eloquent\Collection $admins
+ * @property \App\Models\Package $package
+ * @property \App\Models\Product $product
  *
  * @package App\Models
  */
-class Role extends Eloquent
+class PackageProduct extends Eloquent
 {
-	protected $primaryKey = 'role_id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'role_id' => 'int'
+		'id' => 'int',
+		'prd_id' => 'int',
+		'package_id' => 'int'
 	];
 
 	protected $dates = [
@@ -42,22 +42,21 @@ class Role extends Eloquent
 	];
 
 	protected $fillable = [
-		'role_name',
-		'role_code',
-		'system_code',
+		'prd_id',
+		'package_id',
 		'create_by',
 		'create_at',
 		'update_by',
 		'update_at'
 	];
 
-	public function accounts()
+	public function package()
 	{
-		return $this->hasMany(\App\Models\Account::class);
+		return $this->belongsTo(\App\Models\Package::class);
 	}
 
-	public function admins()
+	public function product()
 	{
-		return $this->hasMany(\App\Models\Admin::class);
+		return $this->belongsTo(\App\Models\Product::class, 'prd_id');
 	}
 }

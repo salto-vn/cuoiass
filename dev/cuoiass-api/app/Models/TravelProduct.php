@@ -10,30 +10,29 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Role
+ * Class TravelProduct
  * 
- * @property int $role_id
- * @property string $role_name
- * @property string $role_code
- * @property string $system_code
+ * @property int $honey_id
+ * @property string $honey_tile
+ * @property string $honey_api_provider
+ * @property string $honey_api_client
+ * @property string $honey_api_key
+ * @property string $honey_api_acc
  * @property string $create_by
  * @property \Carbon\Carbon $create_at
  * @property string $update_by
  * @property \Carbon\Carbon $update_at
- * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
- * @property \Illuminate\Database\Eloquent\Collection $admins
  *
  * @package App\Models
  */
-class Role extends Eloquent
+class TravelProduct extends Eloquent
 {
-	protected $primaryKey = 'role_id';
+	protected $primaryKey = 'honey_id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'role_id' => 'int'
+		'honey_id' => 'int'
 	];
 
 	protected $dates = [
@@ -42,22 +41,14 @@ class Role extends Eloquent
 	];
 
 	protected $fillable = [
-		'role_name',
-		'role_code',
-		'system_code',
+		'honey_tile',
+		'honey_api_provider',
+		'honey_api_client',
+		'honey_api_key',
+		'honey_api_acc',
 		'create_by',
 		'create_at',
 		'update_by',
 		'update_at'
 	];
-
-	public function accounts()
-	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
-
-	public function admins()
-	{
-		return $this->hasMany(\App\Models\Admin::class);
-	}
 }
