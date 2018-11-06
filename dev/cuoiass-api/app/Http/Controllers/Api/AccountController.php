@@ -27,7 +27,7 @@ class AccountController extends Controller
 
     /**
      * @param Request $request
-     * @return AccountCollection
+     * @return AccountCollection test
      */
     public function index(Request $request)
     {
