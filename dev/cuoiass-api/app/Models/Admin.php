@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Tue, 06 Nov 2018 15:54:41 +0000.
  */
 
 namespace App\Models;
@@ -10,29 +10,28 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Role
+ * Class Admin
  * 
+ * @property int $id
+ * @property string $email
+ * @property string $password
  * @property int $role_id
- * @property string $role_name
- * @property string $role_code
- * @property string $system_code
  * @property string $create_by
  * @property \Carbon\Carbon $create_at
  * @property string $update_by
  * @property \Carbon\Carbon $update_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
- * @property \Illuminate\Database\Eloquent\Collection $admins
+ * @property \App\Models\Role $role
  *
  * @package App\Models
  */
-class Role extends Eloquent
+class Admin extends Eloquent
 {
-	protected $primaryKey = 'role_id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
+		'id' => 'int',
 		'role_id' => 'int'
 	];
 
@@ -41,23 +40,22 @@ class Role extends Eloquent
 		'update_at'
 	];
 
+	protected $hidden = [
+		'password'
+	];
+
 	protected $fillable = [
-		'role_name',
-		'role_code',
-		'system_code',
+		'email',
+		'password',
+		'role_id',
 		'create_by',
 		'create_at',
 		'update_by',
 		'update_at'
 	];
 
-	public function accounts()
+	public function role()
 	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
-
-	public function admins()
-	{
-		return $this->hasMany(\App\Models\Admin::class);
+		return $this->belongsTo(\App\Models\Role::class);
 	}
 }

@@ -10,30 +10,32 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Role
+ * Class Fee
  * 
- * @property int $role_id
- * @property string $role_name
- * @property string $role_code
- * @property string $system_code
+ * @property int $fee_id
+ * @property string $fee_title
+ * @property int $fee_amount
+ * @property string $memo
+ * @property int $vendor_id
  * @property string $create_by
  * @property \Carbon\Carbon $create_at
  * @property string $update_by
  * @property \Carbon\Carbon $update_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
- * @property \Illuminate\Database\Eloquent\Collection $admins
+ * @property \App\Models\Vendor $vendor
  *
  * @package App\Models
  */
-class Role extends Eloquent
+class Fee extends Eloquent
 {
-	protected $primaryKey = 'role_id';
+	protected $primaryKey = 'fee_id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'role_id' => 'int'
+		'fee_id' => 'int',
+		'fee_amount' => 'int',
+		'vendor_id' => 'int'
 	];
 
 	protected $dates = [
@@ -42,22 +44,18 @@ class Role extends Eloquent
 	];
 
 	protected $fillable = [
-		'role_name',
-		'role_code',
-		'system_code',
+		'fee_title',
+		'fee_amount',
+		'memo',
+		'vendor_id',
 		'create_by',
 		'create_at',
 		'update_by',
 		'update_at'
 	];
 
-	public function accounts()
+	public function vendor()
 	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
-
-	public function admins()
-	{
-		return $this->hasMany(\App\Models\Admin::class);
+		return $this->belongsTo(\App\Models\Vendor::class);
 	}
 }

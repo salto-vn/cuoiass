@@ -1,0 +1,156 @@
+<?php
+
+/**
+ * Created by Reliese Model.
+ * Date: Tue, 06 Nov 2018 15:54:41 +0000.
+ */
+
+namespace App\Models;
+
+use Reliese\Database\Eloquent\Model as Eloquent;
+
+/**
+ * Class Booking
+ * 
+ * @property int $booked_id
+ * @property string $booked_cd
+ * @property string $booked_pro_name
+ * @property int $booked_size
+ * @property string $booked_color
+ * @property string $booked_material
+ * @property string $booked_style
+ * @property int $booked_album_page
+ * @property string $booked_photo_size
+ * @property int $booked_size_2
+ * @property string $booked_color_2
+ * @property \Carbon\Carbon $booked_time
+ * @property \Carbon\Carbon $try_date
+ * @property \Carbon\Carbon $activate_date
+ * @property string $status
+ * @property string $memo
+ * @property \Carbon\Carbon $booked_date
+ * @property string $payment_name
+ * @property string $payment_phone
+ * @property string $payment_email
+ * @property float $net_price
+ * @property float $gross_price
+ * @property string $invoice_url
+ * @property string $plan_id
+ * @property int $prd_id
+ * @property int $vendor_service_id
+ * @property string $create_by
+ * @property \Carbon\Carbon $create_at
+ * @property string $update_by
+ * @property \Carbon\Carbon $update_at
+ * 
+ * @property \App\Models\Product $product
+ * @property \App\Models\Plan $plan
+ * @property \Illuminate\Database\Eloquent\Collection $booked_customize_fields
+ * @property \Illuminate\Database\Eloquent\Collection $booked_foods
+ * @property \Illuminate\Database\Eloquent\Collection $booked_options
+ * @property \Illuminate\Database\Eloquent\Collection $credits
+ * @property \Illuminate\Database\Eloquent\Collection $honeymooninfos
+ * @property \Illuminate\Database\Eloquent\Collection $reviews
+ *
+ * @package App\Models
+ */
+class Booking extends Eloquent
+{
+	protected $primaryKey = 'booked_id';
+	public $incrementing = false;
+	public $timestamps = false;
+
+	protected $casts = [
+		'booked_id' => 'int',
+		'booked_size' => 'int',
+		'booked_album_page' => 'int',
+		'booked_size_2' => 'int',
+		'net_price' => 'float',
+		'gross_price' => 'float',
+		'prd_id' => 'int',
+		'vendor_service_id' => 'int'
+	];
+
+	protected $dates = [
+		'booked_time',
+		'try_date',
+		'activate_date',
+		'booked_date',
+		'create_at',
+		'update_at'
+	];
+
+	protected $fillable = [
+		'booked_cd',
+		'booked_pro_name',
+		'booked_size',
+		'booked_color',
+		'booked_material',
+		'booked_style',
+		'booked_album_page',
+		'booked_photo_size',
+		'booked_size_2',
+		'booked_color_2',
+		'booked_time',
+		'try_date',
+		'activate_date',
+		'status',
+		'memo',
+		'booked_date',
+		'payment_name',
+		'payment_phone',
+		'payment_email',
+		'net_price',
+		'gross_price',
+		'invoice_url',
+		'plan_id',
+		'prd_id',
+		'vendor_service_id',
+		'create_by',
+		'create_at',
+		'update_by',
+		'update_at'
+	];
+
+	public function product()
+	{
+		return $this->belongsTo(\App\Models\Product::class, 'prd_id')
+					->where('products.prd_id', '=', 'bookings.prd_id')
+					->where('products.vendor_service_id', '=', 'bookings.vendor_service_id');
+	}
+
+	public function plan()
+	{
+		return $this->belongsTo(\App\Models\Plan::class);
+	}
+
+	public function booked_customize_fields()
+	{
+		return $this->hasMany(\App\Models\BookedCustomizeField::class, 'booked_id');
+	}
+
+	public function booked_foods()
+	{
+		return $this->hasMany(\App\Models\BookedFood::class, 'booked_id');
+	}
+
+	public function booked_options()
+	{
+		return $this->hasMany(\App\Models\BookedOption::class, 'booked_id');
+	}
+
+	public function credits()
+	{
+		return $this->hasMany(\App\Models\Credit::class, 'booked_id');
+	}
+
+	public function honeymooninfos()
+	{
+		return $this->hasMany(\App\Models\Honeymooninfo::class, 'booked_id');
+	}
+
+	public function reviews()
+	{
+		return $this->hasMany(\App\Models\Review::class, 'booked_id');
+	}
+}

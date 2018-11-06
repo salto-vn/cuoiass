@@ -10,30 +10,25 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Role
+ * Class Image
  * 
- * @property int $role_id
- * @property string $role_name
- * @property string $role_code
- * @property string $system_code
+ * @property int $img_id
+ * @property string $img_url
  * @property string $create_by
  * @property \Carbon\Carbon $create_at
  * @property string $update_by
  * @property \Carbon\Carbon $update_at
- * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
- * @property \Illuminate\Database\Eloquent\Collection $admins
  *
  * @package App\Models
  */
-class Role extends Eloquent
+class Image extends Eloquent
 {
-	protected $primaryKey = 'role_id';
+	protected $primaryKey = 'img_id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'role_id' => 'int'
+		'img_id' => 'int'
 	];
 
 	protected $dates = [
@@ -42,22 +37,10 @@ class Role extends Eloquent
 	];
 
 	protected $fillable = [
-		'role_name',
-		'role_code',
-		'system_code',
+		'img_url',
 		'create_by',
 		'create_at',
 		'update_by',
 		'update_at'
 	];
-
-	public function accounts()
-	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
-
-	public function admins()
-	{
-		return $this->hasMany(\App\Models\Admin::class);
-	}
 }

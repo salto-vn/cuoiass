@@ -10,30 +10,30 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Role
+ * Class Drink
  * 
- * @property int $role_id
- * @property string $role_name
- * @property string $role_code
- * @property string $system_code
+ * @property int $drink_id
+ * @property string $drink_name
+ * @property string $image_ids
+ * @property int $menu_id
  * @property string $create_by
  * @property \Carbon\Carbon $create_at
  * @property string $update_by
  * @property \Carbon\Carbon $update_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
- * @property \Illuminate\Database\Eloquent\Collection $admins
+ * @property \App\Models\Menu $menu
  *
  * @package App\Models
  */
-class Role extends Eloquent
+class Drink extends Eloquent
 {
-	protected $primaryKey = 'role_id';
+	protected $primaryKey = 'drink_id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'role_id' => 'int'
+		'drink_id' => 'int',
+		'menu_id' => 'int'
 	];
 
 	protected $dates = [
@@ -42,22 +42,17 @@ class Role extends Eloquent
 	];
 
 	protected $fillable = [
-		'role_name',
-		'role_code',
-		'system_code',
+		'drink_name',
+		'image_ids',
+		'menu_id',
 		'create_by',
 		'create_at',
 		'update_by',
 		'update_at'
 	];
 
-	public function accounts()
+	public function menu()
 	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
-
-	public function admins()
-	{
-		return $this->hasMany(\App\Models\Admin::class);
+		return $this->belongsTo(\App\Models\Menu::class);
 	}
 }
