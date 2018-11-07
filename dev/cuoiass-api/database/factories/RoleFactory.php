@@ -1,13 +1,13 @@
 <?php
 
+use App\Models\Role;
 use Faker\Generator as Faker;
 
-$factory->define(\App\Models\Role::class, function (Faker $faker) {
-    $faker->addProvider(new \Faker\Provider\Payment($faker));
+$factory->define(Role::class, function (Faker $faker) {
     return [
         'role_name' => $faker->name(),
-        'role_code' => $faker->swiftBicNumber(),
-        'system_code' => $faker->creditCardNumber(),
-        'created_user' => 'admin@test.com'
+        'role_code' => $faker->postcode,
+        'system_code' => $faker->unique()->numerify('#####'),
+        'created_by' => 'admin@test.com'
     ];
 });
