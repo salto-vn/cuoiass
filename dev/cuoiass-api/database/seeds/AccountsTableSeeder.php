@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Account;
+use App\Models\Role;
+use App\Models\Staff;
 use Illuminate\Database\Seeder;
 
 class AccountsTableSeeder extends Seeder
@@ -12,6 +14,15 @@ class AccountsTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Account::class, 10)->create();
+        $staffs = Staff::query()->get();
+        $roles = Role::query()->get()->toArray();
+
+        foreach ($staffs as $item) {
+            factory(Account::class)->create([
+                'role_id' => array_random($roles)['role_id'],
+                'staff_id' => $item->staff_id,
+                'vendor_id' => $item->vendor_id
+            ]);
+        }
     }
 }

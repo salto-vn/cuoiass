@@ -5,7 +5,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Staff::class, function (Faker $faker) {
     return [
-        'vendor_id' => $faker->numerify('#####'),
+        'vendor_id' => $faker->numerify('######'),
         'staff_name' => $faker->name,
         'phone' => $faker->numerify('#######'),
         'address' => $faker->address,
