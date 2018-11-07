@@ -46,6 +46,16 @@ abstract class Repository implements IRepository
     }
 
     /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->model->getTable();
+    }
+
+    /**
      * Retrieve data array for populate field select
      * @param string $column
      * @param string|null $key

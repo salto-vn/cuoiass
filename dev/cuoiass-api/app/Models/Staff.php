@@ -29,6 +29,11 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  */
 class Staff extends Eloquent
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
 	protected $table = 'staffs';
 
 	protected $casts = [
@@ -42,6 +47,16 @@ class Staff extends Eloquent
 		'created_by',
 		'updated_by'
 	];
+
+    /**
+     * Allow fields search
+     *
+     * @return array
+     */
+    public function fieldsSearchable()
+    {
+        return ['staff_name', 'phone', 'address', 'email', 'role_name', 'role_code', 'system_code'];
+    }
 
 	public function vendor()
 	{

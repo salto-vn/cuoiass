@@ -21,11 +21,6 @@ use Illuminate\Http\Request;
     /**
      * Route for account
      */
-    Route::resource('accounts','Api\AccountController')->except('create');
-    //Route::post('users', 'Api\AccountController@index')->name('users.index');
-    //Route::post('users/store', 'Api\AccountController@store')->name('users.store');
-    //Route::put('users/{$account}', 'Api\AccountController@update')->name('users.update');
-    //Route::delete('users/{$account}', 'Api\AccountController@destroy')->name('users.destroy');
-    //Route::post('users/{$account}/edit', 'Api\AccountController@edit')->name('users.edit');
+    Route::resource('staffs','Api\StaffController')->except('create');
 //});
 

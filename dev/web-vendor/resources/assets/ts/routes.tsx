@@ -2,8 +2,9 @@ import * as React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Layout } from './share/Layout';
 import { WeddingDress } from './components/WeddingDress/Index';
-import { Feedback } from './components/Feedback/Index'
-import { ViewDetailFeedback } from './components/Feedback/ViewDetail'
+import { Feedback } from './components/Feedback/Index';
+import { ViewDetailFeedback } from './components/Feedback/ViewDetail';
+import { AccountScreen } from './components/Account/Index';
 
 // import { WeddingInvitation } from './components/WeddingInvitation/Index';
 
@@ -41,6 +42,7 @@ export const Routes = () => (
     <Router>
         <Layout>
             <Route exact={true} path='/' component={WeddingDress} />
+            <Route path='/account' component={AccountScreen} />
             <Route path='/wedding-dress' component={WeddingDress} />
             <Route path='/wedding-album' component={WeddingAlbum} />
             <Route path='/wedding-invitation' component={WeddingDress} />

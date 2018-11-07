@@ -4,25 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\StoreAccount;
-use App\Http\Resources\AccountCollection;
-use App\Models\Account;
-use App\Repositories\AccountRepo;
+use App\Http\Resources\StaffCollection;
+use App\Repositories\StaffRepo;
 use Illuminate\Http\Request;
 
-class AccountController extends Controller
+class StaffController extends Controller
 {
     /**
-     * @var AccountRepo
+     * @var StaffRepo
      */
-    private $accountRepo;
+    private $staffRepo;
 
     /**
-     * AccountController constructor.
-     * @param AccountRepo sss
+     * StaffController constructor.
+     * @param StaffRepo $staffRepo
      */
-    public function __construct(AccountRepo $accountRepo)
+    public function __construct(StaffRepo $staffRepo)
     {
-        $this->accountRepo = $accountRepo;
+        $this->staffRepo = $staffRepo;
     }
 
     /**
@@ -37,10 +36,9 @@ class AccountController extends Controller
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
 
-        $model = $this->accountRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
+        $model = $this->staffRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
 
-        abort(500);
-        return (new AccountCollection($model));
+        return (new StaffCollection($model));
     }
 
     /**
@@ -53,7 +51,7 @@ class AccountController extends Controller
     {
         $input = $request->validated();
         $input['password'] = bcrypt($input['password']);
-        $input['created_user'] = 'test@gmail.com';
+        $input['created_by'] = 'test@gmail.com';
 
         $model = $this->accountRepo->create($input);
 
