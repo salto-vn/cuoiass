@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Model\ProReview;
+use App\Http\Controllers\Controller;
+use App\Model\Review;
+use App\Repositories\ReviewRepo;
 use Illuminate\Http\Request;
 use App\Http\Resources\ReviewCollection;
 
 class ReviewController extends Controller
-{   
-    
+{
+
     /**
-     * ReviewRepository 
+     * ReviewRepository
      */
      private $reviewRepo;
 
@@ -36,7 +38,7 @@ class ReviewController extends Controller
         $orderBy = $request->get('orderBy', null);
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $model = $this->ReviewRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
+        $model = $this->reviewRepo->getListAllData($search, $offset, $limit, $orderBy, $sortBy);
 
         return new ReviewCollection($model);
     }

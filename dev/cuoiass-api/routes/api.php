@@ -26,5 +26,8 @@ use Illuminate\Http\Request;
     Route::put('users/{$id}', 'Api\AccountController@update')->name('users.update');
     Route::delete('users/{$id}', 'Api\AccountController@destroy')->name('users.edit');
     Route::post('users/{$id}/edit', 'Api\AccountController@edit')->name('users.edit');
+
+    //Review Route
+    Route::resource('reviews', 'Api\ReviewController');
 //});
 
