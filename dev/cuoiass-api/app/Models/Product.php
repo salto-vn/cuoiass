@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Wed, 07 Nov 2018 04:42:06 +0000.
  */
 
 namespace App\Models;
@@ -29,10 +29,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $prd_images
  * @property int $vendor_service_id
  * @property string $service_code
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\MasterService $master_service
  * @property \App\Models\VendorService $vendor_service
@@ -51,7 +51,6 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Product extends Eloquent
 {
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'prd_id' => 'int',
@@ -62,9 +61,7 @@ class Product extends Eloquent
 	];
 
 	protected $dates = [
-		'publish_date',
-		'create_at',
-		'update_at'
+		'publish_date'
 	];
 
 	protected $fillable = [
@@ -83,10 +80,8 @@ class Product extends Eloquent
 		'prd_times',
 		'prd_images',
 		'service_code',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function master_service()
@@ -127,13 +122,15 @@ class Product extends Eloquent
 	public function packages()
 	{
 		return $this->belongsToMany(\App\Models\Package::class, 'package_products', 'prd_id')
-					->withPivot('id', 'create_by', 'create_at', 'update_by', 'update_at');
+					->withPivot('id', 'created_by', 'updated_by')
+					->withTimestamps();
 	}
 
 	public function promotions()
 	{
 		return $this->belongsToMany(\App\Models\Promotion::class, 'promotion_products', 'prd_id')
-					->withPivot('promotion_product_id', 'vendor_service_id', 'create_by', 'create_at', 'update_by', 'update_at');
+					->withPivot('promotion_product_id', 'vendor_service_id', 'created_by', 'updated_by')
+					->withTimestamps();
 	}
 
 	public function reviews()

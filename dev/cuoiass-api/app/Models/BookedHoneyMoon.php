@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Wed, 07 Nov 2018 04:42:06 +0000.
  */
 
 namespace App\Models;
@@ -10,7 +10,7 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class Honeymooninfo
+ * Class BookedHoneyMoon
  * 
  * @property int $honey_id
  * @property string $honey_tile
@@ -24,20 +24,19 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $status
  * @property string $memo
  * @property int $booked_id
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\Booking $booking
  *
  * @package App\Models
  */
-class Honeymooninfo extends Eloquent
+class BookedHoneyMoon extends Eloquent
 {
 	protected $primaryKey = 'honey_id';
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'honey_id' => 'int',
@@ -47,9 +46,7 @@ class Honeymooninfo extends Eloquent
 	protected $dates = [
 		'departure_date',
 		'arrial_date',
-		'booked_date',
-		'create_at',
-		'update_at'
+		'booked_date'
 	];
 
 	protected $fillable = [
@@ -64,10 +61,8 @@ class Honeymooninfo extends Eloquent
 		'status',
 		'memo',
 		'booked_id',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function booking()

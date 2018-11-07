@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Wed, 07 Nov 2018 04:42:06 +0000.
  */
 
 namespace App\Models;
@@ -19,10 +19,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $end_date
  * @property string $promotion_type
  * @property int $promotion_amount
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \Illuminate\Database\Eloquent\Collection $products
  *
@@ -32,7 +32,6 @@ class Promotion extends Eloquent
 {
 	protected $primaryKey = 'promotion_id';
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'promotion_id' => 'int',
@@ -41,9 +40,7 @@ class Promotion extends Eloquent
 
 	protected $dates = [
 		'start_date',
-		'end_date',
-		'create_at',
-		'update_at'
+		'end_date'
 	];
 
 	protected $fillable = [
@@ -53,15 +50,14 @@ class Promotion extends Eloquent
 		'end_date',
 		'promotion_type',
 		'promotion_amount',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function products()
 	{
 		return $this->belongsToMany(\App\Models\Product::class, 'promotion_products', 'promotion_id', 'prd_id')
-					->withPivot('promotion_product_id', 'vendor_service_id', 'create_by', 'create_at', 'update_by', 'update_at');
+					->withPivot('promotion_product_id', 'vendor_service_id', 'created_by', 'updated_by')
+					->withTimestamps();
 	}
 }
