@@ -23,10 +23,6 @@ class ApiController extends Controller
             'json' => $request->query()
         ]);
 
-        dd($response->getStatusCode());
-
-        //return $response->getBody();
-
         return response($response->getBody(), $response->getStatusCode());
     }
 }
