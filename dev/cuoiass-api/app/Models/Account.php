@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 06:56:23 +0000.
+ * Date: Wed, 07 Nov 2018 07:39:35 +0000.
  */
 
 namespace App\Models;
@@ -18,13 +18,11 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $password
  * @property int $staff_id
  * @property int $vendor_id
- * @property int $customer_id
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
  * 
- * @property \App\Models\Customer $customer
  * @property \App\Models\Staff $staff
  * @property \App\Models\Role $role
  *
@@ -37,8 +35,7 @@ class Account extends Eloquent
 	protected $casts = [
 		'role_id' => 'int',
 		'staff_id' => 'int',
-		'vendor_id' => 'int',
-		'customer_id' => 'int'
+		'vendor_id' => 'int'
 	];
 
 	protected $hidden = [
@@ -51,15 +48,9 @@ class Account extends Eloquent
 		'password',
 		'staff_id',
 		'vendor_id',
-		'customer_id',
 		'created_by',
 		'updated_by'
 	];
-
-	public function customer()
-	{
-		return $this->belongsTo(\App\Models\Customer::class);
-	}
 
 	public function staff()
 	{

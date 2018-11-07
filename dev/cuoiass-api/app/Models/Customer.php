@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 06:56:23 +0000.
+ * Date: Wed, 07 Nov 2018 07:39:35 +0000.
  */
 
 namespace App\Models;
@@ -15,6 +15,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $customer_id
  * @property string $first_name
  * @property string $last_name
+ * @property string $email
+ * @property string $password
  * @property string $address
  * @property string $phone
  * @property string $fb
@@ -24,7 +26,6 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
  * @property \Illuminate\Database\Eloquent\Collection $analysis
  * @property \Illuminate\Database\Eloquent\Collection $plans
  * @property \Illuminate\Database\Eloquent\Collection $reviews
@@ -39,9 +40,15 @@ class Customer extends Eloquent
 		'member_flag' => 'int'
 	];
 
+	protected $hidden = [
+		'password'
+	];
+
 	protected $fillable = [
 		'first_name',
 		'last_name',
+		'email',
+		'password',
 		'address',
 		'phone',
 		'fb',
@@ -49,11 +56,6 @@ class Customer extends Eloquent
 		'created_by',
 		'updated_by'
 	];
-
-	public function accounts()
-	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
 
 	public function analysis()
 	{
