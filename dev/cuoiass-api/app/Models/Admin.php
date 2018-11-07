@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:41 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:23 +0000.
  */
 
 namespace App\Models;
@@ -15,11 +15,12 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $id
  * @property string $email
  * @property string $password
+ * @property string $name
  * @property int $role_id
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\Role $role
  *
@@ -27,17 +28,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  */
 class Admin extends Eloquent
 {
-	public $incrementing = false;
-	public $timestamps = false;
-
 	protected $casts = [
-		'id' => 'int',
 		'role_id' => 'int'
-	];
-
-	protected $dates = [
-		'create_at',
-		'update_at'
 	];
 
 	protected $hidden = [
@@ -47,11 +39,10 @@ class Admin extends Eloquent
 	protected $fillable = [
 		'email',
 		'password',
+		'name',
 		'role_id',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function role()

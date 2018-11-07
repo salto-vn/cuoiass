@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:43 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:24 +0000.
  */
 
 namespace App\Models;
@@ -22,17 +22,16 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $total_booking_cancelled
  * @property float $total_price
  * @property float $total_price_canceled
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  *
  * @package App\Models
  */
 class WeeklyReport extends Eloquent
 {
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'report_year' => 'int',
@@ -46,11 +45,6 @@ class WeeklyReport extends Eloquent
 		'total_price_canceled' => 'float'
 	];
 
-	protected $dates = [
-		'create_at',
-		'update_at'
-	];
-
 	protected $fillable = [
 		'report_type',
 		'report_id',
@@ -60,9 +54,7 @@ class WeeklyReport extends Eloquent
 		'total_booking_cancelled',
 		'total_price',
 		'total_price_canceled',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 }

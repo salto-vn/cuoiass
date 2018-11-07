@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:24 +0000.
  */
 
 namespace App\Models;
@@ -19,10 +19,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $sche_desc
  * @property string $image_ids
  * @property int $prd_id
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\Product $product
  *
@@ -31,19 +31,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class SchedulePhoto extends Eloquent
 {
 	protected $primaryKey = 'sche_id';
-	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
-		'sche_id' => 'int',
 		'prd_id' => 'int'
 	];
 
 	protected $dates = [
 		'sche_start_time',
-		'sche_end_time',
-		'create_at',
-		'update_at'
+		'sche_end_time'
 	];
 
 	protected $fillable = [
@@ -53,10 +48,8 @@ class SchedulePhoto extends Eloquent
 		'sche_desc',
 		'image_ids',
 		'prd_id',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function product()

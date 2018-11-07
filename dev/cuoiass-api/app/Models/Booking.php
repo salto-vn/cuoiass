@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:41 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:23 +0000.
  */
 
 namespace App\Models;
@@ -38,18 +38,18 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $plan_id
  * @property int $prd_id
  * @property int $vendor_service_id
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\Product $product
  * @property \App\Models\Plan $plan
  * @property \Illuminate\Database\Eloquent\Collection $booked_customize_fields
  * @property \Illuminate\Database\Eloquent\Collection $booked_foods
+ * @property \Illuminate\Database\Eloquent\Collection $booked_honey_moons
  * @property \Illuminate\Database\Eloquent\Collection $booked_options
  * @property \Illuminate\Database\Eloquent\Collection $credits
- * @property \Illuminate\Database\Eloquent\Collection $honeymooninfos
  * @property \Illuminate\Database\Eloquent\Collection $reviews
  *
  * @package App\Models
@@ -57,11 +57,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Booking extends Eloquent
 {
 	protected $primaryKey = 'booked_id';
-	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
-		'booked_id' => 'int',
 		'booked_size' => 'int',
 		'booked_album_page' => 'int',
 		'booked_size_2' => 'int',
@@ -75,9 +72,7 @@ class Booking extends Eloquent
 		'booked_time',
 		'try_date',
 		'activate_date',
-		'booked_date',
-		'create_at',
-		'update_at'
+		'booked_date'
 	];
 
 	protected $fillable = [
@@ -106,10 +101,8 @@ class Booking extends Eloquent
 		'plan_id',
 		'prd_id',
 		'vendor_service_id',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function product()
@@ -134,6 +127,11 @@ class Booking extends Eloquent
 		return $this->hasMany(\App\Models\BookedFood::class, 'booked_id');
 	}
 
+	public function booked_honey_moons()
+	{
+		return $this->hasMany(\App\Models\BookedHoneyMoon::class, 'booked_id');
+	}
+
 	public function booked_options()
 	{
 		return $this->hasMany(\App\Models\BookedOption::class, 'booked_id');
@@ -142,11 +140,6 @@ class Booking extends Eloquent
 	public function credits()
 	{
 		return $this->hasMany(\App\Models\Credit::class, 'booked_id');
-	}
-
-	public function honeymooninfos()
-	{
-		return $this->hasMany(\App\Models\Honeymooninfo::class, 'booked_id');
 	}
 
 	public function reviews()

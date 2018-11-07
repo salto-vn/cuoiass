@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:23 +0000.
  */
 
 namespace App\Models;
@@ -21,10 +21,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $total_booking_cancelled
  * @property float $total_price
  * @property float $total_price_canceled
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  *
  * @package App\Models
  */
@@ -32,7 +32,6 @@ class DailyReport extends Eloquent
 {
 	protected $primaryKey = 'report_date';
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'report_id' => 'int',
@@ -45,9 +44,7 @@ class DailyReport extends Eloquent
 	];
 
 	protected $dates = [
-		'report_date',
-		'create_at',
-		'update_at'
+		'report_date'
 	];
 
 	protected $fillable = [
@@ -59,9 +56,7 @@ class DailyReport extends Eloquent
 		'total_booking_cancelled',
 		'total_price',
 		'total_price_canceled',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 }
