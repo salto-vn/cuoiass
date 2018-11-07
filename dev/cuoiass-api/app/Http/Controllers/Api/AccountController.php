@@ -18,7 +18,7 @@ class AccountController extends Controller
 
     /**
      * AccountController constructor.
-     * @param AccountRepo $accountRepo
+     * @param AccountRepo sss
      */
     public function __construct(AccountRepo $accountRepo)
     {
@@ -27,7 +27,7 @@ class AccountController extends Controller
 
     /**
      * @param Request $request
-     * @return AccountCollection
+     * @return AccountCollection test
      */
     public function index(Request $request)
     {
@@ -36,67 +36,67 @@ class AccountController extends Controller
         $orderBy = $request->get('orderBy', null);
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
+
         $model = $this->accountRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
 
-        return new AccountCollection($model);
-    }
-
-
-    public function store(StoreAccount $request)
-    {
-        $input = [
-            'role_id' => 1,
-            'name' => 'duy',
-            'email' => 'abc@gmail.com',
-            'staff_id' => 1,
-            'vendor_id' => 1,
-            'created_user' => '123123',
-            'password' => '23234234'
-        ];
-        $model = $this->accountRepo->create($input);
-        dd($model);
-        //$input = $request->all();
-        ////$input['password'] = bcrypt($input['password']);
-        //$input['created_user'] = 'test@gmail.com';
-        //
-        ////dd($input);
-        //$model = new Account($input);
-        //$model->save();
-        //
-        return response()->json(['type' => $model]);
+        abort(500);
+        return (new AccountCollection($model));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Create Account and return model
      *
-     * @param  \App\Account  $account
-     * @return \Illuminate\Http\Response
+     * @param StoreAccount $request
+     * @return \Illuminate\Http\JsonResponse
      */
+    public function store(StoreAccount $request)
+    {
+        $input = $request->validated();
+        $input['password'] = bcrypt($input['password']);
+        $input['created_user'] = 'test@gmail.com';
+
+        $model = $this->accountRepo->create($input);
+
+        return response()->json(['data' => $model], 200);
+    }
+
     public function edit(Account $account)
     {
-        //
+        return response()->json(['data' => $account], 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Account  $account
+     * @param  \Illuminate\Http\Request $request
+     * @param Account $account
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Account $account)
     {
-        //
+        $input = array_filter($request->validated());
+
+        $input['update_user'] = auth()->user()->email;
+
+        if (isset($input['password'])) {
+            $input['password'] = bcrypt($input['password']);
+        }
+
+        $account->update($input);
+
+        return response()->json(['data' => $account], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Account  $account
+     * @param Account $account
      * @return \Illuminate\Http\Response
      */
     public function destroy(Account $account)
     {
-        //
+        $account->delete();
+
+        return response()->json(null, 200);
     }
 }
