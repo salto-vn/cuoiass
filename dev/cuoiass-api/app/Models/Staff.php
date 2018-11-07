@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:42 +0000.
+ * Date: Wed, 07 Nov 2018 04:42:06 +0000.
  */
 
 namespace App\Models;
@@ -17,10 +17,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $staff_name
  * @property string $phone
  * @property string $address
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\Vendor $vendor
  * @property \Illuminate\Database\Eloquent\Collection $accounts
@@ -31,26 +31,18 @@ class Staff extends Eloquent
 {
 	protected $table = 'staffs';
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'staff_id' => 'int',
 		'vendor_id' => 'int'
 	];
 
-	protected $dates = [
-		'create_at',
-		'update_at'
-	];
-
 	protected $fillable = [
 		'staff_name',
 		'phone',
 		'address',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function vendor()

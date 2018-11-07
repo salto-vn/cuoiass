@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Tue, 06 Nov 2018 15:54:41 +0000.
+ * Date: Wed, 07 Nov 2018 04:42:06 +0000.
  */
 
 namespace App\Models;
@@ -21,10 +21,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property float $drink_unit_price
  * @property int $booked_id
  * @property int $menu_id
- * @property string $create_by
- * @property \Carbon\Carbon $create_at
- * @property string $update_by
- * @property \Carbon\Carbon $update_at
+ * @property string $created_by
+ * @property \Carbon\Carbon $created_at
+ * @property string $updated_by
+ * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\Models\Menu $menu
  * @property \App\Models\Booking $booking
@@ -35,7 +35,6 @@ class BookedFood extends Eloquent
 {
 	protected $primaryKey = 'booked_food_id';
 	public $incrementing = false;
-	public $timestamps = false;
 
 	protected $casts = [
 		'booked_food_id' => 'int',
@@ -44,11 +43,6 @@ class BookedFood extends Eloquent
 		'drink_unit_price' => 'float',
 		'booked_id' => 'int',
 		'menu_id' => 'int'
-	];
-
-	protected $dates = [
-		'create_at',
-		'update_at'
 	];
 
 	protected $fillable = [
@@ -60,10 +54,8 @@ class BookedFood extends Eloquent
 		'drink_unit_price',
 		'booked_id',
 		'menu_id',
-		'create_by',
-		'create_at',
-		'update_by',
-		'update_at'
+		'created_by',
+		'updated_by'
 	];
 
 	public function menu()
