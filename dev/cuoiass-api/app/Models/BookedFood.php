@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:23 +0000.
  */
 
 namespace App\Models;
@@ -34,10 +34,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class BookedFood extends Eloquent
 {
 	protected $primaryKey = 'booked_food_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'booked_food_id' => 'int',
 		'booked_total' => 'int',
 		'unit_price' => 'float',
 		'drink_unit_price' => 'float',

@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:23 +0000.
  */
 
 namespace App\Models;
@@ -33,10 +33,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Account extends Eloquent
 {
 	protected $primaryKey = 'account_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'account_id' => 'int',
 		'role_id' => 'int',
 		'staff_id' => 'int',
 		'vendor_id' => 'int',

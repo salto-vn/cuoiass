@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:24 +0000.
  */
 
 namespace App\Models;
@@ -28,10 +28,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  */
 class PromotionProduct extends Eloquent
 {
-	public $incrementing = false;
-
 	protected $casts = [
-		'promotion_product_id' => 'int',
 		'promotion_id' => 'int',
 		'prd_id' => 'int',
 		'vendor_service_id' => 'int'

@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:24 +0000.
  */
 
 namespace App\Models;
@@ -34,10 +34,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Review extends Eloquent
 {
 	protected $primaryKey = 'review_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'review_id' => 'int',
 		'review_rate' => 'float',
 		'prd_id' => 'int',
 		'booked_id' => 'int',

@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:23 +0000.
  */
 
 namespace App\Models;
@@ -36,10 +36,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Credit extends Eloquent
 {
 	protected $primaryKey = 'credit_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'credit_id' => 'int',
 		'credit' => 'int',
 		'money' => 'float',
 		'vendor_id' => 'int',
