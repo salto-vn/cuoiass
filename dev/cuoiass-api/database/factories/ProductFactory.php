@@ -2,23 +2,10 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(Model::class, function (Faker $faker) {
-    $serviceCodes = [
-        "PHT",
-        "DRSS",
-        "STD",
-        "NC",
-        "QUAC",
-        "TC",
-        "TRTR",
-        "REST",
-        "HNM",
-        "XC",
-        "VN"
-    ];
+$factory->define(\App\Models\Product::class, function (Faker $faker) {
     return [
         'prd_id' => $faker->numerify('#####'),
-        'prd_cd' => "PRD-" . $faker->numerify('#####'),
+        'prd_cd' => "PRD-" . $faker->unique()->numerify('#####'),
         'prd_name' => $faker->text(50),
         'prd_desc' => $faker->text(200),
         'price' => $faker->randomFloat(20, 100000, 99999999999),

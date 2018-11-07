@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 
 class VendorsTableSeeder extends Seeder
@@ -12,16 +13,6 @@ class VendorsTableSeeder extends Seeder
     public function run()
     {
         //
-        factory(\App\Models\Vendor::class)->create([
-            'vendor_name' => 'Studio A'
-        ]);
-
-        factory(\App\Models\Vendor::class)->create([
-            'vendor_name' => 'Nhà hàng '
-        ]);
-
-        factory(\App\Models\Vendor::class)->create([
-            'vendor_name' => 'Trang trí B '
-        ]);
+        factory(Vendor::class, 10)->create();
     }
 }

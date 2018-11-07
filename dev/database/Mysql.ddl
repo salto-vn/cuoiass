@@ -17,7 +17,7 @@ drop table if exists `admins` cascade;
 create table `admins` (
     `id` int(11) auto_increment not null comment 'id'
   , `email` char(255) not null comment 'email'
-  , `password` char(255) not null comment 'password'
+  , `password` varchar(255) not null comment 'password'
   , `name` varchar(255) comment 'name'
   , `role_id` int(11) not null comment 'role id'
   , `created_by` varchar(255) not null comment 'create user'
@@ -796,7 +796,7 @@ create table `customers` (
   , `first_name` varchar(255) comment 'first name'
   , `last_name` varchar(255) comment 'last name'
   , `email` varchar(50) comment 'email'
-  , `password` char(255) comment 'password'
+  , `password` varchar(255) comment 'password'
   , `address` varchar(255) comment 'address'
   , `phone` char(14) comment 'phone'
   , `fb` varchar(255) comment 'facebook'
@@ -816,7 +816,7 @@ create table `accounts` (
     `account_id` int(11) auto_increment not null comment 'account id'
   , `role_id` int(11) not null comment 'role'
   , `email` varchar(255) not null comment 'email'
-  , `password` char(255) not null comment 'password'
+  , `password` varchar(255) not null comment 'password'
   , `staff_id` int(11) not null comment 'staff'
   , `vendor_id` int(11) not null comment 'vendor id'
   , `created_by` varchar(255) not null comment 'create user'
@@ -963,3 +963,4 @@ alter table `staffs`
 
 alter table `accounts`
   add constraint `accounts_fk2` foreign key (`role_id`) references `roles`(`role_id`);
+ALTER DATABASE cass CHARACTER SET utf8 COLLATE utf8_general_ci;
