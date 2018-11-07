@@ -36,13 +36,19 @@ class ReviewRepo extends Repository
         return $this->list($search, $offset, $limit, $orderBy, $sortBy, $columns);
     }
 
-    public function getListAllData($search, $offset, $limit, $orderBy , $sortBy, $columns)
+    public function getListAllData($search, $offset, $limit, $orderBy , $sortBy)
     {
         $fieldsSearchable = $this->model->getFillable();
         $offset = (int)$offset ? $offset : \Constant::MIN_OFFSET;
         $limit = (int)$limit ? $limit : \Constant::MIN_LIMiT;
         $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
-        $model = $this->model->newQuery()->select($columns);
+        $model = $this->model->newQuery()->select([
+            'reviews.review_id', 'reviews.review_content', 'reviews.review_date',
+            'reviews.review_rate', 'reviews.review_imgs',
+            'bookings.booked_cd','bookings.booked_pro_name','',
+            '','','',
+            '','','',
+        ]);
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
             if ($searchData) {
