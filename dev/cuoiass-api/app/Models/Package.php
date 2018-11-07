@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:24 +0000.
  */
 
 namespace App\Models;
@@ -28,10 +28,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Package extends Eloquent
 {
 	protected $primaryKey = 'package_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'package_id' => 'int',
 		'package_price' => 'float',
 		'pub_user' => 'int'
 	];

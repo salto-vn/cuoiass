@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 04:42:06 +0000.
+ * Date: Wed, 07 Nov 2018 06:56:24 +0000.
  */
 
 namespace App\Models;
@@ -31,10 +31,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 class Menu extends Eloquent
 {
 	protected $primaryKey = 'menu_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'menu_id' => 'int',
 		'unit_price' => 'float',
 		'prd_id' => 'int'
 	];
