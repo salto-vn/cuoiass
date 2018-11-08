@@ -7,7 +7,7 @@ interface IHandleResponse {
 const HandleResponse = async (res: Response) => {
     let isError = true;
     let data = null;
-
+    debugger;
     if (res.ok) {
         isError = false;
         data = await res.json();

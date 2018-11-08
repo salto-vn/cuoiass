@@ -45,10 +45,11 @@ class ReviewRepo extends Repository
         $model = $this->model->newQuery()->select([
             'reviews.review_id', 'reviews.review_content', 'reviews.review_date',
             'reviews.review_rate', 'reviews.review_imgs',
-            'bookings.booked_cd', 'bookings.booked_pro_name',
+            'bookings.booked_cd', 'bookings.booked_pro_name', 'products.prd_cd',
             'customers.first_name', 'customers.last_name'
         ])->join('bookings','reviews.booked_id','=','bookings.booked_id')
-        ->join('customers','reviews.customer_id','=','customers.customer_id');
+        ->join('customers','reviews.customer_id','=','customers.customer_id')
+        ->join('products','reviews.prd_id','=','products.prd_id');
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
             if ($searchData) {

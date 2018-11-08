@@ -13,7 +13,6 @@ class ProductsTableSeeder extends Seeder
     public function run()
     {
         $venderServices = \App\Models\VendorService::query()->get();
-
         foreach ($venderServices as $service) {
             factory(Product::class, 10)->create([
                 'vendor_service_id'=>$service['vendor_service_id'],

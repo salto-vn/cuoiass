@@ -35,8 +35,8 @@ class ReviewController extends Controller
         //
         $offset = (int)$request->get('offset', \Constant::MIN_OFFSET);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
-        $orderBy = $request->get('orderBy', null);
-        $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('sortby', null);
+        $sortBy = $request->get('orderby', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
         $model = $this->reviewRepo->getListAllData($search, $offset, $limit, $orderBy, $sortBy);
 

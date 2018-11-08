@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { IFeedbackState, IFeedbackList } from '../../interface/IFeedback';
-import { FeedbackModel } from '../../model/FeedbackModel';
 import CONSTANT from '../../bootstrap/Constant';
 import { Table } from '../../common/Grid/Table';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSortUp } from '@fortawesome/free-solid-svg-icons'
+import * as FeedbackApi  from '../../api/FeedbackApi';
 
 library.add(faSortUp)
 
@@ -25,7 +25,6 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         limit: CONSTANT.LIMIT,
         offset: CONSTANT.OFFSET,
         feedbackGrid: [],
-        model: new FeedbackModel(),
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
         isError: false,
@@ -57,7 +56,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         for (let i: number = 0; i < feedbackGrid.length; i++) {
             let item: IFeedbackList = feedbackGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.productCode, item.productName, item.name, item.date, item.content, String(item.rate), item.feedbackId];
+            let data: string[] = [String(i + 1), item.prd_cd, item.booked_pro_name, item.first_name + item.last_name, item.review_date, item.review_content, String(item.review_rate), String(item.rreview_id)];
             listdata.push(data);
         }
 
@@ -133,137 +132,20 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         ];
 
 
+        const { offset, limit } = this.state;
+        const response = await FeedbackApi.GetList('api/reviews', offset, limit);
+
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message });
+        }
+
         //TODO set request api offset, limit
         // const { offset, limit } = this.state;
         // Call api get Feedback 
-        const responses = [
-
-            {
-                name: 'Ngo Tuan Anh2',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '1',
-            },
-
-            {
-                name: 'Ngo Tuan Anh',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '2',
-            },
-            {
-                name: 'Ngo Tuan Anh2',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '3',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '4',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '5',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '6',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '7',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '8',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '9',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '10'
-            }
-        ];
 
         this.setState({
-            feedbackGrid: responses,
-            totalItem: 30,
+            feedbackGrid: response.data,
+            totalItem: response.data.length,
             isLoading: false,
             feedbacHeader: header
         });
@@ -285,47 +167,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         }), () => {
 
             //TODO: Hard data waiting for api with request limit, offset, reponse
-            if (pageNumber === 1) {
-                this.getListFeedback();
-            } else if (pageNumber === 2) {
-                const responses = [
-                    {
-                        name: 'Ngo Tuan Anh3',
-                        email: 'ngoanh@mulodo.com',
-                        date: '2018-12-12',
-                        content: 'Review content, Good Job!,',
-                        images: ['', ''],
-                        rate: 4.5,
-                        productCode: '00001',
-                        productName: 'Product Name A',
-                        customerId: '00002',
-                        feedbackId: '11',
-                    },
-                    {
-                        name: 'Ngo Tuan Anh3',
-                        email: 'ngoanh@mulodo.com',
-                        date: '2018-12-12',
-                        content: 'Review content, Good Job!,',
-                        images: ['', ''],
-                        rate: 4.5,
-                        productCode: '00001',
-                        productName: 'Product Name A',
-                        customerId: '00002',
-                        feedbackId: '12',
-                    }
-                ];
-                this.setState({
-                    feedbackGrid: responses,
-                    totalItem: 30,
-                    isLoading: false,
-                });
-            } else {
-                this.setState({
-                    feedbackGrid: [],
-                    totalItem: 30,
-                    isLoading: true,
-                });
-            }
+            this.getListFeedback();
         });
     }
 

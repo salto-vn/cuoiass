@@ -3,17 +3,32 @@ import { IProduct } from './IProduct';
 import { ICustomer } from './ICustomer';
 import { IBooking } from './IBooking';
 
+
+export interface Feedbacks {
+    data: FeedbackItem[];
+    total: number;
+}
+
+export interface FeedbackItem {
+    review_id: number;
+    review_content: string;
+    review_date: string;
+    review_rate: number;
+    review_imgs: string[];
+    booked_cd: string;
+    prd_cd: string;
+    booked_pro_name: string;
+    first_name: string;
+    last_name: string;
+    product: IProduct;
+    customer: ICustomer;
+    booking: IBooking;
+}
+
+
+
+
 export interface IFeedback {
-    // name: string;
-    // email: string;
-    // date: string;
-    // content: string;
-    // images: string[];
-    // rate: number;
-    // productId: string;
-    // productName: string;
-    // customerId: string;
-    // feedbackId: string;
     feedbackId: string;
     date: string;
     title: string;
@@ -26,16 +41,16 @@ export interface IFeedback {
 }
 
 export interface IFeedbackList {
-    name: string;
-    email: string;
-    date: string;
-    content: string;
-    images: string[];
-    rate: number;
-    productCode: string;
-    productName: string;
-    customerId: string;
-    feedbackId: string;
+    rreview_id: number;
+    review_content: string;
+    review_date: string;
+    review_rate: number;
+    review_imgs: string[];
+    booked_cd: string;
+    prd_cd: string;
+    booked_pro_name: string;
+    first_name: string;
+    last_name: string;
 }
 
 export interface IFeedbackState {
