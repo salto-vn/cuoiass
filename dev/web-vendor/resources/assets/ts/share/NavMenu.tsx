@@ -18,8 +18,8 @@ export class NavMenu extends React.Component<{}, {}> {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/account" activeClassName="active-page">
-                                <i className="menu-icon icon-info_outline" /><span>Tài khoản</span>
+                            <NavLink to="/staff" activeClassName="active-page">
+                                <i className="menu-icon icon-info_outline" /><span>Nhân viên</span>
                             </NavLink>
                         </li>
                         <li>

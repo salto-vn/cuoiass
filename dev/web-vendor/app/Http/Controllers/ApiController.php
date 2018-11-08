@@ -14,17 +14,17 @@ class ApiController extends Controller
     public function index(Request $request)
     {
         $client = new Client([
-            'base_uri' => 'http://api.local',
-            //'http_errors' => false,
+            'base_uri' => 'http://api.wedding.local',
+            'http_errors' => false,
             'headers' => [
-                'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
             ]
         ]);
 
-
-        $response = $client->request($request->method(), $request->path(), [
-            'json' => $request->query()
+        $routeName = str_replace(config('wedding.api_prefix'), '', $request->path());
+        $response = $client->request($request->method(), $routeName, [
+            'json' => $request->input()
         ]);
 
         return response($response->getBody(), $response->getStatusCode());

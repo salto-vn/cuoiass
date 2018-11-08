@@ -28,7 +28,7 @@ class StaffController extends Controller
 
     /**
      * @param Request $request
-     * @return StaffCollection
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -38,17 +38,16 @@ class StaffController extends Controller
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
 
-        $model = $this->staffRepo->getList($search, $offset, $limit, $orderBy, $sortBy);
+        $data = $this->staffRepo->getList($search, $offset, $limit, $orderBy, $sortBy);
 
-        return (new StaffCollection($model));
+        return $this->toJsonPaginate($data);
     }
 
     /**
      * Create Account and return model
      *
      * @param StoreStaff $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @return Staff
      */
     public function store(StoreStaff $request)
     {
@@ -56,14 +55,16 @@ class StaffController extends Controller
 
         $input['password'] = bcrypt($input['password']);
         $input['created_by'] = 'test@gmail.com';
-        $this->staffRepo->create($input);
-
-        return response()->json(['status' => 'OK']);
+        return $this->staffRepo->create($input);
     }
 
+    /**
+     * @param Staff $staff
+     * @return Staff
+     */
     public function edit(Staff $staff)
     {
-        return response()->json(['data' => $staff], 200);
+        return $staff;
     }
 
     /**
@@ -77,15 +78,13 @@ class StaffController extends Controller
     {
         $input = array_filter($request->validated());
 
-        $input['update_user'] = auth()->user()->email;
+        $input['updated_by'] = 'test@gmail.com';
 
         if (isset($input['password'])) {
             $input['password'] = bcrypt($input['password']);
         }
 
-        $staff->update($input);
-
-        return response()->json(['data' => $staff], 200);
+        return tap($staff)->update($input);
     }
 
     /**

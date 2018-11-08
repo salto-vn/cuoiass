@@ -9,10 +9,8 @@
 namespace App\Repositories;
 
 
-use App\Models\Account;
 use App\Models\Staff;
 use App\Utils\TableName as TBL;
-use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class StaffRepo
@@ -31,13 +29,14 @@ class StaffRepo extends Repository
         return Staff::class;
     }
 
+
     /**
      * @param $search
      * @param $offset
      * @param $limit
      * @param $orderBy
      * @param $sortBy
-     * @return Collection
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getList($search, $offset, $limit, $orderBy, $sortBy)
     {
@@ -80,7 +79,7 @@ class StaffRepo extends Repository
             $model->orderBy($orderBy, $sortBy);
         }
 
-        return $model->get();
+        return $model->paginate();
     }
 
     /**

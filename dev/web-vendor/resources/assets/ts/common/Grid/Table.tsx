@@ -329,15 +329,15 @@ export class Table extends React.Component<ISourceProp, {}> {
         const errorInfo: string = String(this.props.errorInfo);
         const limit: number = Number(this.props.limit);
 
-
-        return (<div className="table-responsive">
-            <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
-                <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
-                <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} limit={limit} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
-            </table>
-            {this.paginate()}
-        </div>
-        )
+        return (
+            <div className="table-responsive">
+                <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
+                    <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
+                    <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} limit={limit} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
+                </table>
+                {this.paginate()}
+            </div>
+        );
     }
 
     /**
