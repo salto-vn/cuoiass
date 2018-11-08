@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Account\StoreAccount;
+use App\Http\Requests\Staff\StoreStaff;
+use App\Http\Requests\Staff\UpdateStaff;
 use App\Http\Resources\StaffCollection;
+use App\Models\Staff;
 use App\Repositories\StaffRepo;
 use Illuminate\Http\Request;
 
@@ -26,7 +28,7 @@ class StaffController extends Controller
 
     /**
      * @param Request $request
-     * @return AccountCollection test
+     * @return StaffCollection
      */
     public function index(Request $request)
     {
@@ -36,7 +38,7 @@ class StaffController extends Controller
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
 
-        $model = $this->staffRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
+        $model = $this->staffRepo->getList($search, $offset, $limit, $orderBy, $sortBy);
 
         return (new StaffCollection($model));
     }
@@ -44,33 +46,34 @@ class StaffController extends Controller
     /**
      * Create Account and return model
      *
-     * @param StoreAccount $request
+     * @param StoreStaff $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public function store(StoreAccount $request)
+    public function store(StoreStaff $request)
     {
         $input = $request->validated();
+
         $input['password'] = bcrypt($input['password']);
         $input['created_by'] = 'test@gmail.com';
+        $this->staffRepo->create($input);
 
-        $model = $this->accountRepo->create($input);
-
-        return response()->json(['data' => $model], 200);
+        return response()->json(['status' => 'OK']);
     }
 
-    public function edit(Account $account)
+    public function edit(Staff $staff)
     {
-        return response()->json(['data' => $account], 200);
+        return response()->json(['data' => $staff], 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param Account $account
+     * @param UpdateStaff $request
+     * @param Staff $staff
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Account $account)
+    public function update(UpdateStaff $request, Staff $staff)
     {
         $input = array_filter($request->validated());
 
@@ -80,21 +83,21 @@ class StaffController extends Controller
             $input['password'] = bcrypt($input['password']);
         }
 
-        $account->update($input);
+        $staff->update($input);
 
-        return response()->json(['data' => $account], 200);
+        return response()->json(['data' => $staff], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Account $account
+     * @param Staff $staff
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Account $account)
+    public function destroy(Staff $staff)
     {
-        $account->delete();
+        $staff->delete();
 
-        return response()->json(null, 200);
+        return response()->json(['status' => 'OK']);
     }
 }

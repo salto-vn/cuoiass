@@ -11,8 +11,15 @@ namespace App\Repositories;
 
 use App\Models\Account;
 use App\Models\Staff;
-use App\Until\TableName as Tbl;
+use App\Utils\TableName as TBL;
+use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * Class StaffRepo
+ *
+ * @property Staff $model
+ * @method Staff create(array $attributes)
+ */
 class StaffRepo extends Repository
 {
     /**
@@ -30,10 +37,9 @@ class StaffRepo extends Repository
      * @param $limit
      * @param $orderBy
      * @param $sortBy
-     * @param $columns
-     * @return mixed
+     * @return Collection
      */
-    public function getList($search, $offset, $limit, $orderBy, $sortBy, $columns)
+    public function getList($search, $offset, $limit, $orderBy, $sortBy)
     {
         $fieldsSearchable = $this->model->fieldsSearchable();
         $offset = (int)$offset ? $offset : \Constant::MIN_OFFSET;
@@ -41,12 +47,10 @@ class StaffRepo extends Repository
         $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
 
         $tblStaff = $this->getTable();
-        $tblRole = Tbl::$n['TBL_ROLES'];
-        $tblAc = Tbl::$n['TBL_ACCOUNTS'];
+        $tblRole = TBL::TBL_ROLES;
 
         $model = $this->model->newQuery();
-        $model->join($tblAc, "$tblAc.staff_id", '=', "$tblStaff.staff_id")
-            ->join($tblRole, "$tblAc.role_id", '=', "$tblRole.role_id");
+        $model->join($tblRole, "$tblStaff.role_id", '=', "$tblRole.role_id");
 
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
@@ -66,7 +70,7 @@ class StaffRepo extends Repository
             "$tblStaff.staff_name",
             "$tblStaff.phone",
             "$tblStaff.address",
-            "$tblAc.email",
+            "$tblStaff.email",
             "$tblRole.role_name",
             "$tblRole.role_code",
             "$tblRole.system_code",
@@ -77,5 +81,16 @@ class StaffRepo extends Repository
         }
 
         return $model->get();
+    }
+
+    /**
+     * @param $input
+     * @return Staff
+     */
+    public function createWithAccount($input)
+    {
+        $staff = $this->create($input);
+        $staff->accounts()->create($input);
+        return $staff;
     }
 }

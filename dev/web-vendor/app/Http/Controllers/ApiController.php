@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         $client = new Client([
