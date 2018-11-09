@@ -12,14 +12,12 @@ export interface IStaff {
 }
 
 export interface IStaffList {
-    staff_id: number;
+    staff_id: string;
     staff_name: string;
     email: string;
     phone: string;
     address: string;
     role_name: string;
-    role_code: string;
-    system_code: string;
 }
 
 export interface IStaffState {
@@ -33,5 +31,5 @@ export interface IStaffState {
     isError: boolean;
     errorInfo: null | string;
     activePage: number;
-    feedbacHeader: ITh[];
+    tableHeader: ITh[];
 };

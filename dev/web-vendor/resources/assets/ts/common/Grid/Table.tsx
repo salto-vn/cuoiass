@@ -140,8 +140,6 @@ export interface IRowState {
  * state:N/A
  */
 export class Header extends React.Component<IHeader>{
-
-
     state = {
         date: undefined,
     }
@@ -150,7 +148,9 @@ export class Header extends React.Component<IHeader>{
         this.setState({
             date: date,
         });
+
         const { onFilter } = this.props;
+
         if (typeof onFilter !== "undefined") {
             this.props.onFilter(date);
         }
@@ -209,21 +209,29 @@ export class Header extends React.Component<IHeader>{
 
     public render() {
         const { className, dataSet, filterFlag } = this.props;
-        return (<thead className={className}>
-            <tr role="row" >
-                {dataSet.map((thdata, key) => (
-                    <th key={key} scope="col" className={thdata.className}>
-                        <div onClick={this.handleSortClicked} >
-                            {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
-                            {thdata.title}
-                        </div>
-                        {key === 0 || key === dataSet.length - 1 ? '' :
-                            filterFlag === true ? this.renderHeaderInputElement(thdata.dataType, thdata.id) : ''
-                        }
-                    </th>
-                ))}
-            </tr>
-        </thead>);
+        return (
+            <thead className={className}>
+                <tr role="row" key={0}>
+                    {dataSet.map((thdata, key) => (
+                        <th key={key} scope="col" className={thdata.className}>
+                            <div onClick={this.handleSortClicked} >
+                                {thdata.title}
+                                {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
+                            </div>
+                        </th>
+                    ))}
+                </tr>
+                <tr role="row" key={1}>
+                    {dataSet.map((thdata, key) => (
+                        <th key={key} scope="col" className={thdata.className}>
+                            {key === 0 || key === dataSet.length - 1 ? '' :
+                                filterFlag === true ? this.renderHeaderInputElement(thdata.dataType, thdata.id) : ''
+                            }
+                        </th>
+                    ))}
+                </tr>
+            </thead>
+        );
     }
 }
 
@@ -238,8 +246,6 @@ export class Header extends React.Component<IHeader>{
  * state:N/A
  */
 export class Body extends React.Component<IRowState> {
-
-
     /**
      * Change Page click event
      * call event via properties
@@ -282,25 +288,26 @@ export class Body extends React.Component<IRowState> {
             return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid itemRepeat={1} /></td></tr></tbody>;
         }
 
-        return (<tbody>
-            {
-                dataSet.map((rows, key) => (
-                    <tr role="row" key={key} >
-                        {rows.map((d, k) =>
-                            k < rows.length - 1 ?
-                                <td key={k}>{d}</td> :
-                                <td key={rows.length + 1} className="text-center">
-                                    {canView === true ? <a data-index={d} onClick={this.handleViewClicked} className="action-icon"><FontAwesomeIcon title="Chi tiết" icon='sticky-note' /></a> : ''}
-                                    {canEdit === true ? <a data-index={d} onClick={this.handleEditClicked} className="action-icon"><FontAwesomeIcon title="Chỉnh sửa" icon='edit' /></a> : ''}
-                                    {canDelete === true ? <a data-index={d} onClick={this.handleDeleteClicked} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
-                                </td>
-                        )}
+        return (
+            <tbody>
+                {
+                    dataSet.map((rows, key) => (
+                        <tr role="row" key={key} >
+                            {rows.map((d, k) =>
+                                k < rows.length - 1 ?
+                                    <td key={k}>{d}</td> :
+                                    <td key={rows.length + 1} className="text-center">
+                                        {canView === true ? <a data-index={d} onClick={this.handleViewClicked} className="action-icon"><FontAwesomeIcon title="Chi tiết" icon='sticky-note' /></a> : ''}
+                                        {canEdit === true ? <a data-index={d} onClick={this.handleEditClicked} className="action-icon"><FontAwesomeIcon title="Chỉnh sửa" icon='edit' /></a> : ''}
+                                        {canDelete === true ? <a data-index={d} onClick={this.handleDeleteClicked} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
+                                    </td>
+                            )}
 
-                    </tr>
-                )
-                )
-            }
-        </tbody>);
+                        </tr>
+                    ))
+                }
+            </tbody>
+        );
     }
 }
 
@@ -331,7 +338,7 @@ export class Table extends React.Component<ISourceProp, {}> {
 
         return (
             <div className="table-responsive">
-                <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
+                <table id="tabledata" className="table table-striped table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
                     <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
                     <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} limit={limit} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
                 </table>

@@ -32,8 +32,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         totalItem: CONSTANT.TOTAL_COUNT,
         isError: false,
         errorInfo: '',
-        feedbacHeader: [],
         activePage: CONSTANT.CURRENT_PAGE,
+        tableHeader: []
     };
 
 
@@ -42,7 +42,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
-        this.getListFeedback();
+        this.setTableHeader();
+        this.getListStaff();
     }
 
 
@@ -52,14 +53,14 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
+        const { staffGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, tableHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < staffGrid.length; i++) {
             let item: IStaffList = staffGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.staff_name, item.email, item.phone, item.address, item.role_name, item.role_code, item.system_code];
+            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.role_name, item.staff_id];
             listdata.push(data);
         }
 
@@ -78,7 +79,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                 <div className="panel-body">
                                     <Table
                                         pageClicked={this.handlePageChange}
-                                        headers={feedbacHeader}
+                                        headers={tableHeader}
                                         activePage={activePage}
                                         totalItem={totalItem}
                                         dataSet={listdata}
@@ -113,25 +114,30 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     }
 
     /**
-     * Get Feedback data
+     * Set header for table
+     */
+    private setTableHeader = () => {
+        const sortIcon: string = 'sort';
+        const tableHeader = [
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
+            { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon },
+            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon },
+            { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon },
+            { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon },
+            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon },
+            { id: '', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon }
+        ];
+        this.setState({ tableHeader });
+    }
+
+    /**
+     * Get staff data
      * Return: not need to return set to state is OK
      */
-    private getListFeedback = async () => {
+    private getListStaff = async () => {
 
         const { offset, limit } = this.state;
         this.setState({ isLoading: true });
-
-        //TODO
-        const sortIcon: string = 'sort';
-        const header = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'staff_name', title: 'Tên nhân viên', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
-            { id: 'email', title: 'Email', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
-            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'col-sm-2', sortClass: sortIcon },
-            { id: 'address', title: 'Địa chỉ', className: 'col-sm-3', dataType: 'text', sortClass: sortIcon },
-            { id: 'role_name', title: 'Quyền', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'col-md-auto', dataType: 'none', sortClass: sortIcon }
-        ];
 
         const response = await HandleRequest.GetList(APP_URL.STAFF, offset, limit);
 
@@ -142,8 +148,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({
             staffGrid: response.result.data,
             totalItem: response.result.total,
-            isLoading: false,
-            feedbacHeader: header
+            isLoading: false
         });
 
     }

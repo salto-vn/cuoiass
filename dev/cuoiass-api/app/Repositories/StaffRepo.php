@@ -68,11 +68,9 @@ class StaffRepo extends Repository
             "$tblStaff.staff_id",
             "$tblStaff.staff_name",
             "$tblStaff.phone",
-            "$tblStaff.address",
             "$tblStaff.email",
-            "$tblRole.role_name",
-            "$tblRole.role_code",
-            "$tblRole.system_code",
+            "$tblStaff.address",
+            "$tblRole.role_name"
         ])->skip($offset)->take($limit);
 
         if (!empty($orderBy)) {
