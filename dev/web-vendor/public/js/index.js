@@ -4134,10 +4134,11 @@ var locationsAreEqual = function locationsAreEqual(a, b) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var CONSTANT = {
     TOTAL_COUNT: 0,
-    OFFSET: 0,
-    LIMIT: 5,
+    PAGE: 1,
+    LIMIT: 20,
     ITEM_REPEAT: 1,
     CURRENT_PAGE: 1,
+    PAGE_RANGE_DISPLAY: 10,
     PAGE_TITLE: 'Quản lý booking'
 };
 exports.default = CONSTANT;
@@ -6991,18 +6992,20 @@ var headerOptions = {
     "Content-Type": "application/json",
     "Accept": "application/json"
 };
-exports.GetList = function (url, offset, limit, columns) {
-    if (offset === void 0) { offset = 0; }
-    if (limit === void 0) { limit = 100; }
+exports.GetList = function (url, page, limit, columns) {
+    if (page === void 0) { page = 1; }
+    if (limit === void 0) { limit = 10; }
     if (columns === void 0) { columns = []; }
     return tslib_1.__awaiter(_this, void 0, void 0, function () {
-        var result;
+        var fullUrl, result;
         return tslib_1.__generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch(url + "?offset=" + offset + "&limit=" + limit + "&columns=" + columns, {
-                        method: "GET",
-                        headers: headerOptions,
-                    })];
+                case 0:
+                    fullUrl = url + "?page=" + page + "&limit=" + limit + (columns.length ? '&columns=' + columns : '');
+                    return [4 /*yield*/, fetch(fullUrl, {
+                            method: "GET",
+                            headers: headerOptions,
+                        })];
                 case 1:
                     result = _a.sent();
                     return [2 /*return*/, HandleResponse_1.default(result)];
@@ -8398,20 +8401,10 @@ var React = tslib_1.__importStar(__webpack_require__(0));
 var LoadingGrid = /** @class */ (function (_super) {
     tslib_1.__extends(LoadingGrid, _super);
     function LoadingGrid() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.makeItem = function () {
-            var itemRepeat = _this.props.itemRepeat;
-            if (itemRepeat === 0) {
-                return;
-            }
-            var i = 0;
-            var arrItem = [];
-            for (; i < itemRepeat; i++) {
-                arrItem.push(_this.item(i));
-            }
-            return arrItem;
-        };
-        _this.item = function (key) { return React.createElement("div", { className: "wrap-item", key: key },
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LoadingGrid.prototype.render = function () {
+        return (React.createElement("div", { className: "wrap-item" },
             React.createElement("div", { className: "timeline-wrapper" },
                 React.createElement("div", { className: "timeline-item" },
                     React.createElement("div", { className: "animated-background" },
@@ -8420,11 +8413,7 @@ var LoadingGrid = /** @class */ (function (_super) {
                         React.createElement("div", { className: "background-masker line-3" }),
                         React.createElement("div", { className: "background-masker line-4" }),
                         React.createElement("div", { className: "background-masker line-5" }),
-                        React.createElement("div", { className: "background-masker line-6" }))))); };
-        return _this;
-    }
-    LoadingGrid.prototype.render = function () {
-        return (this.makeItem());
+                        React.createElement("div", { className: "background-masker line-6" }))))));
     };
     return LoadingGrid;
 }(React.Component));
@@ -8685,7 +8674,7 @@ var Body = /** @class */ (function (_super) {
             return React.createElement("tbody", null,
                 React.createElement("tr", null,
                     React.createElement("td", { colSpan: colsNo, className: 'is-loadding' },
-                        React.createElement(LoadingGrid_1.default, { itemRepeat: 1 }))));
+                        React.createElement(LoadingGrid_1.default, null))));
         }
         return (React.createElement("tbody", null, dataSet.map(function (rows, key) { return (React.createElement("tr", { role: "row", key: key }, rows.map(function (d, k) {
             return k < rows.length - 1 ?
@@ -8727,17 +8716,24 @@ var Table = /** @class */ (function (_super) {
         };
         /**
          * Render Pagination
+         * totalItemsCount: Number => Required. Total count of items which you are going to display
+         * onChange: Function => Required. Page change handler. Receive pageNumber as arg
+         * activePage: Number => Default: 1, Required. Active page,
+         * itemsCountPerPage: Defalt: 10, Count of items per page
+         * pageRangeDisplayed: Number => Default 5, Range of pages in paginator, Dislay total button on paginate
          */
         _this.paginate = function () {
             var activePage = Number(_this.props.activePage);
             var totalItem = Number(_this.props.totalItem);
             var limit = Number(_this.props.limit);
+            var pageRange = Number(_this.props.pageRange);
             var isError = Boolean(_this.props.isError);
+            console.log(totalItem, limit, activePage);
             if (isError) {
                 return null;
             }
             return totalItem === Constant_1.default.TOTAL_COUNT ? React.createElement(LoadingPaginate_1.default, { width: 300, height: 30 }) :
-                React.createElement(react_js_pagination_1.default, { pageRangeDisplayed: limit, activePage: activePage, totalItemsCount: totalItem, onChange: _this.handlePageClicked });
+                React.createElement(react_js_pagination_1.default, { totalItemsCount: totalItem, itemsCountPerPage: limit, pageRangeDisplayed: pageRange, activePage: activePage, onChange: _this.handlePageClicked });
         };
         return _this;
     }
@@ -34872,9 +34868,8 @@ var WeddingDress = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.state = {
             isLoading: false,
-            itemRepeat: Constant_1.default.ITEM_REPEAT,
             limit: Constant_1.default.LIMIT,
-            offset: Constant_1.default.OFFSET,
+            page: Constant_1.default.PAGE,
             weddingGrid: [],
             weddingModel: new IWedding_1.WeddingModal(),
             sourceTransport: [],
@@ -34891,13 +34886,13 @@ var WeddingDress = /** @class */ (function (_super) {
             _this.setState({ sourceTransport: sourceTransport }, function () { return console.log(_this.state.sourceTransport); });
         };
         _this.makeGrid = function (data, isError) {
-            var _a = _this.state, errorInfo = _a.errorInfo, isLoading = _a.isLoading, itemRepeat = _a.itemRepeat;
+            var _a = _this.state, errorInfo = _a.errorInfo, isLoading = _a.isLoading;
             if (isError) {
                 return React.createElement("div", null, errorInfo);
             }
             if (isLoading) {
                 return React.createElement("div", { className: "is-loadding" },
-                    React.createElement(LoadingGrid_1.default, { itemRepeat: itemRepeat }));
+                    React.createElement(LoadingGrid_1.default, null));
             }
             return data.map(function (item, key) {
                 return React.createElement("div", { className: "row-item flex align-items-center", key: key },
@@ -34945,13 +34940,13 @@ var WeddingDress = /** @class */ (function (_super) {
                 React.createElement(react_js_pagination_1.default, { pageRangeDisplayed: limit, activePage: activePage, totalItemsCount: totalItem, onChange: _this.handlePageChange });
         };
         _this.getListWeddingDress = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-            var _a, offset, limit, response;
+            var _a, page, limit, response;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         this.setState({ isLoading: true });
-                        _a = this.state, offset = _a.offset, limit = _a.limit;
-                        return [4 /*yield*/, HandleRequest.GetList(urlGetList, offset, limit)];
+                        _a = this.state, page = _a.page, limit = _a.limit;
+                        return [4 /*yield*/, HandleRequest.GetList(urlGetList, page, limit)];
                     case 1:
                         response = _b.sent();
                         if (response.isError) {
@@ -35366,7 +35361,7 @@ var Feedback = /** @class */ (function (_super) {
             isLoading: false,
             itemRepeat: Constant_1.default.ITEM_REPEAT,
             limit: Constant_1.default.LIMIT,
-            offset: Constant_1.default.OFFSET,
+            page: Constant_1.default.PAGE,
             feedbackGrid: [],
             model: new FeedbackModel_1.FeedbackModel(),
             isShowModal: false,
@@ -35555,8 +35550,8 @@ var Feedback = /** @class */ (function (_super) {
             if (activePage === pageNumber) {
                 return;
             }
-            return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { activePage: pageNumber, offset: (pageNumber - 1) * limit })); }, function () {
-                //TODO: Hard data waiting for api with request limit, offset, reponse
+            return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { activePage: pageNumber, page: (pageNumber - 1) * limit })); }, function () {
+                //TODO: Hard data waiting for api with request limit, page, reponse
                 if (pageNumber === 1) {
                     _this.getListFeedback();
                 }
@@ -41770,15 +41765,13 @@ var StaffScreen = /** @class */ (function (_super) {
             isLoading: false,
             itemRepeat: Constant_1.default.ITEM_REPEAT,
             limit: Constant_1.default.LIMIT,
-            offset: Constant_1.default.OFFSET,
             isShowModal: false,
             totalItem: Constant_1.default.TOTAL_COUNT,
+            pageRange: Constant_1.default.PAGE_RANGE_DISPLAY,
             isError: false,
             errorInfo: '',
             activePage: Constant_1.default.CURRENT_PAGE,
             tableHeader: []
-        };
-        _this.handleView = function (feedbackId) {
         };
         _this.handleSort = function () {
             console.log('Call API Sort');
@@ -41800,8 +41793,8 @@ var StaffScreen = /** @class */ (function (_super) {
         /**
          * Set header for table
          */
-        _this.setTableHeader = function () {
-            var sortIcon = 'sort';
+        _this.setTableHeader = function (sortIcon) {
+            if (sortIcon === void 0) { sortIcon = 'sort'; }
             var tableHeader = [
                 { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
                 { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon },
@@ -41818,13 +41811,13 @@ var StaffScreen = /** @class */ (function (_super) {
          * Return: not need to return set to state is OK
          */
         _this.getListStaff = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-            var _a, offset, limit, response;
+            var _a, activePage, limit, response;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = this.state, offset = _a.offset, limit = _a.limit;
+                        _a = this.state, activePage = _a.activePage, limit = _a.limit;
                         this.setState({ isLoading: true });
-                        return [4 /*yield*/, HandleRequest.GetList(Url_1.default.STAFF, offset, limit)];
+                        return [4 /*yield*/, HandleRequest.GetList(Url_1.default.STAFF, activePage, limit)];
                     case 1:
                         response = _b.sent();
                         if (response.isError) {
@@ -41844,12 +41837,12 @@ var StaffScreen = /** @class */ (function (_super) {
          * Return: not need to return set to state is OK
          */
         _this.handlePageChange = function (pageNumber) {
-            var _a = _this.state, limit = _a.limit, activePage = _a.activePage;
+            var activePage = _this.state.activePage;
             if (activePage === pageNumber) {
                 return;
             }
-            return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { activePage: pageNumber, offset: (pageNumber - 1) * limit })); }, function () {
-                console.log('CALL API');
+            return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { activePage: pageNumber })); }, function () {
+                _this.getListStaff();
             });
         };
         return _this;
@@ -41873,7 +41866,7 @@ var StaffScreen = /** @class */ (function (_super) {
      * Render view
      */
     StaffScreen.prototype.render = function () {
-        var _a = this.state, staffGrid = _a.staffGrid, isError = _a.isError, totalItem = _a.totalItem, limit = _a.limit, activePage = _a.activePage, isLoading = _a.isLoading, errorInfo = _a.errorInfo, tableHeader = _a.tableHeader;
+        var _a = this.state, staffGrid = _a.staffGrid, isError = _a.isError, totalItem = _a.totalItem, pageRange = _a.pageRange, limit = _a.limit, activePage = _a.activePage, isLoading = _a.isLoading, errorInfo = _a.errorInfo, tableHeader = _a.tableHeader;
         var listdata = new Array();
         //Convert Datajson to Array with last index id PK key.
         for (var i = 0; i < staffGrid.length; i++) {
@@ -41892,7 +41885,7 @@ var StaffScreen = /** @class */ (function (_super) {
                             React.createElement("div", { className: "panel-heading flex justify-content-between align-items-center" },
                                 React.createElement("h4", { className: "panel-title" }, "Danh s\u00E1ch nh\u00E2n vi\u00EAn")),
                             React.createElement("div", { className: "panel-body" },
-                                React.createElement(Table_1.Table, { pageClicked: this.handlePageChange, headers: tableHeader, activePage: activePage, totalItem: totalItem, dataSet: listdata, limit: limit, isError: isError, isLoading: isLoading, errorInfo: errorInfo, desc: 'Feedback data', onSort: this.handleSort, canView: true, onView: this.handleView, filterFlag: true, onFilter: this.handleFilter }))))))));
+                                React.createElement(Table_1.Table, { pageClicked: this.handlePageChange, headers: tableHeader, activePage: activePage, totalItem: totalItem, pageRange: pageRange, dataSet: listdata, limit: limit, isError: isError, isLoading: isLoading, errorInfo: errorInfo, desc: 'Feedback data', onSort: this.handleSort, canEdit: true, canDelete: true, filterFlag: true, onFilter: this.handleFilter }))))))));
     };
     return StaffScreen;
 }(React.Component));
