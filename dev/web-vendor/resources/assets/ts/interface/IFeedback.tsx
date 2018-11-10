@@ -41,7 +41,7 @@ export interface IFeedback {
 }
 
 export interface IFeedbackList {
-    rreview_id: number;
+    review_id: number;
     review_content: string;
     review_date: string;
     review_rate: number;
@@ -56,8 +56,9 @@ export interface IFeedbackList {
 export interface IFeedbackState {
     feedbackGrid: IFeedbackList[],
     isLoading: boolean,
-    itemRepeat: number
+    // itemRepeat: number,
     limit: number,
+    limitPagingor: number,
     offset: number,
     isShowModal: boolean,
     totalItem: number,
@@ -65,6 +66,10 @@ export interface IFeedbackState {
     errorInfo: null | string,
     activePage: number,
     feedbacHeader: ITh[],
+    sortbyc: string,
+    sortby: string,
+    search: string
+    sortedIndex: number
 }
 
 export interface IVFeedbackState {

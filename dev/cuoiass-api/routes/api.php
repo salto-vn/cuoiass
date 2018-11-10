@@ -30,5 +30,6 @@ use Illuminate\Http\Request;
 
     //Review Route
     Route::resource('reviews', 'Api\ReviewController');
+//    Route::get('reviews', 'Api\ReviewController@index');
 //});
 

@@ -11,11 +11,11 @@
 |
 */
 
-$router->group(['prefix' => config('wedding.api_prefix')], function () use ($router) {
-    $router->get('/api/{any:.*}', 'ApiController@index');
-    $router->post('/api/{any:.*}', 'ApiController@index');
-    $router->put('/api/{any:.*}', 'ApiController@index');
-    $router->delete('/api/{any:.*}', 'ApiController@index');
+$router->group(['prefix' => 'api'], function () use ($router) {
+    $router->get('/{any:.*}', 'ApiController@index');
+    $router->post('/{any:.*}', 'ApiController@store');
+    $router->put('/{any:.*}', 'ApiController@index');
+    $router->delete('/{any:.*}', 'ApiController@index');
 });
 
 $router->get('/{any:.*}', 'HomeController@index');

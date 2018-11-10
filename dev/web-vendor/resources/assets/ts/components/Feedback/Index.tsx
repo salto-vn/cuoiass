@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { IFeedbackState, IFeedbackList } from '../../interface/IFeedback';
 import CONSTANT from '../../bootstrap/Constant';
-import { Table } from '../../common/Grid/Table';
+import { Table, ITh } from '../../common/Grid/Table';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSortUp } from '@fortawesome/free-solid-svg-icons'
-import * as FeedbackApi  from '../../api/FeedbackApi';
+import * as FeedbackApi from '../../api/FeedbackApi';
 
 library.add(faSortUp)
 
@@ -21,8 +21,8 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
     // inital state varialble using in this Component, 
     public state = {
         isLoading: false,
-        itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
+        limitPagingor: CONSTANT.LIMIT,
         offset: CONSTANT.OFFSET,
         feedbackGrid: [],
         isShowModal: false,
@@ -31,6 +31,10 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         errorInfo: '',
         feedbacHeader: [],
         activePage: CONSTANT.CURRENT_PAGE,
+        sortbyc: 'review_id',
+        sortby: 'asc',
+        search: '',
+        sortedIndex: 0,
     };
 
 
@@ -39,6 +43,19 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
+        //TODO
+        const sortIcon: string = 'sort';
+        var feedbacHeader = [
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
+            { id: 'msp', title: 'MSP', className: 'col-sm-auto', dataType: 'text', sortClass: sortIcon },
+            { id: 'tsp', title: 'Tên sản phẩm', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
+            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'col-sm-auto', sortClass: sortIcon },
+            { id: 'ngay', title: 'Ngày', className: 'col-sm-auto', dataType: 'date', sortClass: sortIcon },
+            { id: 'nd', title: 'Nội dung', className: 'col-sm-3', dataType: 'text', sortClass: sortIcon },
+            { id: 'tl', title: 'Tỷ lệ', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
+            { id: '', title: 'Actions', className: 'col-sm-auto', dataType: 'none', sortClass: sortIcon }
+        ];
+        this.setState({ feedbacHeader })
         this.getListFeedback();
     }
 
@@ -49,17 +66,17 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Render view
      */
     public render() {
-        const { feedbackGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
+        const { feedbackGrid, isError, totalItem, limit, limitPagingor, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < feedbackGrid.length; i++) {
             let item: IFeedbackList = feedbackGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.prd_cd, item.booked_pro_name, item.first_name + item.last_name, item.review_date, item.review_content, String(item.review_rate), String(item.rreview_id)];
+            let reviewContent = item.review_content.substring(0, 60) + '...';
+            let data: string[] = [String(item.review_id), item.prd_cd, item.booked_pro_name, item.first_name + " " + item.last_name, item.review_date, reviewContent, String(item.review_rate), String(item.review_id)];
             listdata.push(data);
         }
-
         return (
             <>
                 <div className="page-title">
@@ -69,8 +86,16 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                     <div className="row">
                         <div className="col-md-12">
                             <div className="panel panel-white">
-                                <div className="panel-heading flex justify-content-between align-items-center">
-                                    <h4 className="panel-title">Danh sách phản hồi</h4>
+                                <div className="panel-heading flex justify-content-between align-items-center ">
+                                    <span className="panel-title">Danh sách phản hồi: Có {totalItem} PH</span>
+                                    <div>
+                                        <select onChange={this.handleDisplayNoPage} className="form-control">
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="panel-body">
                                     <Table
@@ -79,7 +104,8 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                         activePage={activePage}
                                         totalItem={totalItem}
                                         dataSet={listdata}
-                                        limit={limit} isError={isError}
+                                        limit={limit}
+                                        limitPagingor={limitPagingor} isError={isError}
                                         isLoading={isLoading} errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
                                         canView={true}
@@ -96,8 +122,64 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         );
     }
 
-    private handleSort = () => {
-        console.log('Call API Sort');
+    private handleSort = (key: any, index: any) => {
+        const feedbacHeader: ITh[] = this.state.feedbacHeader;
+        var sortClass = feedbacHeader[index].sortClass;
+        const { sortedIndex } = this.state;
+        feedbacHeader[sortedIndex].sortClass = "sort";
+        switch (sortClass) {
+            case "sort":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-up":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-down":
+                feedbacHeader[index].sortClass = "sort-up"
+                break;
+            default:
+                feedbacHeader[index].sortClass = "sort"
+                break;
+        }
+
+        let sortbyc: string = "";
+        let sortby: string = "";
+        if ((sortClass == "sort") || (sortClass == "sort-up")) {
+            sortby = 'asc';
+        } else {
+            sortby = 'desc';
+        }
+
+        switch (key) {
+            case "msp":
+                sortbyc = "prd_cd33";
+                break;
+            case "tsp":
+                sortbyc = "booked_pro_name";
+                break;
+            case "tnd":
+                sortbyc = "first_name";
+                break;
+            case "ngay":
+                sortbyc = "review_date";
+                break;
+            case "nd":
+                sortbyc = "review_content";
+                break;
+            case "tl":
+                sortbyc = "review_rate";
+                break;
+            default:
+                sortbyc = "review_id";
+                break;
+        }
+
+        return this.setState((prevState) => ({
+            ...prevState, sortbyc: sortbyc, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+        }), () => {
+
+            this.getListFeedback();
+        });
     }
 
     private handleView = (feedbackId: number) => {
@@ -110,6 +192,20 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         console.log('filter ' + value);
     }
 
+    private handleDisplayNoPage = (event: any) => {
+        const { limit, activePage } = this.state;
+        let selectedValue = event.currentTarget.value;
+        if (limit === selectedValue) {
+            return;
+        }
+        return this.setState((prevState) => ({
+            ...prevState, limit: selectedValue, offset: (activePage - 1) * limit
+        }), () => {
+
+            this.getListFeedback();
+        });
+    }
+
     /**
      * Get Feedback data
      * Return: not need to return set to state is OK
@@ -118,38 +214,19 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
         this.setState({ isLoading: true });
 
-        //TODO
-        const sortIcon: string = 'sort';
-        const header = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'msp', title: 'MSP', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
-            { id: 'tsp', title: 'Tên sản phẩm', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
-            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'col-sm-2', sortClass: sortIcon },
-            { id: 'ngay', title: 'Ngày', className: 'col-sm-1', dataType: 'date', sortClass: sortIcon },
-            { id: 'nd', title: 'Nội dung', className: 'col-md-auto', dataType: 'text', sortClass: sortIcon },
-            { id: 'tl', title: 'Tỷ lệ', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'col-md-auto', dataType: 'none', sortClass: sortIcon }
-        ];
-
-
-        const { offset, limit } = this.state;
-        const response = await FeedbackApi.GetList('api/reviews', offset, limit);
+        const { offset, limit, sortbyc, sortby } = this.state;
+        // Call api get Feedback 
+        const response = await FeedbackApi.GetList('/api/reviews', offset, limit, sortbyc, sortby);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
 
-        //TODO set request api offset, limit
-        // const { offset, limit } = this.state;
-        // Call api get Feedback 
-
         this.setState({
-            feedbackGrid: response.data,
-            totalItem: response.data.length,
+            feedbackGrid: response.data.data,
+            totalItem: response.data.total,
             isLoading: false,
-            feedbacHeader: header
         });
-
     }
 
     /**
@@ -161,12 +238,10 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         if (activePage === pageNumber) {
             return;
         }
-
         return this.setState((prevState) => ({
             ...prevState, activePage: pageNumber, offset: (pageNumber - 1) * limit
         }), () => {
 
-            //TODO: Hard data waiting for api with request limit, offset, reponse
             this.getListFeedback();
         });
     }

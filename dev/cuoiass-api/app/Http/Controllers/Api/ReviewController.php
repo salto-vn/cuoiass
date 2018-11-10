@@ -28,15 +28,16 @@ class ReviewController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ReviewCollection
      */
     public function index(Request $request)
     {
         //
         $offset = (int)$request->get('offset', \Constant::MIN_OFFSET);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
-        $orderBy = $request->get('sortby', null);
-        $sortBy = $request->get('orderby', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('sortbyc', null);
+        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
         $model = $this->reviewRepo->getListAllData($search, $offset, $limit, $orderBy, $sortBy);
 

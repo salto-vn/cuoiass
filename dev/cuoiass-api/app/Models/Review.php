@@ -39,7 +39,8 @@ class Review extends Eloquent
 		'review_rate' => 'float',
 		'prd_id' => 'int',
 		'booked_id' => 'int',
-		'customer_id' => 'int'
+		'customer_id' => 'int',
+        'review_date' => 'date:d-m-Y'
 	];
 
 	protected $dates = [

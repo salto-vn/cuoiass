@@ -9,14 +9,14 @@ class ReviewCollection extends ResourceCollection
     /**
      * Transform the resource collection into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)
     {
         return [
-            'data' => $this->collection,
-            'total' => $this->collection->count()
+            'data' => $this->collection['data'],
+            'total' => $this->collection['total']
         ];
     }
 }

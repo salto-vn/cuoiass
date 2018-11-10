@@ -9,6 +9,7 @@ const HandleResponse = async (res: Response) => {
     let data = null;
 
     if (res.ok) {
+        debugger;
         isError = false;
         data = await res.json();
     }

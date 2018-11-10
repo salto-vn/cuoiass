@@ -10,6 +10,9 @@ namespace App\Repositories;
 
 
 use App\Models\Review;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class ReviewRepo extends Repository
 {
@@ -42,6 +45,7 @@ class ReviewRepo extends Repository
         $offset = (int)$offset ? $offset : \Constant::MIN_OFFSET;
         $limit = (int)$limit ? $limit : \Constant::MIN_LIMiT;
         $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
+        $total = $this->model->newQuery()->count('review_id');
         $model = $this->model->newQuery()->select([
             'reviews.review_id', 'reviews.review_content', 'reviews.review_date',
             'reviews.review_rate', 'reviews.review_imgs',
@@ -69,7 +73,6 @@ class ReviewRepo extends Repository
         if (!empty($orderBy)) {
             $model->orderBy($orderBy, $sortBy);
         }
-
-        return $model->get();
+        return new Collection(['data'=>$model->get(),'total' => $total]);
     }
 }

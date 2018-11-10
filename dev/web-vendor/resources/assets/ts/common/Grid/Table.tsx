@@ -61,6 +61,7 @@ export interface ISourceProp {
     isLoading: boolean;
     isError: boolean;
     errorInfo: string;
+    limitPagingor: number;
     limit: number;
     totalItem?: number;
     activePage?: number;
@@ -123,7 +124,6 @@ export interface IRowState {
     isLoading: boolean;
     isError: boolean;
     errorInfo: string;
-    limit: number;
     canEdit?: boolean;
     canView?: boolean;
     canDelete?: boolean;
@@ -146,6 +146,7 @@ export class Header extends React.Component<IHeader>{
         date: undefined,
     }
 
+
     onChange = (date: any) => {
         this.setState({
             date: date,
@@ -162,10 +163,11 @@ export class Header extends React.Component<IHeader>{
      */
     handleSortClicked = (event: React.SyntheticEvent<HTMLElement>) => {
         const { onSort } = this.props;
-
+        const key = event.currentTarget.getAttribute('data-key');
+        const index = event.currentTarget.getAttribute('data-index');
         //Call event onSort if have set
         if (typeof onSort !== "undefined") {
-            this.props.onSort(event);
+            this.props.onSort(key, index);
         }
     }
 
@@ -213,7 +215,7 @@ export class Header extends React.Component<IHeader>{
             <tr role="row" >
                 {dataSet.map((thdata, key) => (
                     <th key={key} scope="col" className={thdata.className}>
-                        <div onClick={this.handleSortClicked} >
+                        <div onClick={this.handleSortClicked} data-key={thdata.id} data-index={key}>
                             {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
                             {thdata.title}
                         </div>
@@ -281,7 +283,6 @@ export class Body extends React.Component<IRowState> {
         if (isLoading) {
             return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid itemRepeat={1} /></td></tr></tbody>;
         }
-
         return (<tbody>
             {
                 dataSet.map((rows, key) => (
@@ -327,15 +328,14 @@ export class Table extends React.Component<ISourceProp, {}> {
         const canView: boolean = Boolean(this.props.canView);
         const canDelete: boolean = Boolean(this.props.canDelete);
         const errorInfo: string = String(this.props.errorInfo);
-        const limit: number = Number(this.props.limit);
 
 
         return (<div className="table-responsive">
             <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
                 <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
-                <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} limit={limit} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
+                <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
             </table>
-            {this.paginate()}
+            <div className="text-center">{this.paginate()}</div>
         </div>
         )
     }
@@ -354,16 +354,17 @@ export class Table extends React.Component<ISourceProp, {}> {
     private paginate = () => {
         const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
-        const limit: number = Number(this.props.limit);
+        const limitPagingor: number = Number(this.props.limitPagingor);
         const isError: boolean = Boolean(this.props.isError);
+        const limit: number = Number(this.props.limit);
 
         if (isError) {
             return null;
         }
-
         return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
             <Pagination
-                pageRangeDisplayed={limit}
+                pageRangeDisplayed={limitPagingor}
+                itemsCountPerPage={limit}
                 activePage={activePage}
                 totalItemsCount={totalItem}
                 onChange={this.handlePageClicked}
