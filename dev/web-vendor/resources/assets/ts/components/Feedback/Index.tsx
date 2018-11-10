@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { IFeedbackState, IFeedbackList } from '../../interface/IFeedback';
-import { FeedbackModel } from '../../model/FeedbackModel';
 import CONSTANT from '../../bootstrap/Constant';
-import { Table } from '../../common/Grid/Table';
+import { Table, ITh } from '../../common/Grid/Table';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSortUp } from '@fortawesome/free-solid-svg-icons'
+import * as HandleRequest from '../../api/HandleRequest';
+import API_URL from '../../bootstrap/Url';
 
 library.add(faSortUp)
 
@@ -21,17 +22,19 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
     // inital state varialble using in this Component, 
     public state = {
         isLoading: false,
-        itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
-        page: CONSTANT.PAGE,
         feedbackGrid: [],
-        model: new FeedbackModel(),
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
         isError: false,
         errorInfo: '',
         feedbacHeader: [],
         activePage: CONSTANT.CURRENT_PAGE,
+        sortbyc: 'review_id',
+        sortby: 'asc',
+        search: '',
+        sortedIndex: 0,
+        pageRange: CONSTANT.PAGE_RANGE_DISPLAY
     };
 
 
@@ -40,6 +43,19 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
+        //TODO
+        const sortIcon: string = 'sort';
+        var feedbacHeader = [
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
+            { id: 'msp', title: 'MSP', className: 'w100', dataType: 'text', sortClass: sortIcon },
+            { id: 'tsp', title: 'Tên sản phẩm', className: 'w150', dataType: 'text', sortClass: sortIcon },
+            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'w150', sortClass: sortIcon },
+            { id: 'ngay', title: 'Ngày', className: 'w100', dataType: 'date', sortClass: sortIcon },
+            { id: 'nd', title: 'Nội dung', className: '', dataType: 'text', sortClass: sortIcon },
+            { id: 'tl', title: 'Tỷ lệ', className: 'w100', dataType: 'text', sortClass: sortIcon },
+            { id: '', title: 'Actions', className: 'w100', dataType: 'none', sortClass: sortIcon }
+        ];
+        this.setState({ feedbacHeader })
         this.getListFeedback();
     }
 
@@ -50,17 +66,17 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Render view
      */
     public render() {
-        const { feedbackGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
+        const { feedbackGrid, isError, totalItem, limit, pageRange, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < feedbackGrid.length; i++) {
             let item: IFeedbackList = feedbackGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.productCode, item.productName, item.name, item.date, item.content, String(item.rate), item.feedbackId];
+            let reviewContent = item.review_content.substring(0, 60) + '...';
+            let data: string[] = [String(item.review_id), item.prd_cd, item.booked_pro_name, item.first_name + " " + item.last_name, item.review_date, reviewContent, String(item.review_rate), String(item.review_id)];
             listdata.push(data);
         }
-
         return (
             <>
                 <div className="page-title">
@@ -70,8 +86,16 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                     <div className="row">
                         <div className="col-md-12">
                             <div className="panel panel-white">
-                                <div className="panel-heading flex justify-content-between align-items-center">
-                                    <h4 className="panel-title">Danh sách phản hồi</h4>
+                                <div className="panel-heading flex justify-content-between align-items-center ">
+                                    <span className="panel-title">Danh sách phản hồi: Có {totalItem} PH</span>
+                                    <div>
+                                        <select onChange={this.handleDisplayNoPage} className="form-control">
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="panel-body">
                                     <Table
@@ -80,7 +104,8 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                         activePage={activePage}
                                         totalItem={totalItem}
                                         dataSet={listdata}
-                                        limit={limit} isError={isError}
+                                        limit={limit}
+                                        pageRange={pageRange} isError={isError}
                                         isLoading={isLoading} errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
                                         canView={true}
@@ -97,8 +122,64 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         );
     }
 
-    private handleSort = () => {
-        console.log('Call API Sort');
+    private handleSort = (key: any, index: any) => {
+        const feedbacHeader: ITh[] = this.state.feedbacHeader;
+        var sortClass = feedbacHeader[index].sortClass;
+        const { sortedIndex } = this.state;
+        feedbacHeader[sortedIndex].sortClass = "sort";
+        switch (sortClass) {
+            case "sort":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-up":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-down":
+                feedbacHeader[index].sortClass = "sort-up"
+                break;
+            default:
+                feedbacHeader[index].sortClass = "sort"
+                break;
+        }
+
+        let sortbyc: string = "";
+        let sortby: string = "";
+        if ((sortClass == "sort") || (sortClass == "sort-up")) {
+            sortby = 'asc';
+        } else {
+            sortby = 'desc';
+        }
+
+        switch (key) {
+            case "msp":
+                sortbyc = "prd_cd";
+                break;
+            case "tsp":
+                sortbyc = "booked_pro_name";
+                break;
+            case "tnd":
+                sortbyc = "first_name";
+                break;
+            case "ngay":
+                sortbyc = "review_date";
+                break;
+            case "nd":
+                sortbyc = "review_content";
+                break;
+            case "tl":
+                sortbyc = "review_rate";
+                break;
+            default:
+                sortbyc = "review_id";
+                break;
+        }
+
+        return this.setState((prevState) => ({
+            ...prevState, sortbyc: sortbyc, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+        }), () => {
+
+            this.getListFeedback();
+        });
     }
 
     private handleView = (feedbackId: number) => {
@@ -111,6 +192,20 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         console.log('filter ' + value);
     }
 
+    private handleDisplayNoPage = (event: any) => {
+        const { limit, activePage } = this.state;
+        let selectedValue = event.currentTarget.value;
+        if (limit === selectedValue) {
+            return;
+        }
+        return this.setState((prevState) => ({
+            ...prevState, limit: selectedValue, offset: (activePage - 1) * limit
+        }), () => {
+
+            this.getListFeedback();
+        });
+    }
+
     /**
      * Get Feedback data
      * Return: not need to return set to state is OK
@@ -119,155 +214,23 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
         this.setState({ isLoading: true });
 
-        //TODO
-        const sortIcon: string = 'sort';
-        const header = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'msp', title: 'MSP', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
-            { id: 'tsp', title: 'Tên sản phẩm', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
-            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'col-sm-2', sortClass: sortIcon },
-            { id: 'ngay', title: 'Ngày', className: 'col-sm-1', dataType: 'date', sortClass: sortIcon },
-            { id: 'nd', title: 'Nội dung', className: 'col-md-auto', dataType: 'text', sortClass: sortIcon },
-            { id: 'tl', title: 'Tỷ lệ', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'col-md-auto', dataType: 'none', sortClass: sortIcon }
-        ];
+        const { activePage, limit, sortbyc, sortby } = this.state;
 
 
         //TODO set request api page, limit
-        // const { page, limit } = this.state;
-        // Call api get Feedback 
-        const responses = [
+        // Call api get Feedback
 
-            {
-                name: 'Ngo Tuan Anh2',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '1',
-            },
+        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby);
 
-            {
-                name: 'Ngo Tuan Anh',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '2',
-            },
-            {
-                name: 'Ngo Tuan Anh2',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '3',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '4',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '5',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '6',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '7',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '8',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '9',
-            },
-            {
-                name: 'Ngo Tuan Anh3',
-                email: 'ngoanh@mulodo.com',
-                date: '2018-12-12',
-                content: 'Review content, Good Job!,',
-                images: ['', ''],
-                rate: 4.5,
-                productCode: '00001',
-                productName: 'Product Name A',
-                customerId: '00002',
-                feedbackId: '10'
-            }
-        ];
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message });
+        }
 
         this.setState({
-            feedbackGrid: responses,
-            totalItem: 30,
+            feedbackGrid: response.result.data,
+            totalItem: response.result.total,
             isLoading: false,
-            feedbacHeader: header
         });
-
     }
 
     /**
@@ -275,57 +238,15 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Return: not need to return set to state is OK
      */
     private handlePageChange = (pageNumber: number) => {
-        const { limit, activePage } = this.state;
+        const { activePage } = this.state;
         if (activePage === pageNumber) {
             return;
         }
-
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber, page: (pageNumber - 1) * limit
+            ...prevState, activePage: pageNumber
         }), () => {
 
-            //TODO: Hard data waiting for api with request limit, page, reponse
-            if (pageNumber === 1) {
-                this.getListFeedback();
-            } else if (pageNumber === 2) {
-                const responses = [
-                    {
-                        name: 'Ngo Tuan Anh3',
-                        email: 'ngoanh@mulodo.com',
-                        date: '2018-12-12',
-                        content: 'Review content, Good Job!,',
-                        images: ['', ''],
-                        rate: 4.5,
-                        productCode: '00001',
-                        productName: 'Product Name A',
-                        customerId: '00002',
-                        feedbackId: '11',
-                    },
-                    {
-                        name: 'Ngo Tuan Anh3',
-                        email: 'ngoanh@mulodo.com',
-                        date: '2018-12-12',
-                        content: 'Review content, Good Job!,',
-                        images: ['', ''],
-                        rate: 4.5,
-                        productCode: '00001',
-                        productName: 'Product Name A',
-                        customerId: '00002',
-                        feedbackId: '12',
-                    }
-                ];
-                this.setState({
-                    feedbackGrid: responses,
-                    totalItem: 30,
-                    isLoading: false,
-                });
-            } else {
-                this.setState({
-                    feedbackGrid: [],
-                    totalItem: 30,
-                    isLoading: true,
-                });
-            }
+            this.getListFeedback();
         });
     }
 

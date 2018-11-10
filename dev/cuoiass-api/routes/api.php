@@ -18,9 +18,8 @@ use Illuminate\Http\Request;
 //});
 
 //Route::group(['middleware' => ['api']], function(){
-    /**
-     * Route for account
-     */
+    //Review Route
+    Route::resource('reviews', 'Api\ReviewController');
     Route::resource('staffs','Api\StaffController')->except('create');
 //});
 

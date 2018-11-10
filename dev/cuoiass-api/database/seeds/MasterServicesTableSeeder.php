@@ -16,7 +16,7 @@ class MasterServicesTableSeeder extends Seeder
             "PHT" => 'Photo',
             "DRSS" => 'dress',
             "STD" => 'studio',
-            "NC" => 'Nhẫn cưới',
+            "NC" => 'Nhan cưới',
             "QUAC" => 'Quà cưới',
             "TC" => 'Thiệp cưới',
             "TRTR" => 'Trang trí',

@@ -7,8 +7,8 @@ $factory->define(VendorService::class, function (Faker $faker) {
     return [
         'vendor_id' => $faker->numerify('######'),
         'service_code' => $faker->postcode,
-        'ven_serv_name' => $faker->title,
-        'add_service' => $faker->title,
+        'ven_serv_name' => $faker->text(20),
+        'add_service' => $faker->address,
         'city' => $faker->city,
         'phone_service' => $faker->numerify('########'),
         'fax_service' => $faker->numerify('########'),

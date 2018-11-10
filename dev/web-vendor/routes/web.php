@@ -11,7 +11,7 @@
 |
 */
 
-$router->group(['prefix' => config('wedding.api_prefix')], function () use ($router) {
+$router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('/{any:.*}', 'ApiController@index');
     $router->post('/{any:.*}', 'ApiController@index');
     $router->put('/{any:.*}', 'ApiController@index');

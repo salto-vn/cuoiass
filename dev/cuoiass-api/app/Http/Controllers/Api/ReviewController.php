@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Model\ProReview;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Review\GetRequest;
 use App\Models\Review;
 use App\Repositories\ReviewRepo;
-use Illuminate\Http\Request;
-use App\Http\Resources\ReviewCollection;
 
 class ReviewController extends Controller
 {
@@ -31,16 +30,16 @@ class ReviewController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(GetRequest $request)
     {
-        $offset = (int)$request->get('offset', \Constant::MIN_OFFSET);
+        $page = (int)$request->get('page', \Constant::MIN_PAGE);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
-        $orderBy = $request->get('orderBy', null);
-        $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('sortbyc', null);
+        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $data = $this->reviewRepo->getList($search, $offset, $limit, $orderBy, $sortBy, ['account_id', 'name']);
+        $model = $this->reviewRepo->getListAllData($search, $page, $limit, $orderBy, $sortBy);
 
-        return $this->toJsonPaginate($data);
+        return $this->toJsonPaginate($model);
     }
 
     /**

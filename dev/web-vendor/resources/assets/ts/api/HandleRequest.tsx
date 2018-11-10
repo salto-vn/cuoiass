@@ -5,8 +5,8 @@ const headerOptions = {
     "Accept": "application/json"
 };
 
-export const GetList = async (url: string, page: number = 1, limit: number = 10, columns: string[] = []) => {
-    const fullUrl = `${url}?page=${page}&limit=${limit}${columns.length ? '&columns=' + columns : ''}`;
+export const GetList = async (url: string, page: number = 1, limit: number = 10, sortbyc?: string, sortby?: string, search?: string, columns?: string[]) => {
+    const fullUrl = `${url}?page=${page}&limit=${limit}&sortbyc=${sortbyc}&sortby=${sortby}&search=${search}`;
     const result = await fetch(fullUrl, {
         method: "GET",
         headers: headerOptions,

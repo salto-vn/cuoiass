@@ -1,4 +1,4 @@
-version: '2'
+version: '3.3'
 services:
   cuoi-db:
     build:
@@ -17,6 +17,9 @@ services:
         MYSQL_PASSWORD_1: cass_admin123
     ports:
         - 23306:3306
+    networks:
+        app_net:
+          ipv4_address: 172.30.0.4
   api:
     build:
       dockerfile: docker/api/Dockerfile
@@ -24,6 +27,9 @@ services:
     container_name: cuoi_api
     ports:
       - 1234:80
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.3
     environment:
       APP_NAME: API
       APP_ENV: local
@@ -34,7 +40,7 @@ services:
       LOG_CHANNEL: stack
 
       DB_CONNECTION: mysql
-      DB_HOST: cuoi-db
+      DB_HOST: 172.30.0.4
       DB_PORT: 3306
       DB_DATABASE: cass
       DB_USERNAME: cass_admin
@@ -121,13 +127,16 @@ services:
     container_name: cuoi_vendor
     ports:
       - 1237:80
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.2
     environment:
       APP_NAME: CUSTOMER
       APP_ENV: local
       APP_KEY: base64:5IDClfWg31l/n0lcabxDu2RzVOi2TuzbV4otITTCwtg=
       APP_DEBUG: "true"
       APP_URL: http://localhost:1237
-      API_URL: api
+      API_URL: 172.30.0.3/
       LOG_CHANNEL: stack
 
       BROADCAST_DRIVER: log
@@ -141,3 +150,11 @@ services:
       - ./web-vendor:/var/www/web-vendor
       - ./web-vendor/storage/logs:/var/www/storage/logs
 
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24
+#         gateway: 172.30.0.1

@@ -17643,6 +17643,7 @@ _::-webkit-full-page-media, _:future, :root .page-inner {
 
 .flex .page-inner {
   min-height: calc(100vh - 56px);
+  padding: 10px;
 }
 
 .justify-content-center {

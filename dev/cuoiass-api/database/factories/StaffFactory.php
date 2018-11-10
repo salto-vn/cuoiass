@@ -4,6 +4,8 @@ use App\Models\Staff;
 use Faker\Generator as Faker;
 
 $factory->define(Staff::class, function (Faker $faker) {
+
+
     return [
         'vendor_id' => $faker->numerify('######'),
         'role_id' =>$faker->numerify('#######'),

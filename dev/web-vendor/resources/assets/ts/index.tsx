@@ -4,6 +4,8 @@ import registerServiceWorker from './registerServiceWorker';
 import { Routes } from './routes';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSort } from '@fortawesome/free-solid-svg-icons';
+import { faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -11,7 +13,7 @@ import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
 
-library.add(faStickyNote, faComments, faSort, faCalendarAlt, faEdit, faTrashAlt)
+library.add(faSortUp, faSortDown, faStickyNote, faComments, faSort, faCalendarAlt, faEdit, faTrashAlt)
 
 ReactDOM.render(
   <Routes />,

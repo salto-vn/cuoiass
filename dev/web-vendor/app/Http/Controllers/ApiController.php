@@ -7,26 +7,30 @@ use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
-    {
-        $client = new Client([
-            'base_uri' => 'http://api.wedding.local',
+    {   
+        
+        $base_url = env('API_URL', '127.0.0.1');
+
+        $client = new Client( [
+            'base_uri' => $base_url,
             'http_errors' => false,
             'headers' => [
+                'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
             ]
-        ]);
+        ] );
+        $apinames = explode('/',$request->path());
+        $apiname = $apinames[count($apinames) - 1];
+        $response = $client->request( $request->method(), $apiname,
+            [
+                'json' => $request->input()
+            ] );
 
-        $routeName = str_replace(config('wedding.api_prefix'), '', $request->path());
-        $response = $client->request($request->method(), $routeName, [
-            'json' => $request->input()
-        ]);
+        //return $response->getBody();
 
         return response($response->getBody(), $response->getStatusCode());
     }
+
 }
+
