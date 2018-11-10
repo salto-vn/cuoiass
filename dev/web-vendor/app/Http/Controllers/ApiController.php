@@ -14,6 +14,7 @@ class ApiController extends Controller
 
         $client = new Client( [
             'base_uri' => $base_url,
+            'http_errors' => false,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -23,16 +24,12 @@ class ApiController extends Controller
         $apiname = $apinames[count($apinames) - 1];
         $response = $client->request( $request->method(), $apiname,
             [
-                'json' => $request->query()
+                'json' => $request->input()
             ] );
 
         //return $response->getBody();
 
         return response($response->getBody(), $response->getStatusCode());
-    }
-
-    public  function index1(Request $request){
-
     }
 
 }

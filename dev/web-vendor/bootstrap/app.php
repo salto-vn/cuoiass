@@ -23,7 +23,9 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
+$app->configure('app');
 $app->configure('wedding');
+
 // $app->withFacades();
 
 // $app->withEloquent();

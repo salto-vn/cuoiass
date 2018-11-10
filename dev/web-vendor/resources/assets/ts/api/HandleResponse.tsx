@@ -1,18 +1,18 @@
 interface IHandleResponse {
     isError: boolean;
     message: string;
-    data: any;
+    result: any;
 }
 
 const HandleResponse = async (res: Response) => {
     let isError = true;
-    let data = null;
+    let result = null;
+
     if (res.ok) {
         isError = false;
-        data = await res.json();
+        result = await res.json();
     }
-
-    return { isError, message: res.statusText, data } as IHandleResponse;
+    return { isError, message: res.statusText, result } as IHandleResponse;
 };
 
 export default HandleResponse;

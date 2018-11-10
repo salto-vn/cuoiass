@@ -15,7 +15,7 @@ class ReviewsTableSeeder extends Seeder
         $bookings = \App\Models\Booking::query()->get();
         foreach ($bookings as $booking) {
             $plan = \App\Models\Plan::find($booking['plan_id']);
-            factory(\App\Models\Review::class, 10)->create([
+            factory(\App\Models\Review::class, 1)->create([
                 'prd_id' => $booking['prd_id'],
                 'booked_id' => $booking['booked_id'],
                 'customer_id' => $plan['customer_id'],

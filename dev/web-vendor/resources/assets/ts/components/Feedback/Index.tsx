@@ -4,7 +4,8 @@ import CONSTANT from '../../bootstrap/Constant';
 import { Table, ITh } from '../../common/Grid/Table';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSortUp } from '@fortawesome/free-solid-svg-icons'
-import * as FeedbackApi from '../../api/FeedbackApi';
+import * as HandleRequest from '../../api/HandleRequest';
+import API_URL from '../../bootstrap/Url';
 
 library.add(faSortUp)
 
@@ -22,8 +23,6 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
     public state = {
         isLoading: false,
         limit: CONSTANT.LIMIT,
-        limitPagingor: CONSTANT.LIMIT,
-        offset: CONSTANT.OFFSET,
         feedbackGrid: [],
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
@@ -35,6 +34,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         sortby: 'asc',
         search: '',
         sortedIndex: 0,
+        pageRange: CONSTANT.PAGE_RANGE_DISPLAY
     };
 
 
@@ -47,13 +47,13 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         const sortIcon: string = 'sort';
         var feedbacHeader = [
             { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'msp', title: 'MSP', className: 'col-sm-auto', dataType: 'text', sortClass: sortIcon },
-            { id: 'tsp', title: 'Tên sản phẩm', className: 'col-sm-2', dataType: 'text', sortClass: sortIcon },
-            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'col-sm-auto', sortClass: sortIcon },
-            { id: 'ngay', title: 'Ngày', className: 'col-sm-auto', dataType: 'date', sortClass: sortIcon },
-            { id: 'nd', title: 'Nội dung', className: 'col-sm-3', dataType: 'text', sortClass: sortIcon },
-            { id: 'tl', title: 'Tỷ lệ', className: 'col-sm-1', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'col-sm-auto', dataType: 'none', sortClass: sortIcon }
+            { id: 'msp', title: 'MSP', className: 'w100', dataType: 'text', sortClass: sortIcon },
+            { id: 'tsp', title: 'Tên sản phẩm', className: 'w150', dataType: 'text', sortClass: sortIcon },
+            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'w150', sortClass: sortIcon },
+            { id: 'ngay', title: 'Ngày', className: 'w100', dataType: 'date', sortClass: sortIcon },
+            { id: 'nd', title: 'Nội dung', className: '', dataType: 'text', sortClass: sortIcon },
+            { id: 'tl', title: 'Tỷ lệ', className: 'w100', dataType: 'text', sortClass: sortIcon },
+            { id: '', title: 'Actions', className: 'w100', dataType: 'none', sortClass: sortIcon }
         ];
         this.setState({ feedbacHeader })
         this.getListFeedback();
@@ -66,7 +66,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Render view
      */
     public render() {
-        const { feedbackGrid, isError, totalItem, limit, limitPagingor, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
+        const { feedbackGrid, isError, totalItem, limit, pageRange, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -105,7 +105,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                         totalItem={totalItem}
                                         dataSet={listdata}
                                         limit={limit}
-                                        limitPagingor={limitPagingor} isError={isError}
+                                        pageRange={pageRange} isError={isError}
                                         isLoading={isLoading} errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
                                         canView={true}
@@ -152,7 +152,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
         switch (key) {
             case "msp":
-                sortbyc = "prd_cd33";
+                sortbyc = "prd_cd";
                 break;
             case "tsp":
                 sortbyc = "booked_pro_name";
@@ -214,17 +214,21 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
         this.setState({ isLoading: true });
 
-        const { offset, limit, sortbyc, sortby } = this.state;
-        // Call api get Feedback 
-        const response = await FeedbackApi.GetList('/api/reviews', offset, limit, sortbyc, sortby);
+        const { activePage, limit, sortbyc, sortby } = this.state;
+
+
+        //TODO set request api page, limit
+        // Call api get Feedback
+
+        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
 
         this.setState({
-            feedbackGrid: response.data.data,
-            totalItem: response.data.total,
+            feedbackGrid: response.result.data,
+            totalItem: response.result.total,
             isLoading: false,
         });
     }
@@ -234,12 +238,12 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Return: not need to return set to state is OK
      */
     private handlePageChange = (pageNumber: number) => {
-        const { limit, activePage } = this.state;
+        const { activePage } = this.state;
         if (activePage === pageNumber) {
             return;
         }
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber, offset: (pageNumber - 1) * limit
+            ...prevState, activePage: pageNumber
         }), () => {
 
             this.getListFeedback();

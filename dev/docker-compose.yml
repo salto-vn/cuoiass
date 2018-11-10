@@ -136,7 +136,7 @@ services:
       APP_KEY: base64:5IDClfWg31l/n0lcabxDu2RzVOi2TuzbV4otITTCwtg=
       APP_DEBUG: "true"
       APP_URL: http://localhost:1237
-      API_URL: 172.30.0.3/api/
+      API_URL: 172.30.0.3/
       LOG_CHANNEL: stack
 
       BROADCAST_DRIVER: log

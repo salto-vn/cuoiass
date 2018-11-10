@@ -17,7 +17,7 @@ drop table if exists `admins` cascade;
 create table `admins` (
     `id` int(11) auto_increment not null comment 'id'
   , `email` char(255) not null comment 'email'
-  , `password` varchar(255) not null comment 'password'
+  , `password` char(255) not null comment 'password'
   , `name` varchar(255) comment 'name'
   , `role_id` int(11) not null comment 'role id'
   , `created_by` varchar(255) not null comment 'create user'
@@ -716,7 +716,10 @@ drop table if exists `staffs` cascade;
 create table `staffs` (
     `staff_id` int(11) auto_increment not null comment 'staff'
   , `vendor_id` int(11) not null comment 'vendor id'
+  , `role_id` int(11) NOT NULL comment 'role id'
   , `staff_name` varchar(255) not null comment 'staff name'
+  , `email` char(255) not null comment 'email'
+  , `password` char(255) not null comment 'password'
   , `phone` char(14) comment 'phone'
   , `address` varchar(255) comment 'address'
   , `created_by` varchar(255) not null comment 'create user'
@@ -809,32 +812,6 @@ create table `customers` (
 ) comment 'customer' ;
 
 ##* backuptotemptable
-drop table if exists `accounts` cascade;
-
-##* restorefromtemptable
-create table `accounts` (
-    `account_id` int(11) auto_increment not null comment 'account id'
-  , `role_id` int(11) not null comment 'role'
-  , `email` varchar(255) not null comment 'email'
-  , `password` varchar(255) not null comment 'password'
-  , `staff_id` int(11) not null comment 'staff'
-  , `vendor_id` int(11) not null comment 'vendor id'
-  , `created_by` varchar(255) not null comment 'create user'
-  , `created_at` datetime comment 'create at date time'
-  , `updated_by` varchar(255) comment 'update user'
-  , `updated_at` datetime comment 'update at time'
-  , constraint `accounts_pkc` primary key (`account_id`)
-) comment 'account' ;
-
-alter table `accounts` add unique `accounts_ix1` (`email`) ;
-
-create index `accounts_ix2`
-  on `accounts`(`staff_id`,`vendor_id`);
-
-create index `accounts_ix3`
-  on `accounts`(`role_id`);
-
-##* backuptotemptable
 drop table if exists `roles` cascade;
 
 ##* restorefromtemptable
@@ -885,9 +862,6 @@ alter table `credits`
 
 alter table `credits`
   add constraint `credits_fk3` foreign key (`vendor_id`) references `vendors`(`vendor_id`);
-
-alter table `accounts`
-  add constraint `accounts_fk1` foreign key (`staff_id`,`vendor_id`) references `staffs`(`staff_id`,`vendor_id`);
 
 alter table `analysis`
   add constraint `analysis_fk1` foreign key (`customer_id`) references `customers`(`customer_id`);
@@ -961,6 +935,5 @@ alter table `vendor_services`
 alter table `staffs`
   add constraint `staffs_fk1` foreign key (`vendor_id`) references `vendors`(`vendor_id`);
 
-alter table `accounts`
-  add constraint `accounts_fk2` foreign key (`role_id`) references `roles`(`role_id`);
-ALTER DATABASE cass CHARACTER SET utf8 COLLATE utf8_general_ci;
+alter table `staffs`
+  add constraint `staffs_fk2` foreign key (`role_id`) references `roles`(`role_id`);

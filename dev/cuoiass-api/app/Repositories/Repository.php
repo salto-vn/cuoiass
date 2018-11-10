@@ -46,6 +46,16 @@ abstract class Repository implements IRepository
     }
 
     /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->model->getTable();
+    }
+
+    /**
      * Retrieve data array for populate field select
      * @param string $column
      * @param string|null $key
@@ -72,7 +82,7 @@ abstract class Repository implements IRepository
     /**
      * Retrieve all data of repository, paginated
      *
-     * @param $filter
+     * @param $search
      * @param int $offset
      * @param int|null $limit
      * @param null $orderBy
@@ -193,13 +203,13 @@ abstract class Repository implements IRepository
     /**
      * Save a new entity in repository
      *
-     * @param array $data
+     * @param array $attributes
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(array $data)
+    public function create(array $attributes)
     {
-        return $this->model->newQuery()->create($data);
+        return $this->model->newQuery()->create($attributes);
     }
 
     /**
@@ -435,7 +445,6 @@ abstract class Repository implements IRepository
             $values = explode(';', $search);
             foreach ($values as $value) {
                 $s = explode(':', $value);
-                dump($s);
                 if (count($s) == 1) {
                     return $s[0];
                 }

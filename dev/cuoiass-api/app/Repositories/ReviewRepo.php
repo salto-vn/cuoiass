@@ -10,6 +10,7 @@ namespace App\Repositories;
 
 
 use App\Models\Review;
+use App\Utils\TableName;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
@@ -39,21 +40,36 @@ class ReviewRepo extends Repository
         return $this->list($search, $offset, $limit, $orderBy, $sortBy, $columns);
     }
 
-    public function getListAllData($search, $offset, $limit, $orderBy, $sortBy)
+    /**
+     * @param $search search=email:abc@Gmai.com;ten:duy
+     * @param $page
+     * @param $limit
+     * @param $orderBy
+     * @param $sortBy
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function getListAllData($search, $page, $limit, $orderBy, $sortBy)
     {
-        $fieldsSearchable = $this->model->getFillable();
-        $offset = (int)$offset ? $offset : \Constant::MIN_OFFSET;
-        $limit = (int)$limit ? $limit : \Constant::MIN_LIMiT;
-        $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
-        $total = $this->model->newQuery()->count('review_id');
-        $model = $this->model->newQuery()->select([
-            'reviews.review_id', 'reviews.review_content', 'reviews.review_date',
-            'reviews.review_rate', 'reviews.review_imgs',
-            'bookings.booked_cd', 'bookings.booked_pro_name', 'products.prd_cd',
+        $fieldsSearchable = [
+            'review_id', 'review_content', 'review_date',
+            'review_rate', 'bookings.booked_pro_name', 'products.prd_cd',
             'customers.first_name', 'customers.last_name'
-        ])->join('bookings','reviews.booked_id','=','bookings.booked_id')
-        ->join('customers','reviews.customer_id','=','customers.customer_id')
-        ->join('products','reviews.prd_id','=','products.prd_id');
+        ];
+        $tblReview = TableName::TBL_REVIEWS;
+        $tblBooking = TableName::TBL_BOOKINGS;
+        $tblCustomer = TableName::TBL_CUSTOMERS;
+        $tblProduct = TableName::TBL_PRODUCTS;
+        $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
+        $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
+        $model = $this->model->newQuery()->select([
+            "$tblReview.review_id", "$tblReview.review_content", "$tblReview.review_date",
+            "$tblReview.review_rate", "$tblReview.review_imgs",
+            "$tblBooking.booked_cd", "$tblBooking.booked_pro_name", "$tblProduct.prd_cd",
+            "$tblCustomer.first_name", "$tblCustomer.last_name"
+        ])
+            ->join("$tblBooking", "$tblReview.booked_id", '=', "$tblBooking.booked_id")
+            ->join("$tblCustomer", "$tblReview.customer_id", '=', "$tblCustomer.customer_id")
+            ->join("$tblProduct", "$tblReview.prd_id", '=', "$tblProduct.prd_id");
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
             if ($searchData) {
@@ -67,12 +83,9 @@ class ReviewRepo extends Repository
             }
         }
 
-        $model->skip($offset)->take($limit);
-
-
         if (!empty($orderBy)) {
             $model->orderBy($orderBy, $sortBy);
         }
-        return new Collection(['data'=>$model->get(),'total' => $total]);
+        return $model->paginate($limit, null, null, $page);
     }
 }

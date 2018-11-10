@@ -61,6 +61,7 @@
 
 .flex .page-inner {
     min-height: calc(100vh - 56px);
+    padding: 10px;
 }
 
 .justify-content-center {
@@ -75,11 +76,59 @@
     align-items: center;
 }
 
-.custom-table>thead>tr>th {
-    background-color: #06d79c;
-    color: #ffffff;
+.w200 {
+    width:200px;
+}
+
+.w150 {
+    width:150px;
+}
+.w120 {
+    width:120px;
+}
+
+.w110 {
+    width:110px;
+}
+
+.w105 {
+    width:105px;
+}
+
+.w100 {
+    width:100px;
+}
+
+.w75 {
+    width:75px;
+}
+
+.w70 {
+    width:70px;
+}
+
+.w50 {
+    width:50px;
+}
+
+.w30 {
+    width:30px;
+}
+
+.is-loadding {
+    padding: 0 !important;
+    background: #fff !important;
+    .timeline-item {
+        border: none;
+    }
+}
+
+.custom-table > thead > tr {
+    background-color: #eee
+}
+
+.custom-table > thead > tr > th {
     align-items: center;
-    border-right: 1px solid #ffffff;
     padding: 5px 10px;
     font-weight: 500;
     height: 35px;
@@ -89,12 +138,20 @@
     transition: all .2s ease-in-out;
 }
 
+.custom-table > thead > tr > th > div > svg {
+    margin-left: 5px;
+}
+
 .custom-table>thead>tr>th>input {
     width: 100%;
 }
 
 .custom-table>thead>tr>th:hover {
     cursor: pointer;
+}
+
+.custom-table > tbody > tr > td {
+    vertical-align: middle;
 }
 
 .grid-header {
@@ -127,15 +184,6 @@
     max-height: 40px;
     overflow: hidden;
 }
-
-/* .row-item .item .block-with-text {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-      white-space:nowrap;
-} */
 
 .row-item .item {
     padding: 0 10px;

@@ -13,7 +13,7 @@
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('/{any:.*}', 'ApiController@index');
-    $router->post('/{any:.*}', 'ApiController@store');
+    $router->post('/{any:.*}', 'ApiController@index');
     $router->put('/{any:.*}', 'ApiController@index');
     $router->delete('/{any:.*}', 'ApiController@index');
 });

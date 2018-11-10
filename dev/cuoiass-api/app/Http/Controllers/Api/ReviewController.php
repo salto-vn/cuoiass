@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Model\Review;
+use App\Http\Requests\Review\GetRequest;
+use App\Models\Review;
 use App\Repositories\ReviewRepo;
-use Illuminate\Http\Request;
-use App\Http\Resources\ReviewCollection;
 
 class ReviewController extends Controller
 {
@@ -14,11 +13,11 @@ class ReviewController extends Controller
     /**
      * ReviewRepository
      */
-     private $reviewRepo;
+    private $reviewRepo;
 
     /**
      * AccountController constructor.
-     * @param AccountRepo $accountRepo
+     * @param ReviewRepo $reviewRepo
      */
     public function __construct(ReviewRepo $reviewRepo)
     {
@@ -29,19 +28,18 @@ class ReviewController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return ReviewCollection
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(GetRequest $request)
     {
-        //
-        $offset = (int)$request->get('offset', \Constant::MIN_OFFSET);
+        $page = (int)$request->get('page', \Constant::MIN_PAGE);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
         $orderBy = $request->get('sortbyc', null);
         $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $model = $this->reviewRepo->getListAllData($search, $offset, $limit, $orderBy, $sortBy);
+        $model = $this->reviewRepo->getListAllData($search, $page, $limit, $orderBy, $sortBy);
 
-        return new ReviewCollection($model);
+        return $this->toJsonPaginate($model);
     }
 
     /**
@@ -57,7 +55,7 @@ class ReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -68,7 +66,7 @@ class ReviewController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Review  $review
+     * @param  Review $review
      * @return \Illuminate\Http\Response
      */
     public function show(Review $review)
@@ -79,7 +77,7 @@ class ReviewController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Review  $review
+     * @param  Review $review
      * @return \Illuminate\Http\Response
      */
     public function edit(Review $review)
@@ -90,8 +88,8 @@ class ReviewController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Review  $review
+     * @param  \Illuminate\Http\Request $request
+     * @param  Review $review
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Review $review)
@@ -102,7 +100,7 @@ class ReviewController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Review  $review
+     * @param Review $review
      * @return \Illuminate\Http\Response
      */
     public function destroy(Review $review)

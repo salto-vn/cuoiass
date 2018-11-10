@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CONSTANT from '../../bootstrap/Constant';
 import Pagination from "react-js-pagination";
-import * as WeddingDressApi from '../../api/WeddingDress';
+import * as HandleRequest from '../../api/HandleRequest';
 import LoadingGrid from '../../common/Loading/LoadingGrid';
 import LoadingPaginate from '../../common/Loading/LoadingPaginate';
 import { IWeddingDressState, WeddingModal } from './IWedding';
@@ -11,9 +11,8 @@ const urlGetList = 'api/weddingdress';
 export class WeddingDress extends React.Component<{}, IWeddingDressState> {
     public state = {
         isLoading: false,
-        itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
-        offset: CONSTANT.OFFSET,
+        page: CONSTANT.PAGE,
         weddingGrid: [],
         weddingModel: new WeddingModal(),
         sourceTransport: [],
@@ -24,7 +23,7 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
         activePage: CONSTANT.CURRENT_PAGE
     };
 
-    
+
 
     public async componentDidMount() {
         document.title = 'Áo cưới';
@@ -93,14 +92,14 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
     }
 
     private makeGrid = (data: any, isError: boolean) => {
-        const { errorInfo, isLoading, itemRepeat } = this.state;
+        const { errorInfo, isLoading } = this.state;
 
         if (isError) {
             return <div>{errorInfo}</div>;
         }
 
         if (isLoading) {
-            return <div className="is-loadding"><LoadingGrid itemRepeat={itemRepeat} /></div>;
+            return <div className="is-loadding"><LoadingGrid /></div>;
         }
 
         return data.map((item: any, key: number) =>
@@ -170,16 +169,16 @@ export class WeddingDress extends React.Component<{}, IWeddingDressState> {
     private getListWeddingDress = async () => {
         this.setState({ isLoading: true });
 
-        const { offset, limit } = this.state;
-        const response = await WeddingDressApi.GetList(urlGetList, offset, limit);
+        const { page, limit } = this.state;
+        const response = await HandleRequest.GetList(urlGetList, page, limit);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
 
         this.setState({
-            weddingGrid: response.data.data,
-            totalItem: response.data.meta.total,
+            weddingGrid: response.result.data,
+            totalItem: response.result.total,
             isLoading: false
         });
     }
