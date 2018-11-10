@@ -63,6 +63,7 @@ export interface ISourceProp {
     errorInfo: string;
     limit: number;
     totalItem?: number;
+    pageRange?: number;
     activePage?: number;
     pageClicked?: any;
     filterFlag?: boolean;
@@ -285,7 +286,7 @@ export class Body extends React.Component<IRowState> {
         }
 
         if (isLoading) {
-            return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid itemRepeat={1} /></td></tr></tbody>;
+            return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid /></td></tr></tbody>;
         }
 
         return (
@@ -357,22 +358,30 @@ export class Table extends React.Component<ISourceProp, {}> {
 
     /**
      * Render Pagination
+     * totalItemsCount: Number => Required. Total count of items which you are going to display
+     * onChange: Function => Required. Page change handler. Receive pageNumber as arg
+     * activePage: Number => Default: 1, Required. Active page,
+     * itemsCountPerPage: Defalt: 10, Count of items per page
+     * pageRangeDisplayed: Number => Default 5, Range of pages in paginator, Dislay total button on paginate
      */
     private paginate = () => {
         const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
         const limit: number = Number(this.props.limit);
+        const pageRange: number = Number(this.props.pageRange)
         const isError: boolean = Boolean(this.props.isError);
 
+        console.log(totalItem, limit, activePage);
         if (isError) {
             return null;
         }
 
         return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
             <Pagination
-                pageRangeDisplayed={limit}
-                activePage={activePage}
                 totalItemsCount={totalItem}
+                itemsCountPerPage={limit}
+                pageRangeDisplayed={pageRange}
+                activePage={activePage}
                 onChange={this.handlePageClicked}
             />;
     };

@@ -38,11 +38,10 @@ class StaffRepo extends Repository
      * @param $sortBy
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getList($search, $offset, $limit, $orderBy, $sortBy)
+    public function getList($search, $page, $limit, $orderBy, $sortBy)
     {
         $fieldsSearchable = $this->model->fieldsSearchable();
-        $offset = (int)$offset ? $offset : \Constant::MIN_OFFSET;
-        $limit = (int)$limit ? $limit : \Constant::MIN_LIMiT;
+        $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
         $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
 
         $tblStaff = $this->getTable();
@@ -71,13 +70,16 @@ class StaffRepo extends Repository
             "$tblStaff.email",
             "$tblStaff.address",
             "$tblRole.role_name"
-        ])->skip($offset)->take($limit);
+        ]);
+
 
         if (!empty($orderBy)) {
             $model->orderBy($orderBy, $sortBy);
+        } else {
+            $model->orderByDesc('staff_id');
         }
 
-        return $model->paginate();
+        return $model->paginate($limit, null, null, $page);
     }
 
     /**

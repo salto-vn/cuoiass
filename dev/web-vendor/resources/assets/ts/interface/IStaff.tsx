@@ -25,9 +25,9 @@ export interface IStaffState {
     isLoading: boolean;
     itemRepeat: number;
     limit: number;
-    offset: number;
     isShowModal: boolean;
     totalItem: number;
+    pageRange: number;
     isError: boolean;
     errorInfo: null | string;
     activePage: number;

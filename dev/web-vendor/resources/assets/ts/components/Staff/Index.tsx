@@ -27,9 +27,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         isLoading: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
-        offset: CONSTANT.OFFSET,
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
+        pageRange: CONSTANT.PAGE_RANGE_DISPLAY,
         isError: false,
         errorInfo: '',
         activePage: CONSTANT.CURRENT_PAGE,
@@ -53,7 +53,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, limit, activePage, isLoading, errorInfo, tableHeader } = this.state;
+        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, errorInfo, tableHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -82,12 +82,13 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         headers={tableHeader}
                                         activePage={activePage}
                                         totalItem={totalItem}
+                                        pageRange={pageRange}
                                         dataSet={listdata}
                                         limit={limit} isError={isError}
                                         isLoading={isLoading} errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
-                                        canView={true}
-                                        onView={this.handleView}
+                                        canEdit={true}
+                                        canDelete={true}
                                         filterFlag={true}
                                         onFilter={this.handleFilter}
                                     />
@@ -98,9 +99,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                 </div>
             </>
         );
-    }
-
-    private handleView = (feedbackId: number) => {
     }
 
     private handleSort = () => {
@@ -116,8 +114,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * Set header for table
      */
-    private setTableHeader = () => {
-        const sortIcon: string = 'sort';
+    private setTableHeader = (sortIcon: string = 'sort') => {
         const tableHeader = [
             { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
             { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon },
@@ -135,11 +132,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Return: not need to return set to state is OK
      */
     private getListStaff = async () => {
+        const { activePage, limit } = this.state;
 
-        const { offset, limit } = this.state;
         this.setState({ isLoading: true });
 
-        const response = await HandleRequest.GetList(APP_URL.STAFF, offset, limit);
+        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
@@ -158,15 +155,15 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Return: not need to return set to state is OK
      */
     private handlePageChange = (pageNumber: number) => {
-        const { limit, activePage } = this.state;
+        const { activePage } = this.state;
         if (activePage === pageNumber) {
             return;
         }
 
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber, offset: (pageNumber - 1) * limit
+            ...prevState, activePage: pageNumber
         }), () => {
-            console.log('CALL API');
+            this.getListStaff()
         });
     }
 }

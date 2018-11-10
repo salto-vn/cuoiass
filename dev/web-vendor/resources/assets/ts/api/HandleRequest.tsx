@@ -5,11 +5,13 @@ const headerOptions = {
     "Accept": "application/json"
 };
 
-export const GetList = async (url: string, offset: number = 0, limit: number = 100, columns: string[] = []) => {
-    const result = await fetch(`${url}?offset=${offset}&limit=${limit}&columns=${columns}`, {
+export const GetList = async (url: string, page: number = 1, limit: number = 10, columns: string[] = []) => {
+    const fullUrl = `${url}?page=${page}&limit=${limit}${columns.length ? '&columns=' + columns : ''}`;
+    const result = await fetch(fullUrl, {
         method: "GET",
         headers: headerOptions,
     });
+
     return HandleResponse(result);
 };
 
@@ -50,4 +52,3 @@ export const Destroy = async (url: string) => {
 
     return HandleResponse(result);
 }
-

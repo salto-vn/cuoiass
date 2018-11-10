@@ -149,6 +149,10 @@
     cursor: pointer;
 }
 
+.custom-table > tbody > tr > td {
+    vertical-align: middle;
+}
+
 .grid-header {
     background-color: #06d79c;
     color: #ffffff;

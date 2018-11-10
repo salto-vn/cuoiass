@@ -1,9 +1,10 @@
 const CONSTANT = {
     TOTAL_COUNT: 0,
-    OFFSET: 0,
-    LIMIT: 5,
+    PAGE: 1,
+    LIMIT: 20,
     ITEM_REPEAT: 1,
     CURRENT_PAGE: 1,
+    PAGE_RANGE_DISPLAY: 10, // display number button on paginate
     PAGE_TITLE: 'Quản lý booking'
 };
 

@@ -32,13 +32,13 @@ class StaffController extends Controller
      */
     public function index(Request $request)
     {
-        $offset = (int)$request->get('offset', \Constant::MIN_OFFSET);
+        $page = (int)$request->get('page', \Constant::MIN_PAGE);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
         $orderBy = $request->get('orderBy', null);
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
 
-        $data = $this->staffRepo->getList($search, $offset, $limit, $orderBy, $sortBy);
+        $data = $this->staffRepo->getList($search, $page, $limit, $orderBy, $sortBy);
 
         return $this->toJsonPaginate($data);
     }
