@@ -5,8 +5,9 @@ import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
 import { Table } from '../../common/Grid/Table';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSortUp } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSortUp } from '@fortawesome/free-solid-svg-icons';
+import StaffModal from './Edit';
 
 library.add(faSortUp)
 
@@ -53,7 +54,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, errorInfo, tableHeader } = this.state;
+        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, errorInfo, tableHeader, isShowModal } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -95,6 +96,17 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className="row">
+                        {
+                            isShowModal &&
+                            <StaffModal
+                                modalTitle={"Add title"}
+                                model={this.state.model}
+                                onToggleModal={this.onToggleModal}
+                                onSaveModel={this.onSave}
+                            />
+                        }
                     </div>
                 </div>
             </>
@@ -165,5 +177,23 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }), () => {
             this.getListStaff()
         });
+    }
+
+    private onToggleModal = () => {
+        const { isShowModal } = this.state;
+
+        if (!isShowModal) {
+            document.body.classList.add('modal-open');
+            document.body.style.paddingRight = '17px';
+        } else {
+            document.body.attributes.removeNamedItem('class');
+            document.body.attributes.removeNamedItem('style');
+        }
+
+        this.setState({ isShowModal: !this.state.isShowModal });
+    }
+
+    public onSave = (dataChild: any) => {
+        console.log(dataChild);
     }
 }

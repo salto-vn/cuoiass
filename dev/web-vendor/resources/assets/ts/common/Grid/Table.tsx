@@ -371,7 +371,6 @@ export class Table extends React.Component<ISourceProp, {}> {
         const pageRange: number = Number(this.props.pageRange)
         const isError: boolean = Boolean(this.props.isError);
 
-        console.log(totalItem, limit, activePage);
         if (isError) {
             return null;
         }
