@@ -23,7 +23,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         isLoading: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
-        offset: CONSTANT.OFFSET,
+        page: CONSTANT.PAGE,
         feedbackGrid: [],
         model: new FeedbackModel(),
         isShowModal: false,
@@ -133,8 +133,8 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         ];
 
 
-        //TODO set request api offset, limit
-        // const { offset, limit } = this.state;
+        //TODO set request api page, limit
+        // const { page, limit } = this.state;
         // Call api get Feedback 
         const responses = [
 
@@ -281,10 +281,10 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         }
 
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber, offset: (pageNumber - 1) * limit
+            ...prevState, activePage: pageNumber, page: (pageNumber - 1) * limit
         }), () => {
 
-            //TODO: Hard data waiting for api with request limit, offset, reponse
+            //TODO: Hard data waiting for api with request limit, page, reponse
             if (pageNumber === 1) {
                 this.getListFeedback();
             } else if (pageNumber === 2) {

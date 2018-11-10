@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Select } from '../../common/FormControls/Select';
 import Input from '../../common/FormControls/Input';
-import * as TransportApi from '../../api/Transport';
+import * as HandleRequest from '../../api/HandleRequest';
 import { IWeddingModal } from './IWedding';
 const urlGetListTransport = 'api/transports';
 
@@ -120,14 +120,14 @@ export default class WeddingDressModal extends React.Component<IWeddingDressModa
     }
 
     private getListTransport = async () => {
-        const response = await TransportApi.GetList(urlGetListTransport);
+        const response = await HandleRequest.GetList(urlGetListTransport);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
 
         this.setState({
-            source: response.data.data
-        }, () => this.props.onSaveSource(response.data.data));
+            source: response.result.data
+        }, () => this.props.onSaveSource(response.result.data));
     }
 }

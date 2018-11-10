@@ -44,9 +44,8 @@ export class WeddingModal implements IWeddingModal {
 
 export interface IWeddingDressState {
     isLoading: boolean,
-    itemRepeat: number
     limit: number,
-    offset: number,
+    page: number,
     weddingGrid: IWeddingList[],
     sourceTransport: ISourceDropdown[],
     isShowModal: boolean,

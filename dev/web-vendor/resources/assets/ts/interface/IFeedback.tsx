@@ -43,7 +43,7 @@ export interface IFeedbackState {
     isLoading: boolean,
     itemRepeat: number
     limit: number,
-    offset: number,
+    page: number,
     isShowModal: boolean,
     totalItem: number,
     isError: boolean,

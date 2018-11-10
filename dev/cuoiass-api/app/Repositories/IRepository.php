@@ -4,8 +4,6 @@ namespace App\Repositories;
 
 /**
  * Interface RepositoryInterface
- * @package Prettus\Repository\Contracts
- * @author Anderson Andrade <contato@andersonandra.de>
  */
 interface IRepository
 {
@@ -95,7 +93,7 @@ interface IRepository
      *
      * @param array $attributes
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function create(array $attributes);
 
