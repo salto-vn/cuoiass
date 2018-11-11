@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IStaffState, IStaffList } from '../../interface/IStaff';
+import { IStaffState, IStaffList, IStaffFilter } from '../../interface/IStaff';
 import { StaffModel } from '../../model/StaffModel';
 import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
@@ -8,6 +8,7 @@ import { Table } from '../../common/Grid/Table';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
 import StaffModal from './Edit';
+import { objectToQueryString } from '../../common/Utils';
 
 library.add(faSortUp)
 
@@ -15,9 +16,9 @@ const subjectPage = 'Quản lý nhân viên'; //Header Content page
 
 /**
  * Feedback Screen Component
- * Display Feedback list data, include paging 
+ * Display Staff list data, include paging 
  * Properties: N/A
- * State: Required IFeedbackState , Optional another variale 
+ * State: Required IStaffState , Optional another variale
  */
 export class StaffScreen extends React.Component<{}, IStaffState> {
 
@@ -34,9 +35,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         isError: false,
         errorInfo: '',
         activePage: CONSTANT.CURRENT_PAGE,
-        tableHeader: []
+        tableHeader: [],
+        filters: CONSTANT.UNDEFINED
     };
-
 
     /**
      * Event usualy mount data to State variale
@@ -86,7 +87,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         pageRange={pageRange}
                                         dataSet={listdata}
                                         limit={limit} isError={isError}
-                                        isLoading={isLoading} errorInfo={errorInfo}
+                                        isLoading={isLoading}
+                                        errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
                                         canEdit={true}
                                         canDelete={true}
@@ -113,16 +115,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         );
     }
 
-    private handleSort = () => {
-        console.log('Call API Sort');
-    }
-
-    private handleFilter = async (value: string) => {
-        const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec));
-        await sleep(3000)
-        console.log('filter ' + value);
-    }
-
     /**
      * Set header for table
      */
@@ -144,11 +136,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Return: not need to return set to state is OK
      */
     private getListStaff = async () => {
-        const { activePage, limit } = this.state;
+        const { activePage, limit, filters } = this.state;
 
         this.setState({ isLoading: true });
 
-        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit);
+        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, undefined, undefined, filters);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
@@ -159,7 +151,25 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
             totalItem: response.result.total,
             isLoading: false
         });
+    }
 
+
+    private handleSort = () => {
+        console.log('Call API Sort');
+    }
+
+    /**
+     * @param filtes
+     * 
+     * @return Get list staff
+     */
+    private handleFilter = (filtes: IStaffFilter) => {
+        const filters = objectToQueryString(filtes);
+        this.setState({
+            filters
+        }, () => {
+            this.getListStaff();
+        })
     }
 
     /**

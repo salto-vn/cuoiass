@@ -1,13 +1,27 @@
 import HandleResponse from './HandleResponse';
+import { objectToQueryString } from '../common/Utils';
 
 const headerOptions = {
     "Content-Type": "application/json",
     "Accept": "application/json"
 };
 
+/**
+ * Make request with method get
+ * @method GET
+ * @param url 
+ * @param page 
+ * @param limit 
+ * @param sortbyc 
+ * @param sortby 
+ * @param search 
+ * @param columns 
+ * @return HandleResponse
+ */
 export const GetList = async (url: string, page: number = 1, limit: number = 10, sortbyc?: string, sortby?: string, search?: string, columns?: string[]) => {
-    const fullUrl = `${url}?page=${page}&limit=${limit}&sortbyc=${sortbyc}&sortby=${sortby}&search=${search}`;
-    const result = await fetch(fullUrl, {
+    const params: any = { page, limit, sortbyc, sortby, search };
+    const queryString = objectToQueryString(params, '=', '&');
+    const result = await fetch(`${url}?${queryString}`, {
         method: "GET",
         headers: headerOptions,
     });
@@ -15,6 +29,13 @@ export const GetList = async (url: string, page: number = 1, limit: number = 10,
     return HandleResponse(result);
 };
 
+/**
+ * Function store data
+ * @method POST
+ * @param url 
+ * @param model 
+ * @return HandleResponse
+ */
 export const Store = async (url: string, model: object) => {
     const result = await fetch(`${url}`, {
         method: "POST",
@@ -25,6 +46,12 @@ export const Store = async (url: string, model: object) => {
     return HandleResponse(result);
 };
 
+/**
+ * Function edit
+ * @method GET
+ * @param url 
+ * @return HandleResponse
+ */
 export const Edit = async (url: string) => {
     const result = await fetch(`${url}`, {
         method: "GET",
@@ -34,6 +61,13 @@ export const Edit = async (url: string) => {
     return HandleResponse(result);
 };
 
+/**
+ * Function update
+ * @method GET
+ * @param url 
+ * @param model 
+ * @return HandleResponse
+ */
 export const Update = async (url: string, model: object) => {
     const result = await fetch(`${url}`, {
         method: "PUT",
@@ -44,6 +78,12 @@ export const Update = async (url: string, model: object) => {
     return HandleResponse(result);
 }
 
+/**
+ * Function delete
+ * @method GET
+ * @param url 
+ * @return HandleResponse
+ */
 export const Destroy = async (url: string) => {
     const result = await fetch(`${url}`, {
         method: "DELETE",

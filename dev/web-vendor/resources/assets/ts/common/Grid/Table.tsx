@@ -36,8 +36,8 @@ import LoadingGrid from '../../common/Loading/LoadingGrid';
 import CONSTANT from '../../bootstrap/Constant';
 import LoadingPaginate from '../Loading/LoadingPaginate';
 import Pagination from 'react-js-pagination';
-import DatePicker from 'react-date-picker'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import DatePicker from 'react-date-picker';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * Interface
@@ -142,8 +142,8 @@ export interface IRowState {
 export class Header extends React.Component<IHeader>{
     state = {
         date: undefined,
+        filters: {}
     }
-
 
     onChange = (date: any) => {
         this.setState({
@@ -171,10 +171,23 @@ export class Header extends React.Component<IHeader>{
         }
     }
 
-    handleFilter = (event: any) => {
+    handleGetFilter = (evt: any) => {
         const { onFilter } = this.props;
-        if (typeof onFilter !== "undefined") {
-            this.props.onFilter(event.currentTarget.value);
+        if (typeof onFilter === "undefined") {
+            return;
+        }
+
+        this.setState({
+            filters: {
+                ...this.state.filters,
+                [evt.target.name]: evt.target.value ? evt.target.value : undefined
+            }
+        });
+    }
+
+    handleFilter = (evt: any) => {
+        if (evt.charCode === 13 || evt.type === 'Enter') {
+            this.props.onFilter(this.state.filters);
         }
     }
 
@@ -195,13 +208,13 @@ export class Header extends React.Component<IHeader>{
                 />
             </div>
         } else if (dataType === "list") {
-            return <select onChange={this.handleFilter} id={id} name={id} className="form-control form-select-options">
+            return <select onChange={this.handleGetFilter} onKeyPress={this.handleFilter} id={id} name={id} className="form-control form-select-options">
                 {ds.map((data, key) => (
                     <option key={key}>{data}</option>
                 ))}
             </select>;
         } else if (dataType === "text") {
-            return <input onChange={this.handleFilter} className="form-control" id={id} name={id} type="text" />
+            return <input onChange={this.handleGetFilter} onKeyPress={this.handleFilter} className="form-control" id={id} name={id} type="text" />
         } else if (dataType === "none") {
             return null;
         } else {
@@ -236,7 +249,6 @@ export class Header extends React.Component<IHeader>{
         );
     }
 }
-
 
 /**
  * Body Class
@@ -313,7 +325,6 @@ export class Body extends React.Component<IRowState> {
     }
 }
 
-
 /**
  * Table Class
  * Display Table
@@ -328,6 +339,10 @@ export class Body extends React.Component<IRowState> {
  */
 export class Table extends React.Component<ISourceProp, {}> {
 
+    public state = {
+        isFilterOrSort: false
+    }
+
     public render() {
         const { headers, dataSet, desc, onSort, headerClass, filterFlag } = this.props;
         const isLoading: boolean = Boolean(this.props.isLoading);
@@ -338,11 +353,11 @@ export class Table extends React.Component<ISourceProp, {}> {
         const errorInfo: string = String(this.props.errorInfo);
 
         return (<div className="table-responsive">
-            <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
+            <table id="tabledata" className="table table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
                 <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
                 <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
             </table>
-            <div className="text-center">{this.paginate()}</div>
+            <div className="text-center">{this.paginate(isLoading, dataSet)}</div>
         </div>
         )
     }
@@ -363,7 +378,7 @@ export class Table extends React.Component<ISourceProp, {}> {
      * itemsCountPerPage: Defalt: 10, Count of items per page
      * pageRangeDisplayed: Number => Default 5, Range of pages in paginator, Dislay total button on paginate
      */
-    private paginate = () => {
+    private paginate = (isLoading: boolean, dataSet: Array<string[]>) => {
         const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
         const pageRange: number = Number(this.props.pageRange)
@@ -373,6 +388,7 @@ export class Table extends React.Component<ISourceProp, {}> {
         if (isError) {
             return null;
         }
+
         return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
             <Pagination
                 totalItemsCount={totalItem}

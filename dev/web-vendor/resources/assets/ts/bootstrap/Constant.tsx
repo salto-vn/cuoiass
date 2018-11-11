@@ -5,7 +5,8 @@ const CONSTANT = {
     ITEM_REPEAT: 1,
     CURRENT_PAGE: 1,
     PAGE_RANGE_DISPLAY: 10, // display number button on paginate
-    PAGE_TITLE: 'Quản lý booking'
+    PAGE_TITLE: 'Quản lý booking',
+    UNDEFINED: undefined
 };
 
 export default CONSTANT;
