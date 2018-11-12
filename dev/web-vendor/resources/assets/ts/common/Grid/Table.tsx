@@ -33,7 +33,7 @@
 
 import * as React from 'react'
 import LoadingGrid from '../../common/Loading/LoadingGrid';
-import CONSTANT from '../../bootstrap/Constant';
+// import CONSTANT from '../../bootstrap/Constant';
 import LoadingPaginate from '../Loading/LoadingPaginate';
 import Pagination from 'react-js-pagination';
 import DatePicker from 'react-date-picker'
@@ -142,19 +142,27 @@ export interface IRowState {
 export class Header extends React.Component<IHeader>{
     state = {
         date: undefined,
+        time: 0
     }
 
 
     onChange = (date: any) => {
+        var d = new Date(date);
+
+        const { onFilter } = this.props;
+        if (typeof onFilter !== "undefined") {
+            if (d.getFullYear() === 1970) {
+                this.props.onFilter('', 'ngay');
+            } else {
+                var month = d.getMonth() + 1;
+                this.props.onFilter(d.getDate() + '-' + month + '-' + d.getFullYear(), 'ngay');
+            }
+        }
+
         this.setState({
             date: date,
         });
 
-        const { onFilter } = this.props;
-
-        if (typeof onFilter !== "undefined") {
-            this.props.onFilter(date);
-        }
     }
 
     /**
@@ -173,9 +181,19 @@ export class Header extends React.Component<IHeader>{
 
     handleFilter = (event: any) => {
         const { onFilter } = this.props;
-        if (typeof onFilter !== "undefined") {
-            this.props.onFilter(event.currentTarget.value);
-        }
+        const { time } = this.state;
+        clearTimeout(time);
+        // Make a new timeout set to go off in 800ms
+        var that = this;
+        var value = event.currentTarget.value;
+        var id = event.currentTarget.id;
+        const timeout = setTimeout(function () {
+            if (typeof onFilter !== "undefined") {
+                that.props.onFilter(value, id);
+            }
+        }, 800);
+        this.setState({ time: timeout });
+
     }
 
     /**
@@ -184,11 +202,12 @@ export class Header extends React.Component<IHeader>{
     private renderHeaderInputElement = (dataType: string, id: string, dataSet?: string[]) => {
         const ds: string[] = dataSet as string[];
         const calIcon = <FontAwesomeIcon icon="calendar-alt" />
+        const clearIcon = <FontAwesomeIcon icon="times" />
         if (dataType === "date") {
             return <div>
                 <DatePicker className="form-control react-date-picker-header"
                     name={id}
-                    clearIcon={null}
+                    clearIcon={clearIcon}
                     calendarIcon={calIcon}
                     onChange={this.onChange}
                     value={this.state.date}
@@ -201,13 +220,14 @@ export class Header extends React.Component<IHeader>{
                 ))}
             </select>;
         } else if (dataType === "text") {
-            return <input onChange={this.handleFilter} className="form-control" id={id} name={id} type="text" />
+            return <input onKeyUp={this.handleFilter} className="form-control" id={id} name={id} type="text" />
         } else if (dataType === "none") {
             return null;
         } else {
             return null;
         }
     }
+
 
     public render() {
         const { className, dataSet, filterFlag } = this.props;
@@ -290,6 +310,10 @@ export class Body extends React.Component<IRowState> {
             return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid /></td></tr></tbody>;
         }
 
+        if (dataSet.length == 0) {
+            return <tbody><tr><td colSpan={colsNo}>Không có dữ liệu</td></tr></tbody>;
+        }
+
         return (
             <tbody>
                 {
@@ -369,11 +393,12 @@ export class Table extends React.Component<ISourceProp, {}> {
         const pageRange: number = Number(this.props.pageRange)
         const isError: boolean = Boolean(this.props.isError);
         const limit: number = Number(this.props.limit);
+        const isLoading: boolean = Boolean(this.props.isLoading);
 
         if (isError) {
             return null;
         }
-        return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
+        return isLoading ? <LoadingPaginate width={300} height={30} /> :
             <Pagination
                 totalItemsCount={totalItem}
                 itemsCountPerPage={limit}

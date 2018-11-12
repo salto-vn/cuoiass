@@ -6992,6 +6992,28 @@ var headerOptions = {
     "Content-Type": "application/json",
     "Accept": "application/json"
 };
+exports.findOne = function (url, id, columns) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var fullUrl, result;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                fullUrl = "";
+                if (columns == undefined) {
+                    fullUrl = url + "?id=" + id;
+                }
+                else {
+                    fullUrl = url + "?id=" + id + "&columns=" + columns;
+                }
+                return [4 /*yield*/, fetch(fullUrl, {
+                        method: "GET",
+                        headers: headerOptions,
+                    })];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, HandleResponse_1.default(result)];
+        }
+    });
+}); };
 exports.GetList = function (url, page, limit, sortbyc, sortby, search, columns) {
     if (page === void 0) { page = 1; }
     if (limit === void 0) { limit = 10; }
@@ -8551,7 +8573,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(2);
 var React = tslib_1.__importStar(__webpack_require__(0));
 var LoadingGrid_1 = tslib_1.__importDefault(__webpack_require__(43));
-var Constant_1 = tslib_1.__importDefault(__webpack_require__(15));
+// import CONSTANT from '../../bootstrap/Constant';
 var LoadingPaginate_1 = tslib_1.__importDefault(__webpack_require__(44));
 var react_js_pagination_1 = tslib_1.__importDefault(__webpack_require__(41));
 var react_date_picker_1 = tslib_1.__importDefault(__webpack_require__(102));
@@ -8569,15 +8591,23 @@ var Header = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.state = {
             date: undefined,
+            time: 0
         };
         _this.onChange = function (date) {
+            var d = new Date(date);
+            var onFilter = _this.props.onFilter;
+            if (typeof onFilter !== "undefined") {
+                if (d.getFullYear() === 1970) {
+                    _this.props.onFilter('', 'ngay');
+                }
+                else {
+                    var month = d.getMonth() + 1;
+                    _this.props.onFilter(d.getDate() + '-' + month + '-' + d.getFullYear(), 'ngay');
+                }
+            }
             _this.setState({
                 date: date,
             });
-            var onFilter = _this.props.onFilter;
-            if (typeof onFilter !== "undefined") {
-                _this.props.onFilter(date);
-            }
         };
         /**
          * Change Page click event
@@ -8594,9 +8624,18 @@ var Header = /** @class */ (function (_super) {
         };
         _this.handleFilter = function (event) {
             var onFilter = _this.props.onFilter;
-            if (typeof onFilter !== "undefined") {
-                _this.props.onFilter(event.currentTarget.value);
-            }
+            var time = _this.state.time;
+            clearTimeout(time);
+            // Make a new timeout set to go off in 800ms
+            var that = _this;
+            var value = event.currentTarget.value;
+            var id = event.currentTarget.id;
+            var timeout = setTimeout(function () {
+                if (typeof onFilter !== "undefined") {
+                    that.props.onFilter(value, id);
+                }
+            }, 800);
+            _this.setState({ time: timeout });
         };
         /**
          * Reader header input element
@@ -8604,15 +8643,16 @@ var Header = /** @class */ (function (_super) {
         _this.renderHeaderInputElement = function (dataType, id, dataSet) {
             var ds = dataSet;
             var calIcon = React.createElement(react_fontawesome_1.FontAwesomeIcon, { icon: "calendar-alt" });
+            var clearIcon = React.createElement(react_fontawesome_1.FontAwesomeIcon, { icon: "times" });
             if (dataType === "date") {
                 return React.createElement("div", null,
-                    React.createElement(react_date_picker_1.default, { className: "form-control react-date-picker-header", name: id, clearIcon: null, calendarIcon: calIcon, onChange: _this.onChange, value: _this.state.date }));
+                    React.createElement(react_date_picker_1.default, { className: "form-control react-date-picker-header", name: id, clearIcon: clearIcon, calendarIcon: calIcon, onChange: _this.onChange, value: _this.state.date }));
             }
             else if (dataType === "list") {
                 return React.createElement("select", { onChange: _this.handleFilter, id: id, name: id, className: "form-control form-select-options" }, ds.map(function (data, key) { return (React.createElement("option", { key: key }, data)); }));
             }
             else if (dataType === "text") {
-                return React.createElement("input", { onChange: _this.handleFilter, className: "form-control", id: id, name: id, type: "text" });
+                return React.createElement("input", { onKeyUp: _this.handleFilter, className: "form-control", id: id, name: id, type: "text" });
             }
             else if (dataType === "none") {
                 return null;
@@ -8694,6 +8734,11 @@ var Body = /** @class */ (function (_super) {
                     React.createElement("td", { colSpan: colsNo, className: 'is-loadding' },
                         React.createElement(LoadingGrid_1.default, null))));
         }
+        if (dataSet.length == 0) {
+            return React.createElement("tbody", null,
+                React.createElement("tr", null,
+                    React.createElement("td", { colSpan: colsNo }, "Kh\u00F4ng c\u00F3 d\u1EEF li\u1EC7u")));
+        }
         return (React.createElement("tbody", null, dataSet.map(function (rows, key) { return (React.createElement("tr", { role: "row", key: key }, rows.map(function (d, k) {
             return k < rows.length - 1 ?
                 React.createElement("td", { key: k }, d) :
@@ -8746,10 +8791,11 @@ var Table = /** @class */ (function (_super) {
             var pageRange = Number(_this.props.pageRange);
             var isError = Boolean(_this.props.isError);
             var limit = Number(_this.props.limit);
+            var isLoading = Boolean(_this.props.isLoading);
             if (isError) {
                 return null;
             }
-            return totalItem === Constant_1.default.TOTAL_COUNT ? React.createElement(LoadingPaginate_1.default, { width: 300, height: 30 }) :
+            return isLoading ? React.createElement(LoadingPaginate_1.default, { width: 300, height: 30 }) :
                 React.createElement(react_js_pagination_1.default, { totalItemsCount: totalItem, itemsCountPerPage: limit, pageRangeDisplayed: pageRange, activePage: activePage, onChange: _this.handlePageClicked });
         };
         return _this;
@@ -10297,7 +10343,8 @@ var free_solid_svg_icons_5 = __webpack_require__(5);
 var free_solid_svg_icons_6 = __webpack_require__(5);
 var free_solid_svg_icons_7 = __webpack_require__(5);
 var free_solid_svg_icons_8 = __webpack_require__(5);
-fontawesome_svg_core_1.library.add(free_solid_svg_icons_2.faSortUp, free_solid_svg_icons_3.faSortDown, free_solid_svg_icons_8.faStickyNote, free_solid_svg_icons_7.faComments, free_solid_svg_icons_1.faSort, free_solid_svg_icons_4.faCalendarAlt, free_solid_svg_icons_5.faEdit, free_solid_svg_icons_6.faTrashAlt);
+var free_solid_svg_icons_9 = __webpack_require__(5);
+fontawesome_svg_core_1.library.add(free_solid_svg_icons_9.faTimes, free_solid_svg_icons_2.faSortUp, free_solid_svg_icons_3.faSortDown, free_solid_svg_icons_8.faStickyNote, free_solid_svg_icons_7.faComments, free_solid_svg_icons_1.faSort, free_solid_svg_icons_4.faCalendarAlt, free_solid_svg_icons_5.faEdit, free_solid_svg_icons_6.faTrashAlt);
 ReactDOM.render(React.createElement(routes_1.Routes, null), document.getElementById('root'));
 registerServiceWorker_1.default();
 
@@ -35301,7 +35348,7 @@ var Feedback = /** @class */ (function (_super) {
             activePage: Constant_1.default.CURRENT_PAGE,
             sortbyc: 'review_id',
             sortby: 'asc',
-            search: '',
+            search: [],
             sortedIndex: 0,
             pageRange: Constant_1.default.PAGE_RANGE_DISPLAY
         };
@@ -35332,29 +35379,7 @@ var Feedback = /** @class */ (function (_super) {
             else {
                 sortby = 'desc';
             }
-            switch (key) {
-                case "msp":
-                    sortbyc = "prd_cd";
-                    break;
-                case "tsp":
-                    sortbyc = "booked_pro_name";
-                    break;
-                case "tnd":
-                    sortbyc = "first_name";
-                    break;
-                case "ngay":
-                    sortbyc = "review_date";
-                    break;
-                case "nd":
-                    sortbyc = "review_content";
-                    break;
-                case "tl":
-                    sortbyc = "review_rate";
-                    break;
-                default:
-                    sortbyc = "review_id";
-                    break;
-            }
+            sortbyc = _this.convertCol(key);
             return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { sortbyc: sortbyc, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index })); }, function () {
                 _this.getListFeedback();
             });
@@ -35362,18 +35387,27 @@ var Feedback = /** @class */ (function (_super) {
         _this.handleView = function (feedbackId) {
             _this.props.history.push("/feedback/" + feedbackId);
         };
-        _this.handleFilter = function (value) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-            var sleep;
+        _this.handleFilter = function (value, id) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var search, col, exitsFlag;
+            var _this = this;
             return tslib_1.__generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        sleep = function (msec) { return new Promise(function (resolve) { return setTimeout(resolve, msec); }); };
-                        return [4 /*yield*/, sleep(3000)];
-                    case 1:
-                        _a.sent();
-                        console.log('filter ' + value);
-                        return [2 /*return*/];
+                search = this.state.search;
+                col = this.convertCol(id);
+                exitsFlag = true;
+                search.forEach(function (item, index) {
+                    if (item.indexOf(col) >= 0) {
+                        if (value === '') {
+                            exitsFlag = false;
+                        }
+                        search.splice(index, 1);
+                    }
+                });
+                if (exitsFlag) {
+                    search.push(col + ":" + value);
                 }
+                return [2 /*return*/, this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { search: search })); }, function () {
+                        _this.getListFeedback();
+                    })];
             });
         }); };
         _this.handleDisplayNoPage = function (event) {
@@ -35391,13 +35425,13 @@ var Feedback = /** @class */ (function (_super) {
          * Return: not need to return set to state is OK
          */
         _this.getListFeedback = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-            var _a, activePage, limit, sortbyc, sortby, response;
+            var _a, activePage, limit, sortbyc, sortby, search, response;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         this.setState({ isLoading: true });
-                        _a = this.state, activePage = _a.activePage, limit = _a.limit, sortbyc = _a.sortbyc, sortby = _a.sortby;
-                        return [4 /*yield*/, HandleRequest.GetList(Url_1.default.REVIEW, activePage, limit, sortbyc, sortby)];
+                        _a = this.state, activePage = _a.activePage, limit = _a.limit, sortbyc = _a.sortbyc, sortby = _a.sortby, search = _a.search;
+                        return [4 /*yield*/, HandleRequest.GetList(Url_1.default.REVIEW, activePage, limit, sortbyc, sortby, search.join(";"))];
                     case 1:
                         response = _b.sent();
                         if (response.isError) {
@@ -35424,6 +35458,33 @@ var Feedback = /** @class */ (function (_super) {
             return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { activePage: pageNumber })); }, function () {
                 _this.getListFeedback();
             });
+        };
+        _this.convertCol = function (id) {
+            var sortbyc;
+            switch (id) {
+                case "msp":
+                    sortbyc = "products.prd_cd";
+                    break;
+                case "tsp":
+                    sortbyc = "bookings.booked_pro_name";
+                    break;
+                case "tnd":
+                    sortbyc = "customers.first_name";
+                    break;
+                case "ngay":
+                    sortbyc = "review_date";
+                    break;
+                case "nd":
+                    sortbyc = "review_content";
+                    break;
+                case "tl":
+                    sortbyc = "review_rate";
+                    break;
+                default:
+                    sortbyc = "review_id";
+                    break;
+            }
+            return sortbyc;
         };
         return _this;
     }
@@ -40389,10 +40450,10 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
                                         React.createElement("div", { className: "m-t-md" },
                                             React.createElement("form", { className: "form-inline" },
                                                 React.createElement("div", { className: "row" },
-                                                    React.createElement("div", { className: "form-group col-md-6" },
+                                                    React.createElement("div", { className: "form-group col-md-11" },
                                                         React.createElement("label", { className: "no-m" }, "Tr\u1EA3 l\u1EDDi:"),
                                                         React.createElement("br", null),
-                                                        React.createElement("textarea", { cols: 90, rows: 5 }))),
+                                                        React.createElement("textarea", { style: { width: "100%" }, rows: 5 }))),
                                                 React.createElement("div", null,
                                                     React.createElement("button", { type: "button", id: "add-row", className: "btn btn-success" }, "L\u01B0u")))))))))),
                 React.createElement("div", { className: "row" }, isShowImageModal && React.createElement(ViewImageModal, { image: image, onToggle: this.onToggle }))));

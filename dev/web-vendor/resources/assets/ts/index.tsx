@@ -11,9 +11,10 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 
-library.add(faSortUp, faSortDown, faStickyNote, faComments, faSort, faCalendarAlt, faEdit, faTrashAlt)
+library.add(faTimes, faSortUp, faSortDown, faStickyNote, faComments, faSort, faCalendarAlt, faEdit, faTrashAlt)
 
 ReactDOM.render(
   <Routes />,
