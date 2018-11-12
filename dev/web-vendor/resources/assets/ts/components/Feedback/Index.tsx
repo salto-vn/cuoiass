@@ -32,7 +32,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         activePage: CONSTANT.CURRENT_PAGE,
         sortbyc: 'review_id',
         sortby: 'asc',
-        search: '',
+        search: [],
         sortedIndex: 0,
         pageRange: CONSTANT.PAGE_RANGE_DISPLAY
     };
@@ -150,29 +150,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
             sortby = 'desc';
         }
 
-        switch (key) {
-            case "msp":
-                sortbyc = "prd_cd";
-                break;
-            case "tsp":
-                sortbyc = "booked_pro_name";
-                break;
-            case "tnd":
-                sortbyc = "first_name";
-                break;
-            case "ngay":
-                sortbyc = "review_date";
-                break;
-            case "nd":
-                sortbyc = "review_content";
-                break;
-            case "tl":
-                sortbyc = "review_rate";
-                break;
-            default:
-                sortbyc = "review_id";
-                break;
-        }
+        sortbyc = this.convertCol(key);
 
         return this.setState((prevState) => ({
             ...prevState, sortbyc: sortbyc, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
@@ -186,10 +164,33 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         this.props.history.push("/feedback/" + feedbackId);
     }
 
-    private handleFilter = async (value: string) => {
-        const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec));
-        await sleep(3000)
-        console.log('filter ' + value);
+    private handleFilter = async (value: string, id: string) => {
+        //search=email:abc@Gmai.com;ten:duy
+        const search: string[] = this.state.search;
+        const col: string = this.convertCol(id);
+        var exitsFlag = true;
+        search.forEach((item, index) => {
+            if (item.indexOf(col) >= 0) {
+                if (value === '') {
+                    exitsFlag = false;
+                }
+                search.splice(index, 1);
+
+            }
+        });
+
+        if (exitsFlag) {
+            search.push(col + ":" + value);
+        }
+
+
+
+        return this.setState((prevState) => ({
+            ...prevState, search: search
+        }), () => {
+
+            this.getListFeedback();
+        });
     }
 
     private handleDisplayNoPage = (event: any) => {
@@ -214,13 +215,13 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
         this.setState({ isLoading: true });
 
-        const { activePage, limit, sortbyc, sortby } = this.state;
+        const { activePage, limit, sortbyc, sortby, search } = this.state;
 
 
         //TODO set request api page, limit
         // Call api get Feedback
 
-        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby);
+        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby, search.join(";"));
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
@@ -250,5 +251,33 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         });
     }
 
+    private convertCol = (id: string) => {
+        var sortbyc;
+        switch (id) {
+            case "msp":
+                sortbyc = "products.prd_cd";
+                break;
+            case "tsp":
+                sortbyc = "bookings.booked_pro_name";
+                break;
+            case "tnd":
+                sortbyc = "customers.first_name";
+                break;
+            case "ngay":
+                sortbyc = "review_date";
+                break;
+            case "nd":
+                sortbyc = "review_content";
+                break;
+            case "tl":
+                sortbyc = "review_rate";
+                break;
+            default:
+                sortbyc = "review_id";
+                break;
+        }
+
+        return sortbyc;
+    }
 
 }

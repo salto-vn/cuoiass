@@ -5,6 +5,22 @@ const headerOptions = {
     "Accept": "application/json"
 };
 
+export const findOne = async (url: string, id: string, columns?: string[]) => {
+    var fullUrl: string = "";
+    if (columns == undefined) {
+        fullUrl = `${url}?id=${id}`;
+    } else {
+        fullUrl = `${url}?id=${id}&columns=${columns}`;
+    }
+
+    const result = await fetch(fullUrl, {
+        method: "GET",
+        headers: headerOptions,
+    });
+
+    return HandleResponse(result);
+};
+
 export const GetList = async (url: string, page: number = 1, limit: number = 10, sortbyc?: string, sortby?: string, search?: string, columns?: string[]) => {
     const fullUrl = `${url}?page=${page}&limit=${limit}&sortbyc=${sortbyc}&sortby=${sortby}&search=${search}`;
     const result = await fetch(fullUrl, {

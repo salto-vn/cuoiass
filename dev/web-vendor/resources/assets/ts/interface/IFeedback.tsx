@@ -65,13 +65,14 @@ export interface IFeedbackState {
     feedbacHeader: ITh[],
     sortbyc: string,
     sortby: string,
-    search: string
+    search: string[],
     sortedIndex: number,
-    pageRange:number,
+    pageRange: number,
 }
 
 export interface IVFeedbackState {
     model: any,
     isShowImageModal: boolean,
-    image: string
+    image: string,
+    id: string
 }

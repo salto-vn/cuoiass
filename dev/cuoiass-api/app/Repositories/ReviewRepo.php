@@ -77,8 +77,25 @@ class ReviewRepo extends Repository
                     if (!in_array($field, $fieldsSearchable)) {
                         continue;
                     }
-                    $value = addslashes($value);
-                    $model->where($field, 'like', "%{$value}%");
+                    if ($field == "review_date") {
+                        if (!empty($value)) {
+                            $model->whereDate($field, '=', Carbon::createFromFormat('d-m-Y', $value));
+                        }
+                    } else if ($field == "$tblCustomer.first_name") {
+                        $value = addslashes($value);
+                        if (!empty($value)) {
+                            $model->where(function ($query) use ($value, $tblCustomer) {
+                                $query->where("$tblCustomer.last_name", "like",  "%{$value}%")
+                                    ->orWhere("$tblCustomer.first_name", 'like',  "%{$value}%");
+                            });
+                        }
+                    } else {
+                        $value = addslashes($value);
+                        if (!empty($value)) {
+                            $model->where($field, 'like', "%{$value}%");
+                        }
+                    }
+
                 }
             }
         }
