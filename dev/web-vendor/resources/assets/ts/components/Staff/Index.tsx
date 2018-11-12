@@ -5,6 +5,7 @@ import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
 import { Table } from '../../common/Grid/Table';
+import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
 import StaffModal from './Edit';
@@ -78,6 +79,16 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                             <div className="panel panel-white">
                                 <div className="panel-heading flex justify-content-between align-items-center">
                                     <h4 className="panel-title">Danh sách nhân viên</h4>
+                                    <div>
+                                        <DisplayNoPage
+                                            onChange={this.handleDisplayNoPage}
+                                            name={'perpage'}
+                                            addClass={'w60 form-control'}
+                                            options={[10, 20, 50, 100]}
+                                            displayDefault={10}
+                                            selectedValue={limit}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="panel-body">
                                     <Table
@@ -189,6 +200,15 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }), () => {
             this.getListStaff()
         });
+    }
+
+    /**
+     * @event Change perpage
+     * 
+     * @return Get list staff
+     */
+    private handleDisplayNoPage = (limit: number) => {
+        this.setState({ limit }, () => this.getListStaff());
     }
 
     /**

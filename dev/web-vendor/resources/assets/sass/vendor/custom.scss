@@ -107,6 +107,10 @@
     width:70px;
 }
 
+.w60 {
+    width: 60px;
+}
+
 .w50 {
     width:50px;
 }
@@ -121,6 +125,10 @@
     .timeline-item {
         border: none;
     }
+}
+
+.table-responsive {
+    min-height: calc(100vh - 260px);
 }
 
 .custom-table > thead > tr {
