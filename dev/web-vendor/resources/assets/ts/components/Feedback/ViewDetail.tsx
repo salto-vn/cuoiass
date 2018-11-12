@@ -4,6 +4,8 @@ import { FeedbackModel } from '../../model/FeedbackModel';
 import { Carousel } from 'react-responsive-carousel';
 import { StartRate } from '../../common/FormControls/StarRate';
 import { Link } from 'react-router-dom';
+import * as HandleRequest from '../../api/HandleRequest';
+import API_URL from '../../bootstrap/Url';
 
 export class ViewImageModal extends React.Component<{ image: string, onToggle: any }, {}>{
 
@@ -40,38 +42,41 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
     public state = {
         model: new FeedbackModel(),
         isShowImageModal: false,
-        image: ''
+        image: '',
+        id: this.props.match.params.id
     }
 
-    componentDidMount() {
-        const params: any = this.props.match.params;
+    async componentDidMount() {
+        const { id } = this.state;
 
         //TODO: Hard Data
-        const response = {
-            feedbackId: params.id,
-            date: '2018-12-12',
-            title: 'Feedback Title',
-            content: 'Review content, Good Job!,',
-            images: ['https://apod.nasa.gov/apod/image/1502/HDR_MVMQ20Feb2015ouellet1024.jpg', 'http://apod.nasa.gov/apod/image/1502/2015_02_20_conj_bourque1024.jpg'],
-            rate: 4.5,
-            product: {
-                id: '1',
-                product_code: 'ABC001',
-                name: 'Product Name',
-                description: 'descriptiondescription',
-                image_urls: ['https://connec-place.com/wp-content/uploads/2018/08/2018-08-30-15.17.22.jpg', '']
-            },
-            customer: {
-                id: '1',
-                name: 'Ngo Tuan Anh2',
-                email: 'ngoanh@mulodo.com'
-            },
-            booking: {
-                id: 'CAS-0001',
-                booked_date: '2018-12-12',
-                activate_date: '2018-12-12',
-            }
-        };
+        // const response = {
+        //     feedbackId: params.id,
+        //     date: '2018-12-12',
+        //     title: 'Feedback Title',
+        //     content: 'Review content, Good Job!,',
+        //     images: ['https://apod.nasa.gov/apod/image/1502/HDR_MVMQ20Feb2015ouellet1024.jpg', 'http://apod.nasa.gov/apod/image/1502/2015_02_20_conj_bourque1024.jpg'],
+        //     rate: 4.5,
+        //     product: {
+        //         id: '1',
+        //         product_code: 'ABC001',
+        //         name: 'Product Name',
+        //         description: 'descriptiondescription',
+        //         image_urls: ['https://connec-place.com/wp-content/uploads/2018/08/2018-08-30-15.17.22.jpg', '']
+        //     },
+        //     customer: {
+        //         id: '1',
+        //         name: 'Ngo Tuan Anh2',
+        //         email: 'ngoanh@mulodo.com'
+        //     },
+        //     booking: {
+        //         id: 'CAS-0001',
+        //         booked_date: '2018-12-12',
+        //         activate_date: '2018-12-12',
+        //     }
+        // };
+
+        const response = await HandleRequest.findOne(API_URL.REVIEW, id);
 
         let model = Object.assign(new FeedbackModel(), response);
         this.setState({
@@ -175,9 +180,9 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
                                         <div className="m-t-md">
                                             <form className="form-inline">
                                                 <div className="row">
-                                                    <div className="form-group col-md-6">
+                                                    <div className="form-group col-md-11">
                                                         <label className="no-m">Trả lời:</label><br></br>
-                                                        <textarea cols={90} rows={5} ></textarea>
+                                                        <textarea style={{ width: "100%" }} rows={5} ></textarea>
                                                     </div>
                                                 </div>
                                                 <div>

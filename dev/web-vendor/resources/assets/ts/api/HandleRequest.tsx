@@ -7,6 +7,31 @@ const headerOptions = {
 };
 
 /**
+ * Fine one by id and select dynamic columns
+ * @method GET
+ * @param url 
+ * @param id 
+ * @param columns 
+ * 
+ * @return HandleResponse
+ */
+export const findOne = async (url: string, id: string, columns?: string[]) => {
+    var fullUrl: string = "";
+    if (columns == undefined) {
+        fullUrl = `${url}?id=${id}`;
+    } else {
+        fullUrl = `${url}?id=${id}&columns=${columns}`;
+    }
+
+    const result = await fetch(fullUrl, {
+        method: "GET",
+        headers: headerOptions,
+    });
+
+    return HandleResponse(result);
+};
+
+/**
  * Make request with method get
  * @method GET
  * @param url 
@@ -16,8 +41,10 @@ const headerOptions = {
  * @param sortby 
  * @param search 
  * @param columns 
+ * 
  * @return HandleResponse
  */
+
 export const GetList = async (url: string, page: number = 1, limit: number = 10, sortbyc?: string, sortby?: string, search?: string, columns?: string[]) => {
     const params: any = { page, limit, sortbyc, sortby, search };
     const queryString = objectToQueryString(params, '=', '&');
@@ -50,6 +77,7 @@ export const Store = async (url: string, model: object) => {
  * Function edit
  * @method GET
  * @param url 
+ * 
  * @return HandleResponse
  */
 export const Edit = async (url: string) => {
@@ -64,8 +92,9 @@ export const Edit = async (url: string) => {
 /**
  * Function update
  * @method GET
- * @param url 
- * @param model 
+ * @param url
+ * @param model
+ * 
  * @return HandleResponse
  */
 export const Update = async (url: string, model: object) => {
@@ -82,6 +111,7 @@ export const Update = async (url: string, model: object) => {
  * Function delete
  * @method GET
  * @param url 
+ * 
  * @return HandleResponse
  */
 export const Destroy = async (url: string) => {

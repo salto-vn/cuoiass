@@ -20,8 +20,8 @@ class ApiController extends Controller
                 'Accept' => 'application/json',
             ]
         ] );
-        $apinames = explode('/',$request->path());
-        $apiname = $apinames[count($apinames) - 1];
+
+        $apiname = str_replace('api/','',$request->path());
         $response = $client->request( $request->method(), $apiname,
             [
                 'json' => $request->input()

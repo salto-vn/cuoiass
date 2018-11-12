@@ -33,7 +33,6 @@
 
 import * as React from 'react'
 import LoadingGrid from '../../common/Loading/LoadingGrid';
-import CONSTANT from '../../bootstrap/Constant';
 import LoadingPaginate from '../Loading/LoadingPaginate';
 import Pagination from 'react-js-pagination';
 import DatePicker from 'react-date-picker';
@@ -143,19 +142,8 @@ export interface IRowState {
 export class Header extends React.Component<IHeader>{
     state = {
         date: undefined,
-        filters: {}
-    }
-
-    onChange = (date: any) => {
-        this.setState({
-            date: date,
-        });
-
-        const { onFilter } = this.props;
-
-        if (typeof onFilter !== "undefined") {
-            this.props.onFilter(date);
-        }
+        filters: {},
+        time: 0
     }
 
     /**
@@ -186,10 +174,37 @@ export class Header extends React.Component<IHeader>{
         });
     }
 
+
     handleFilter = (evt: any) => {
         if (evt.charCode === 13 || evt.type === 'Enter') {
             this.props.onFilter(this.state.filters);
         }
+    }
+
+    /**
+     * Set state for current date and callback filters
+     * 
+     * @param name: string of datepicker
+     * @param date: any, selected date of datepicker
+     * @callback onFilter
+     * @return filters
+     */
+    onChangeDate = (name: string, date: any) => {
+        const d = new Date(date);
+
+        if (d.getFullYear() === 1970) {
+            return;
+        }
+
+        const newDate = [d.getDate(), d.getMonth() + 1, d.getFullYear()].join('-');
+
+        this.setState({
+            date,
+            filters: {
+                ...this.state.filters,
+                [name]: newDate ? newDate : undefined
+            }
+        }, () => this.props.onFilter(this.state.filters));
     }
 
     /**
@@ -198,18 +213,19 @@ export class Header extends React.Component<IHeader>{
     private renderHeaderInputElement = (dataType: string, id: string, dataSet?: string[]) => {
         const ds: string[] = dataSet as string[];
         const calIcon = <FontAwesomeIcon icon="calendar-alt" />
+        const clearIcon = <FontAwesomeIcon icon="times" />;
         if (dataType === "date") {
             return <div>
                 <DatePicker className="form-control react-date-picker-header"
                     name={id}
-                    clearIcon={null}
+                    clearIcon={clearIcon}
                     calendarIcon={calIcon}
-                    onChange={this.onChange}
+                    onChange={this.onChangeDate.bind(this, id)}
                     value={this.state.date}
                 />
             </div>
         } else if (dataType === "list") {
-            return <select onChange={this.handleGetFilter} onKeyPress={this.handleFilter} id={id} name={id} className="form-control form-select-options">
+            return <select onChange={this.handleGetFilter} id={id} name={id} className="form-control form-select-options">
                 {ds.map((data, key) => (
                     <option key={key}>{data}</option>
                 ))}
@@ -222,6 +238,7 @@ export class Header extends React.Component<IHeader>{
             return null;
         }
     }
+
 
     public render() {
         const { className, dataSet, filterFlag } = this.props;
@@ -296,11 +313,15 @@ export class Body extends React.Component<IRowState> {
         const canView: boolean = Boolean(this.props.canView);
         const canDelete: boolean = Boolean(this.props.canDelete);
         if (isError) {
-            return <tbody><tr><td>{errorInfo}</td></tr></tbody>;
+            return <tbody><tr className={'flex-full-height'}><td colSpan={colsNo}>{errorInfo}</td></tr></tbody>;
         }
 
         if (isLoading) {
             return <tbody><tr><td colSpan={colsNo} className='is-loadding'><LoadingGrid /></td></tr></tbody>;
+        }
+
+        if (dataSet.length == 0) {
+            return <tbody><tr className={'flex-full-height'}><td colSpan={colsNo}>Không có dữ liệu</td></tr></tbody>;
         }
 
         return (
@@ -354,14 +375,15 @@ export class Table extends React.Component<ISourceProp, {}> {
         const canDelete: boolean = Boolean(this.props.canDelete);
         const errorInfo: string = String(this.props.errorInfo);
 
-        return (<div className="table-responsive">
-            <table id="tabledata" className="table table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
-                <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
-                <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
-            </table>
-            <div className="text-center">{this.paginate(isLoading, isCLickPaginate)}</div>
-        </div>
-        )
+        return (
+            <div className="table-responsive">
+                <table id="tabledata" className="table table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
+                    <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
+                    <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
+                </table>
+                <div className="text-center">{this.paginate(isLoading, isCLickPaginate)}</div>
+            </div>
+        );
     }
 
     /**
@@ -391,12 +413,11 @@ export class Table extends React.Component<ISourceProp, {}> {
             return null;
         }
 
-        console.log(isLoading, isCLickPaginate);
         if (isLoading && !isCLickPaginate) {
             return <LoadingPaginate width={300} height={30} />;
         }
 
-        if (totalItem === CONSTANT.TOTAL_COUNT) {
+        if (totalItem === 0) {
             return null;
         }
 
