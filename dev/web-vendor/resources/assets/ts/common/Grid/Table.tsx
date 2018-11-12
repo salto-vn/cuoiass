@@ -59,6 +59,7 @@ export interface ISourceProp {
     dataSet: Array<string[]>;
     desc: string;
     isLoading: boolean;
+    isCLickPaginate: boolean;
     isError: boolean;
     errorInfo: string;
     limit: number;
@@ -346,6 +347,7 @@ export class Table extends React.Component<ISourceProp, {}> {
     public render() {
         const { headers, dataSet, desc, onSort, headerClass, filterFlag } = this.props;
         const isLoading: boolean = Boolean(this.props.isLoading);
+        const isCLickPaginate: boolean = Boolean(this.props.isCLickPaginate);
         const isError: boolean = Boolean(this.props.isError);
         const canEdit: boolean = Boolean(this.props.canEdit);
         const canView: boolean = Boolean(this.props.canView);
@@ -357,7 +359,7 @@ export class Table extends React.Component<ISourceProp, {}> {
                 <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
                 <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
             </table>
-            <div className="text-center">{this.paginate(isLoading, dataSet)}</div>
+            <div className="text-center">{this.paginate(isLoading, isCLickPaginate)}</div>
         </div>
         )
     }
@@ -378,7 +380,7 @@ export class Table extends React.Component<ISourceProp, {}> {
      * itemsCountPerPage: Defalt: 10, Count of items per page
      * pageRangeDisplayed: Number => Default 5, Range of pages in paginator, Dislay total button on paginate
      */
-    private paginate = (isLoading: boolean, dataSet: Array<string[]>) => {
+    private paginate = (isLoading: boolean, isCLickPaginate: boolean) => {
         const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
         const pageRange: number = Number(this.props.pageRange)
@@ -389,13 +391,21 @@ export class Table extends React.Component<ISourceProp, {}> {
             return null;
         }
 
-        return totalItem === CONSTANT.TOTAL_COUNT ? <LoadingPaginate width={300} height={30} /> :
-            <Pagination
-                totalItemsCount={totalItem}
-                itemsCountPerPage={limit}
-                pageRangeDisplayed={pageRange}
-                activePage={activePage}
-                onChange={this.handlePageClicked}
-            />;
+        console.log(isLoading, isCLickPaginate);
+        if (isLoading && !isCLickPaginate) {
+            return <LoadingPaginate width={300} height={30} />;
+        }
+
+        if (totalItem === CONSTANT.TOTAL_COUNT) {
+            return null;
+        }
+
+        return <Pagination
+            totalItemsCount={totalItem}
+            itemsCountPerPage={limit}
+            pageRangeDisplayed={pageRange}
+            activePage={activePage}
+            onChange={this.handlePageClicked}
+        />;
     };
 }

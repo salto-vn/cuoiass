@@ -27,6 +27,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         staffGrid: [],
         model: new StaffModel(),
         isLoading: false,
+        isCLickPaginate: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
         isShowModal: false,
@@ -55,7 +56,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, errorInfo, tableHeader, isShowModal } = this.state;
+        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, tableHeader, isShowModal } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -88,6 +89,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         dataSet={listdata}
                                         limit={limit} isError={isError}
                                         isLoading={isLoading}
+                                        isCLickPaginate={isCLickPaginate}
                                         errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
                                         canEdit={true}
@@ -153,12 +155,12 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         });
     }
 
-
     private handleSort = () => {
         console.log('Call API Sort');
     }
 
     /**
+     * Set state for array filters and isCLickPaginate to make it paginate
      * @param filtes
      * 
      * @return Get list staff
@@ -166,7 +168,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     private handleFilter = (filtes: IStaffFilter) => {
         const filters = objectToQueryString(filtes);
         this.setState({
-            filters
+            filters, isCLickPaginate: false
         }, () => {
             this.getListStaff();
         })
@@ -183,12 +185,15 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber
+            ...prevState, activePage: pageNumber, isCLickPaginate: true
         }), () => {
             this.getListStaff()
         });
     }
 
+    /**
+     * Show popup modal
+     */
     private onToggleModal = () => {
         const { isShowModal } = this.state;
 
@@ -203,6 +208,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({ isShowModal: !this.state.isShowModal });
     }
 
+    /**
+     * Save model
+     */
     public onSave = (dataChild: any) => {
         console.log(dataChild);
     }

@@ -31,6 +31,7 @@ export interface IStaffFilter {
 export interface IStaffState {
     staffGrid: IStaffList[];
     isLoading: boolean;
+    isCLickPaginate: boolean;
     itemRepeat: number;
     limit: number;
     isShowModal: boolean;
