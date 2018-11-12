@@ -50,7 +50,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.getListStaff();
     }
 
-
     /**
      * Render event will be run first time, 
      * on initial this Component 
@@ -83,7 +82,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         <DisplayNoPage
                                             onChange={this.handleDisplayNoPage}
                                             name={'perpage'}
-                                            addClass={'w60 form-control'}
+                                            addClass={'w60 form-control pd6'}
                                             options={[10, 20, 50, 100]}
                                             displayDefault={10}
                                             selectedValue={limit}

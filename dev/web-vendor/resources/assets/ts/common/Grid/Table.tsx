@@ -147,19 +147,20 @@ export class Header extends React.Component<IHeader>{
     }
 
     /**
-     * Change Page click event
+     * @event Change Page click event
      * call event via properties
      */
-    handleSortClicked = (event: React.SyntheticEvent<HTMLElement>) => {
+    handleSortClicked = (key: any, index: any) => {
         const { onSort } = this.props;
-        const key = event.currentTarget.getAttribute('data-key');
-        const index = event.currentTarget.getAttribute('data-index');
         //Call event onSort if have set
         if (typeof onSort !== "undefined") {
             this.props.onSort(key, index);
         }
     }
 
+    /**
+     * @event Get all filter and set state: filters
+     */
     handleGetFilter = (evt: any) => {
         const { onFilter } = this.props;
         if (typeof onFilter === "undefined") {
@@ -174,7 +175,10 @@ export class Header extends React.Component<IHeader>{
         });
     }
 
-
+    /**
+     * @param evt: any
+     * @event onFilter through props
+     */
     handleFilter = (evt: any) => {
         if (evt.charCode === 13 || evt.type === 'Enter') {
             this.props.onFilter(this.state.filters);
@@ -209,21 +213,22 @@ export class Header extends React.Component<IHeader>{
 
     /**
      * Reader header input element
+     * @param (dataType: string
+     * @param id: string
+     * @param dataSet: undefined or string[]
      */
     private renderHeaderInputElement = (dataType: string, id: string, dataSet?: string[]) => {
         const ds: string[] = dataSet as string[];
         const calIcon = <FontAwesomeIcon icon="calendar-alt" />
         const clearIcon = <FontAwesomeIcon icon="times" />;
         if (dataType === "date") {
-            return <div>
-                <DatePicker className="form-control react-date-picker-header"
-                    name={id}
-                    clearIcon={clearIcon}
-                    calendarIcon={calIcon}
-                    onChange={this.onChangeDate.bind(this, id)}
-                    value={this.state.date}
-                />
-            </div>
+            return <DatePicker className="form-control react-date-picker-header"
+                name={id}
+                clearIcon={clearIcon}
+                calendarIcon={calIcon}
+                onChange={this.onChangeDate.bind(this, id)}
+                value={this.state.date}
+            />;
         } else if (dataType === "list") {
             return <select onChange={this.handleGetFilter} id={id} name={id} className="form-control form-select-options">
                 {ds.map((data, key) => (
@@ -239,7 +244,6 @@ export class Header extends React.Component<IHeader>{
         }
     }
 
-
     public render() {
         const { className, dataSet, filterFlag } = this.props;
         return (
@@ -247,7 +251,7 @@ export class Header extends React.Component<IHeader>{
                 <tr role="row" key={0}>
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
-                            <div onClick={this.handleSortClicked} data-key={thdata.id} data-index={key}>
+                            <div onClick={() => this.handleSortClicked(thdata.id, key)} data-key={thdata.id} data-index={key}>
                                 {thdata.title}
                                 {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
                             </div>
@@ -280,7 +284,8 @@ export class Header extends React.Component<IHeader>{
 export class Body extends React.Component<IRowState> {
     /**
      * Change Page click event
-     * call event via properties
+     * @param event: any
+     * @event call event via properties
      */
     handleViewClicked = (event: any) => {
         const { onView } = this.props;
@@ -290,6 +295,11 @@ export class Body extends React.Component<IRowState> {
         }
     }
 
+    /**
+      * Change Page click event
+      * @param event: any
+      * @event call event via properties
+      */
     handleEditClicked = (event: any) => {
         const { onEdit } = this.props;
         if (typeof onEdit !== "undefined") {
@@ -298,6 +308,11 @@ export class Body extends React.Component<IRowState> {
         }
     }
 
+    /**
+      * Change Page click event
+      * @param event: any
+      * @event call event via properties
+      */
     handleDeleteClicked = (event: any) => {
         const { onDelete } = this.props;
         if (typeof onDelete !== "undefined") {
@@ -305,7 +320,6 @@ export class Body extends React.Component<IRowState> {
             this.props.onDelete(id);
         }
     }
-
 
     public render() {
         const { dataSet, isError, isLoading, errorInfo, colsNo } = this.props;
@@ -338,7 +352,6 @@ export class Body extends React.Component<IRowState> {
                                         {canDelete === true ? <a data-index={d} onClick={this.handleDeleteClicked} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
                                     </td>
                             )}
-
                         </tr>
                     ))
                 }
@@ -388,7 +401,8 @@ export class Table extends React.Component<ISourceProp, {}> {
 
     /**
      * Change Page click event
-     * Call event via properties
+     * @param event: any
+     * @event Call event via properties
      */
     private handlePageClicked = (event: any) => {
         this.props.pageClicked(event);
@@ -401,6 +415,9 @@ export class Table extends React.Component<ISourceProp, {}> {
      * activePage: Number => Default: 1, Required. Active page,
      * itemsCountPerPage: Defalt: 10, Count of items per page
      * pageRangeDisplayed: Number => Default 5, Range of pages in paginator, Dislay total button on paginate
+     * @param isLoading: boolean
+     * @param isCLickPaginate: boolean
+     * @return null | <LoadingPaginate /> | <Pagination />
      */
     private paginate = (isLoading: boolean, isCLickPaginate: boolean) => {
         const activePage = Number(this.props.activePage);

@@ -5,71 +5,90 @@ namespace App\Http\Controllers;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
+
 class ApiController extends Controller
 {
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
+        $baseUrl = env('API_URL', '127.0.0.1');
         $client = new Client([
-            'base_uri' => 'http://api.wedding.local',
+            'base_uri' => $baseUrl,
             'http_errors' => false,
             'headers' => [
                 'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
+                'Content-Type' => 'application/json',
+            ],
         ]);
 
-        $routeName = str_replace(config('wedding.api_prefix'), '', $request->path());
-        $input = $this->convertColumns($routeName, $request->input());
+        $routeName = str_replace(config('wedding.api_prefix').'/', '', $request->path());
+        $input = $this->convertColumns($routeName, array_filter($request->input()));
         $response = $client->request($request->method(), $routeName, [
-            'json' => $input
+            'json' => $input,
         ]);
 
         return response($response->getBody(), $response->getStatusCode());
     }
 
     /**
-     * @param $key
+     * @param $apiName
      * @param $input
      */
-    private function convertColumns($key, $input)
+    private function convertColumns($apiName, $params)
     {
-        switch (trim($key, '/')) {
+        switch (trim($apiName, '/')) {
             case 'reviews':
-                return $this->changeReviewsColumns($input);
+                $columns = $this->reviewColumns();
+                return $this->buildSearchColumn($params, $columns);
             default:
                 break;
         }
     }
 
     /**
-     * @param $input
+     * @param $params
+     * @param $columns
+     * @return mixed
      */
-    private function changeReviewsColumns($input)
+    public function buildSearchColumn($params, $columns)
     {
-        if (!isset($input['search'])) {
-            return $input;
+        if (isset($params['sortbyc'])) {
+            $params['sortbyc'] = $columns[$params['sortbyc']];
         }
 
-        $columns = [
+        if (!isset($params['search'])) {
+            return $params;
+        }
+
+        $strParam = '';
+        foreach (explode(';', $params['search']) as $item) {
+            [$key, $value] = explode(':', $item);
+            $arrParam[$columns[$key]] = $value;
+            $strParam .= $columns[$key].':'.$value.';';
+        }
+
+        $params['search'] = trim($strParam, ';');
+        return $params;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    private function reviewColumns()
+    {
+        return [
             'msp' => 'products.prd_cd',
             'tsp' => 'bookings.booked_pro_name',
             'tnd' => 'customers.first_name',
             'ngay' => 'review_date',
             'nd' => 'review_content',
-            'tl' => 'review_rate'
+            'tl' => 'review_rate',
+            'review_id' => 'review_id',
         ];
-
-        $newInput = [];
-        foreach (explode(';', $input['search']) as $item) {
-            [$key, $value] = explode(':', $item);
-            $newInput[$columns[$key]] = $value;
-        }
-
-        dd($newInput);
-        //return
     }
 }

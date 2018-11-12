@@ -8,7 +8,6 @@ import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
 import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { objectToQueryString } from '../../common/Utils';
-// import { objectToQueryString } from '../../common/Utils';
 
 library.add(faSortUp)
 
@@ -41,7 +40,6 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         pageRange: CONSTANT.PAGE_RANGE_DISPLAY
     };
 
-
     /**
      * Event usualy mount data to State variale
      */
@@ -62,7 +60,6 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         this.setState({ feedbacHeader })
         this.getListFeedback();
     }
-
 
     /**
      * Render event will be run first time, 
@@ -96,7 +93,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                         <DisplayNoPage
                                             onChange={this.handleDisplayNoPage}
                                             name={'perpage'}
-                                            addClass={'w60 form-control'}
+                                            addClass={'w60 form-control pd6'}
                                             options={[10, 20, 50, 100]}
                                             displayDefault={10}
                                             selectedValue={limit}
@@ -131,8 +128,9 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
     private handleSort = (key: any, index: any) => {
         const feedbacHeader: ITh[] = this.state.feedbacHeader;
-        var sortClass = feedbacHeader[index].sortClass;
+        let sortClass = feedbacHeader[index].sortClass;
         const { sortedIndex } = this.state;
+
         feedbacHeader[sortedIndex].sortClass = "sort";
         switch (sortClass) {
             case "sort":
@@ -149,18 +147,15 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                 break;
         }
 
-        let sortbyc: string = "";
         let sortby: string = "";
-        if ((sortClass == "sort") || (sortClass == "sort-up")) {
+        if ((sortClass === "sort") || (sortClass === "sort-up")) {
             sortby = 'asc';
         } else {
             sortby = 'desc';
         }
 
-        // sortbyc = this.convertCol(key);
-
         return this.setState((prevState) => ({
-            ...prevState, sortbyc: sortbyc, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+            ...prevState, sortbyc: key, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
         }), () => {
 
             this.getListFeedback();
@@ -188,33 +183,6 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         })
     }
 
-    // private handleFilter = async (value: string, id: string) => {
-    //     //search=email:abc@Gmai.com;ten:duy
-    //     const search: string[] = this.state.search;
-    //     const col: string = this.convertCol(id);
-    //     var exitsFlag = true;
-    //     search.forEach((item, index) => {
-    //         if (item.indexOf(col) >= 0) {
-    //             if (value === '') {
-    //                 exitsFlag = false;
-    //             }
-    //             search.splice(index, 1);
-
-    //         }
-    //     });
-
-    //     if (exitsFlag) {
-    //         search.push(col + ":" + value);
-    //     }
-
-    //     return this.setState((prevState) => ({
-    //         ...prevState, search: search
-    //     }), () => {
-
-    //         this.getListFeedback();
-    //     });
-    // }
-
     /**
      * Set state for limit
      * 
@@ -229,15 +197,11 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Return: not need to return set to state is OK
      */
     private getListFeedback = async () => {
-
         this.setState({ isLoading: true });
-
         const { activePage, limit, sortbyc, sortby, search } = this.state;
-
 
         //TODO set request api page, limit
         // Call api get Feedback
-
         const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby, search);
 
         if (response.isError) {
@@ -267,34 +231,4 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
             this.getListFeedback();
         });
     }
-
-    // private convertCol = (id: string) => {
-    //     var sortbyc;
-    //     switch (id) {
-    //         case "msp":
-    //             sortbyc = "products.prd_cd";
-    //             break;
-    //         case "tsp":
-    //             sortbyc = "bookings.booked_pro_name";
-    //             break;
-    //         case "tnd":
-    //             sortbyc = "customers.first_name";
-    //             break;
-    //         case "ngay":
-    //             sortbyc = "review_date";
-    //             break;
-    //         case "nd":
-    //             sortbyc = "review_content";
-    //             break;
-    //         case "tl":
-    //             sortbyc = "review_rate";
-    //             break;
-    //         default:
-    //             sortbyc = "review_id";
-    //             break;
-    //     }
-
-    //     return sortbyc;
-    // }
-
 }
