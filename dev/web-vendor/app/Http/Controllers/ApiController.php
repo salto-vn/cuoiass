@@ -34,9 +34,11 @@ class ApiController extends Controller
         return response($response->getBody(), $response->getStatusCode());
     }
 
+
     /**
      * @param $apiName
-     * @param $input
+     * @param $params
+     * @return mixed
      */
     private function convertColumns($apiName, $params)
     {

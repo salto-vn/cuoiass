@@ -75,13 +75,19 @@ export const Store = async (url: string, model: object) => {
 
 /**
  * Function edit
- * @method GET
  * @param url 
- * 
- * @return HandleResponse
+ * @param id 
  */
-export const Edit = async (url: string) => {
-    const result = await fetch(`${url}`, {
+
+/**
+* Function edit
+* @method GET
+* @param url 
+* 
+* @return HandleResponse
+*/
+export const Edit = async (url: string, id: number | string) => {
+    const result = await fetch(`${url}/${id}/edit`, {
         method: "GET",
         headers: headerOptions,
     });

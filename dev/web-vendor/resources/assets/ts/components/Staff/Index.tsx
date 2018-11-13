@@ -26,7 +26,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     // inital state varialble using in this Component, 
     public state = {
         staffGrid: [],
-        model: new StaffModel(),
+        model: new StaffModel,
         isLoading: false,
         isCLickPaginate: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
@@ -166,6 +166,31 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         });
     }
 
+    private handleEdit = async (id: string | number) => {
+        const response = await HandleRequest.Edit(APP_URL.STAFF, id);
+
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message });
+        }
+
+        // console.log(response.result);
+        // this.setState({
+        //     model: { ...this.state.model, response.result }
+        // });
+
+    }
+
+    private handleDelete = (id: any) => {
+        console.log(id);
+    }
+
+    /**
+     * Save model
+     */
+    public onSave = (dataChild: any) => {
+        console.log(dataChild);
+    }
+
     private handleSort = () => {
         console.log('Call API Sort');
     }
@@ -226,20 +251,5 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         this.setState({ isShowModal: !this.state.isShowModal });
-    }
-
-    private handleEdit = (id: string | number) => {
-        console.log(id);
-    }
-
-    private handleDelete = (id: any) => {
-        console.log(id);
-    }
-
-    /**
-     * Save model
-     */
-    public onSave = (dataChild: any) => {
-        console.log(dataChild);
     }
 }
