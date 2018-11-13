@@ -20,9 +20,18 @@ export interface IStaffList {
     role_name: string;
 }
 
+export interface IStaffFilter {
+    staff_name?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+    role_name?: string;
+}
+
 export interface IStaffState {
     staffGrid: IStaffList[];
     isLoading: boolean;
+    isCLickPaginate: boolean;
     itemRepeat: number;
     limit: number;
     isShowModal: boolean;
@@ -32,4 +41,5 @@ export interface IStaffState {
     errorInfo: null | string;
     activePage: number;
     tableHeader: ITh[];
+    filters?: string
 };

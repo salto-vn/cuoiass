@@ -6,6 +6,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSortUp } from '@fortawesome/free-solid-svg-icons'
 import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
+import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
+import { objectToQueryString } from '../../common/Utils';
 
 library.add(faSortUp)
 
@@ -22,6 +24,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
     // inital state varialble using in this Component, 
     public state = {
         isLoading: false,
+        isCLickPaginate: false,
         limit: CONSTANT.LIMIT,
         feedbackGrid: [],
         isShowModal: false,
@@ -32,11 +35,10 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         activePage: CONSTANT.CURRENT_PAGE,
         sortbyc: 'review_id',
         sortby: 'asc',
-        search: [],
+        search: CONSTANT.UNDEFINED,
         sortedIndex: 0,
         pageRange: CONSTANT.PAGE_RANGE_DISPLAY
     };
-
 
     /**
      * Event usualy mount data to State variale
@@ -59,14 +61,13 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         this.getListFeedback();
     }
 
-
     /**
      * Render event will be run first time, 
      * on initial this Component 
      * Render view
      */
     public render() {
-        const { feedbackGrid, isError, totalItem, limit, pageRange, activePage, isLoading, errorInfo, feedbacHeader } = this.state;
+        const { feedbackGrid, isError, totalItem, limit, pageRange, activePage, isLoading, isCLickPaginate, errorInfo, feedbacHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -89,12 +90,14 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                 <div className="panel-heading flex justify-content-between align-items-center ">
                                     <span className="panel-title">Danh sách phản hồi: Có {totalItem} PH</span>
                                     <div>
-                                        <select onChange={this.handleDisplayNoPage} className="form-control">
-                                            <option value="10">10</option>
-                                            <option value="20">20</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </select>
+                                        <DisplayNoPage
+                                            onChange={this.handleDisplayNoPage}
+                                            name={'perpage'}
+                                            addClass={'w60 form-control pd6'}
+                                            options={[10, 20, 50, 100]}
+                                            displayDefault={10}
+                                            selectedValue={limit}
+                                        />
                                     </div>
                                 </div>
                                 <div className="panel-body">
@@ -105,11 +108,13 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                         totalItem={totalItem}
                                         dataSet={listdata}
                                         limit={limit}
-                                        pageRange={pageRange} isError={isError}
-                                        isLoading={isLoading} errorInfo={errorInfo}
+                                        pageRange={pageRange}
+                                        isLoading={isLoading} isCLickPaginate={isCLickPaginate}
+                                        isError={isError} errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
-                                        canView={true}
-                                        onView={this.handleView}
+                                        canView={true} onView={this.handleView}
+                                        canEdit={false}
+                                        canDelete={false}
                                         filterFlag={true}
                                         onFilter={this.handleFilter}
                                     />
@@ -124,8 +129,9 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
 
     private handleSort = (key: any, index: any) => {
         const feedbacHeader: ITh[] = this.state.feedbacHeader;
-        var sortClass = feedbacHeader[index].sortClass;
+        let sortClass = feedbacHeader[index].sortClass;
         const { sortedIndex } = this.state;
+
         feedbacHeader[sortedIndex].sortClass = "sort";
         switch (sortClass) {
             case "sort":
@@ -142,18 +148,15 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                 break;
         }
 
-        let sortbyc: string = "";
         let sortby: string = "";
-        if ((sortClass == "sort") || (sortClass == "sort-up")) {
+        if ((sortClass === "sort") || (sortClass === "sort-up")) {
             sortby = 'asc';
         } else {
             sortby = 'desc';
         }
 
-        sortbyc = this.convertCol(key);
-
         return this.setState((prevState) => ({
-            ...prevState, sortbyc: sortbyc, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+            ...prevState, sortbyc: key, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
         }), () => {
 
             this.getListFeedback();
@@ -164,45 +167,29 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         this.props.history.push("/feedback/" + feedbackId);
     }
 
-    private handleFilter = async (value: string, id: string) => {
-        //search=email:abc@Gmai.com;ten:duy
-        const search: string[] = this.state.search;
-        const col: string = this.convertCol(id);
-        var exitsFlag = true;
-        search.forEach((item, index) => {
-            if (item.indexOf(col) >= 0) {
-                if (value === '') {
-                    exitsFlag = false;
-                }
-                search.splice(index, 1);
 
-            }
-        });
-
-        if (exitsFlag) {
-            search.push(col + ":" + value);
-        }
-
-        return this.setState((prevState) => ({
-            ...prevState, search: search
-        }), () => {
-
+    /**
+    * Set state for array filters and isCLickPaginate to make it paginate
+    * @param filtes
+    * 
+    * @return Get list staff
+    */
+    private handleFilter = (filtes: any) => {
+        const search = objectToQueryString(filtes);
+        this.setState({
+            search, isCLickPaginate: false
+        }, () => {
             this.getListFeedback();
-        });
+        })
     }
 
-    private handleDisplayNoPage = (event: any) => {
-        const { limit, activePage } = this.state;
-        let selectedValue = event.currentTarget.value;
-        if (limit === selectedValue) {
-            return;
-        }
-        return this.setState((prevState) => ({
-            ...prevState, limit: selectedValue, offset: (activePage - 1) * limit
-        }), () => {
-
-            this.getListFeedback();
-        });
+    /**
+     * Set state for limit
+     * 
+     * @event handleDisplayNoPage
+     */
+    private handleDisplayNoPage = (limit: number) => {
+        this.setState({ limit }, () => this.getListFeedback());
     }
 
     /**
@@ -210,16 +197,12 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
      * Return: not need to return set to state is OK
      */
     private getListFeedback = async () => {
-
         this.setState({ isLoading: true });
-
         const { activePage, limit, sortbyc, sortby, search } = this.state;
-
 
         //TODO set request api page, limit
         // Call api get Feedback
-
-        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby, search.join(";"));
+        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage, limit, sortbyc, sortby, search);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
@@ -248,34 +231,4 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
             this.getListFeedback();
         });
     }
-
-    private convertCol = (id: string) => {
-        var sortbyc;
-        switch (id) {
-            case "msp":
-                sortbyc = "products.prd_cd";
-                break;
-            case "tsp":
-                sortbyc = "bookings.booked_pro_name";
-                break;
-            case "tnd":
-                sortbyc = "customers.first_name";
-                break;
-            case "ngay":
-                sortbyc = "review_date";
-                break;
-            case "nd":
-                sortbyc = "review_content";
-                break;
-            case "tl":
-                sortbyc = "review_rate";
-                break;
-            default:
-                sortbyc = "review_id";
-                break;
-        }
-
-        return sortbyc;
-    }
-
 }

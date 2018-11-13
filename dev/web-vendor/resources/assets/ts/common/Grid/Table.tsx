@@ -33,11 +33,10 @@
 
 import * as React from 'react'
 import LoadingGrid from '../../common/Loading/LoadingGrid';
-// import CONSTANT from '../../bootstrap/Constant';
 import LoadingPaginate from '../Loading/LoadingPaginate';
 import Pagination from 'react-js-pagination';
-import DatePicker from 'react-date-picker'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import DatePicker from 'react-date-picker';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * Interface
@@ -59,6 +58,7 @@ export interface ISourceProp {
     dataSet: Array<string[]>;
     desc: string;
     isLoading: boolean;
+    isCLickPaginate: boolean;
     isError: boolean;
     errorInfo: string;
     limit: number;
@@ -68,9 +68,9 @@ export interface ISourceProp {
     pageClicked?: any;
     filterFlag?: boolean;
     onSort?: any;
-    canEdit?: boolean;
-    canView?: boolean;
-    canDelete?: boolean;
+    canEdit: boolean;
+    canView: boolean;
+    canDelete: boolean;
     onEdit?: any;
     onView?: any;
     onDelete?: any;
@@ -124,9 +124,9 @@ export interface IRowState {
     isLoading: boolean;
     isError: boolean;
     errorInfo: string;
-    canEdit?: boolean;
-    canView?: boolean;
-    canDelete?: boolean;
+    canEdit: boolean;
+    canView: boolean;
+    canDelete: boolean;
     onEdit?: any;
     onView?: any;
     onDelete?: any;
@@ -142,92 +142,107 @@ export interface IRowState {
 export class Header extends React.Component<IHeader>{
     state = {
         date: undefined,
+        filters: {},
         time: 0
     }
 
-
-    onChange = (date: any) => {
-        var d = new Date(date);
-
-        const { onFilter } = this.props;
-        if (typeof onFilter !== "undefined") {
-            if (d.getFullYear() === 1970) {
-                this.props.onFilter('', 'ngay');
-            } else {
-                var month = d.getMonth() + 1;
-                this.props.onFilter(d.getDate() + '-' + month + '-' + d.getFullYear(), 'ngay');
-            }
-        }
-
-        this.setState({
-            date: date,
-        });
-
-    }
-
     /**
-     * Change Page click event
+     * @event Change Page click event
      * call event via properties
      */
-    handleSortClicked = (event: React.SyntheticEvent<HTMLElement>) => {
+    handleSortClicked = (key: any, index: any) => {
         const { onSort } = this.props;
-        const key = event.currentTarget.getAttribute('data-key');
-        const index = event.currentTarget.getAttribute('data-index');
         //Call event onSort if have set
         if (typeof onSort !== "undefined") {
             this.props.onSort(key, index);
         }
     }
 
-    handleFilter = (event: any) => {
+    /**
+     * @event Get all filter and set state: filters
+     */
+    handleGetFilter = (evt: any) => {
         const { onFilter } = this.props;
-        const { time } = this.state;
-        clearTimeout(time);
-        // Make a new timeout set to go off in 800ms
-        var that = this;
-        var value = event.currentTarget.value;
-        var id = event.currentTarget.id;
-        const timeout = setTimeout(function () {
-            if (typeof onFilter !== "undefined") {
-                that.props.onFilter(value, id);
-            }
-        }, 800);
-        this.setState({ time: timeout });
+        if (typeof onFilter === "undefined") {
+            return;
+        }
 
+        this.setState({
+            filters: {
+                ...this.state.filters,
+                [evt.target.name]: evt.target.value ? evt.target.value : undefined
+            }
+        });
+    }
+
+    /**
+     * @param evt: any
+     * @event onFilter through props
+     */
+    handleFilter = (evt: any) => {
+        if (evt.charCode === 13 || evt.type === 'Enter') {
+            this.props.onFilter(this.state.filters);
+        }
+    }
+
+    /**
+     * Set state for current date and callback filters
+     * 
+     * @param name: string of datepicker
+     * @param date: any, selected date of datepicker
+     * @callback onFilter
+     * @return filters
+     */
+    onChangeDate = (name: string, date: any) => {
+        const d = new Date(date);
+
+        if (d.getFullYear() === 1970) {
+            return;
+        }
+
+        const newDate = [d.getDate(), d.getMonth() + 1, d.getFullYear()].join('-');
+
+        this.setState({
+            date,
+            filters: {
+                ...this.state.filters,
+                [name]: newDate ? newDate : undefined
+            }
+        }, () => this.props.onFilter(this.state.filters));
     }
 
     /**
      * Reader header input element
+     * @param (dataType: string
+     * @param id: string
+     * @param dataSet: undefined or string[]
      */
     private renderHeaderInputElement = (dataType: string, id: string, dataSet?: string[]) => {
         const ds: string[] = dataSet as string[];
         const calIcon = <FontAwesomeIcon icon="calendar-alt" />
-        const clearIcon = <FontAwesomeIcon icon="times" />
+        const clearIcon = <FontAwesomeIcon icon="times" />;
         if (dataType === "date") {
-            return <div>
-                <DatePicker className="form-control react-date-picker-header"
-                    name={id}
-                    clearIcon={clearIcon}
-                    calendarIcon={calIcon}
-                    onChange={this.onChange}
-                    value={this.state.date}
-                />
-            </div>
+            return <DatePicker className="form-control react-date-picker-header"
+                name={id}
+                clearIcon={clearIcon}
+                calendarIcon={calIcon}
+                onChange={this.onChangeDate.bind(this, id)}
+                value={this.state.date}
+            />;
         } else if (dataType === "list") {
-            return <select onChange={this.handleFilter} id={id} name={id} className="form-control form-select-options">
+            return <select onChange={this.handleGetFilter} id={id} name={id} className="form-control form-select-options">
                 {ds.map((data, key) => (
                     <option key={key}>{data}</option>
                 ))}
             </select>;
         } else if (dataType === "text") {
-            return <input onKeyUp={this.handleFilter} className="form-control" id={id} name={id} type="text" />
+            return <input onChange={this.handleGetFilter} onKeyPress={this.handleFilter} className="form-control" id={id} name={id} type="text" />
         } else if (dataType === "none") {
             return null;
         } else {
             return null;
         }
     }
-
 
     public render() {
         const { className, dataSet, filterFlag } = this.props;
@@ -236,7 +251,7 @@ export class Header extends React.Component<IHeader>{
                 <tr role="row" key={0}>
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
-                            <div onClick={this.handleSortClicked} data-key={thdata.id} data-index={key}>
+                            <div onClick={this.handleSortClicked.bind(this, thdata.id, key)}>
                                 {thdata.title}
                                 {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
                             </div>
@@ -257,7 +272,6 @@ export class Header extends React.Component<IHeader>{
     }
 }
 
-
 /**
  * Body Class
  * Display Body data on Table
@@ -270,40 +284,42 @@ export class Header extends React.Component<IHeader>{
 export class Body extends React.Component<IRowState> {
     /**
      * Change Page click event
-     * call event via properties
+     * @param id: string | number
+     * @event call event via properties
      */
-    handleViewClicked = (event: any) => {
-        const { onView } = this.props;
-        if (typeof onView !== "undefined") {
-            const id = event.currentTarget.getAttribute('data-index');
+    handleViewClicked = (id: number | string) => {
+        if (this.props.canView) {
             this.props.onView(id);
         }
     }
 
-    handleEditClicked = (event: any) => {
-        const { onEdit } = this.props;
-        if (typeof onEdit !== "undefined") {
-            const id = event.currentTarget.getAttribute('data-index');
+    /**
+      * Change Page click event
+      * @param id: string | number
+      * @event call event via properties
+      */
+    handleEditClicked = (id: number | string) => {
+        if (this.props.canEdit) {
             this.props.onEdit(id);
         }
     }
 
-    handleDeleteClicked = (event: any) => {
-        const { onDelete } = this.props;
-        if (typeof onDelete !== "undefined") {
-            const id = event.currentTarget.getAttribute('data-index');
+    /**
+      * Change Page click event
+      * @param id: string | number
+      * @event call event via properties
+      */
+    handleDeleteClicked = (id: number | string) => {
+        if (this.props.canDelete) {
             this.props.onDelete(id);
         }
     }
 
-
     public render() {
-        const { dataSet, isError, isLoading, errorInfo, colsNo } = this.props;
-        const canEdit: boolean = Boolean(this.props.canEdit);
-        const canView: boolean = Boolean(this.props.canView);
-        const canDelete: boolean = Boolean(this.props.canDelete);
+        const { dataSet, isError, isLoading, errorInfo, colsNo, canEdit, canView, canDelete } = this.props;
+
         if (isError) {
-            return <tbody><tr><td>{errorInfo}</td></tr></tbody>;
+            return <tbody><tr className={'flex-full-height'}><td colSpan={colsNo}>{errorInfo}</td></tr></tbody>;
         }
 
         if (isLoading) {
@@ -311,7 +327,7 @@ export class Body extends React.Component<IRowState> {
         }
 
         if (dataSet.length == 0) {
-            return <tbody><tr><td colSpan={colsNo}>Không có dữ liệu</td></tr></tbody>;
+            return <tbody><tr className={'flex-full-height'}><td colSpan={colsNo}>Không có dữ liệu</td></tr></tbody>;
         }
 
         return (
@@ -323,12 +339,11 @@ export class Body extends React.Component<IRowState> {
                                 k < rows.length - 1 ?
                                     <td key={k}>{d}</td> :
                                     <td key={rows.length + 1} className="text-center">
-                                        {canView === true ? <a data-index={d} onClick={this.handleViewClicked} className="action-icon"><FontAwesomeIcon title="Chi tiết" icon='sticky-note' /></a> : ''}
-                                        {canEdit === true ? <a data-index={d} onClick={this.handleEditClicked} className="action-icon"><FontAwesomeIcon title="Chỉnh sửa" icon='edit' /></a> : ''}
-                                        {canDelete === true ? <a data-index={d} onClick={this.handleDeleteClicked} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
+                                        {canView === true ? <a onClick={this.handleViewClicked.bind(this, d)} className="action-icon"><FontAwesomeIcon title="Chi tiết" icon='sticky-note' /></a> : ''}
+                                        {canEdit === true ? <a onClick={this.handleEditClicked.bind(this, d)} className="action-icon"><FontAwesomeIcon title="Chỉnh sửa" icon='edit' /></a> : ''}
+                                        {canDelete === true ? <a onClick={this.handleDeleteClicked.bind(this, d)} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
                                     </td>
                             )}
-
                         </tr>
                     ))
                 }
@@ -336,7 +351,6 @@ export class Body extends React.Component<IRowState> {
         );
     }
 }
-
 
 /**
  * Table Class
@@ -352,28 +366,35 @@ export class Body extends React.Component<IRowState> {
  */
 export class Table extends React.Component<ISourceProp, {}> {
 
-    public render() {
-        const { headers, dataSet, desc, onSort, headerClass, filterFlag } = this.props;
-        const isLoading: boolean = Boolean(this.props.isLoading);
-        const isError: boolean = Boolean(this.props.isError);
-        const canEdit: boolean = Boolean(this.props.canEdit);
-        const canView: boolean = Boolean(this.props.canView);
-        const canDelete: boolean = Boolean(this.props.canDelete);
-        const errorInfo: string = String(this.props.errorInfo);
+    public state = {
+        isFilterOrSort: false
+    }
 
-        return (<div className="table-responsive">
-            <table id="tabledata" className="table table-hover custom-table" role="grid" aria-describedby={desc}>
-                <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
-                <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
-            </table>
-            <div className="text-center">{this.paginate()}</div>
-        </div>
-        )
+    public render() {
+        const { headers, dataSet, desc, onSort, headerClass, filterFlag, isLoading, isCLickPaginate, isError,
+            canEdit, canView, canDelete, errorInfo } = this.props;
+
+        return (
+            <div className="table-responsive">
+                <table id="tabledata" className="table table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
+                    <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
+                    <Body
+                        canEdit={canEdit} onEdit={this.props.onEdit}
+                        canView={canView} onView={this.props.onView}
+                        canDelete={canDelete} onDelete={this.props.onDelete}
+                        dataSet={dataSet} colsNo={headers.length}
+                        isLoading={isLoading} isError={isError} errorInfo={errorInfo}
+                    />
+                </table>
+                <div className="text-center">{this.paginate(isLoading, isCLickPaginate)}</div>
+            </div>
+        );
     }
 
     /**
      * Change Page click event
-     * Call event via properties
+     * @param event: any
+     * @event Call event via properties
      */
     private handlePageClicked = (event: any) => {
         this.props.pageClicked(event);
@@ -386,25 +407,35 @@ export class Table extends React.Component<ISourceProp, {}> {
      * activePage: Number => Default: 1, Required. Active page,
      * itemsCountPerPage: Defalt: 10, Count of items per page
      * pageRangeDisplayed: Number => Default 5, Range of pages in paginator, Dislay total button on paginate
+     * @param isLoading: boolean
+     * @param isCLickPaginate: boolean
+     * @return null | <LoadingPaginate /> | <Pagination />
      */
-    private paginate = () => {
+    private paginate = (isLoading: boolean, isCLickPaginate: boolean) => {
         const activePage = Number(this.props.activePage);
         const totalItem: number = Number(this.props.totalItem);
         const pageRange: number = Number(this.props.pageRange)
         const isError: boolean = Boolean(this.props.isError);
         const limit: number = Number(this.props.limit);
-        const isLoading: boolean = Boolean(this.props.isLoading);
 
         if (isError) {
             return null;
         }
-        return isLoading ? <LoadingPaginate width={300} height={30} /> :
-            <Pagination
-                totalItemsCount={totalItem}
-                itemsCountPerPage={limit}
-                pageRangeDisplayed={pageRange}
-                activePage={activePage}
-                onChange={this.handlePageClicked}
-            />;
+
+        if (isLoading && !isCLickPaginate) {
+            return <LoadingPaginate width={300} height={30} />;
+        }
+
+        if (totalItem === 0) {
+            return null;
+        }
+
+        return <Pagination
+            totalItemsCount={totalItem}
+            itemsCountPerPage={limit}
+            pageRangeDisplayed={pageRange}
+            activePage={activePage}
+            onChange={this.handlePageClicked}
+        />;
     };
 }
