@@ -3,6 +3,7 @@ import * as React from 'react';
 import Input from '../../common/FormControls/Input';
 // import * as HandleRequest from '../../api/HandleRequest';
 import { IStaff } from '../../interface/IStaff';
+import { isEmpty } from '../../common/Utils';
 
 // interface ISourceDropdown {
 //     id: number;
@@ -14,6 +15,9 @@ interface IStaffModalProp {
     model: IStaff;
     onToggleModal: any;
     onSaveModel: any;
+    isCreate: boolean;
+    isValidate: boolean;
+    errorInfo: string;
     // onSaveSource: any;
     // source: ISourceDropdown[]
 }
@@ -21,8 +25,6 @@ interface IStaffModalProp {
 interface IinitState {
     // source: ISourceDropdown[];
     model: IStaff;
-    isError: boolean,
-    errorInfo: null | string
 }
 
 export default class StaffModal extends React.Component<IStaffModalProp, IinitState> {
@@ -30,13 +32,6 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
     public state = {
         // source: this.props.source,
         model: this.props.model,
-        isError: false,
-        errorInfo: null,
-
-    }
-
-    public componentDidMount() {
-
     }
 
     public handleSubmit = (evt: any) => {
@@ -53,23 +48,23 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
         });
     }
 
-    public handleChange = (evt: any) => {
+    public handleChange = (name: string, value: string) => {
         this.setState({
             model: {
                 ...this.state.model,
-                [evt.target.name]: evt.target.value
+                [name]: value
             }
         });
     }
 
     public render() {
-        const { modalTitle, onToggleModal } = this.props;
+        const { modalTitle, onToggleModal, isCreate, errorInfo } = this.props;
         const { model } = this.state;
-
+        console.log(errorInfo);
         return (
             <>
                 <div className="modal fade in" style={{ display: 'block' }}>
-                    <div className="modal-dialog">
+                    <div className="modal-dialog w800">
                         <div className="modal-content">
                             <div className="modal-header">
                                 <button type="button" className="close" onClick={onToggleModal}><span aria-hidden="true">&times;</span></button>
@@ -78,9 +73,13 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
                             <div className="modal-body">
                                 <form className="form-inline">
                                     <div className="row">
+                                        <div className="form-group col-md-6 h70">
+                                            <Input label={'Tên'} name={'staff_name'} type={'text'} required={true} value={model.staff_name || ''} handleInput={this.handleChange} />
+                                            {isEmpty(model.staff_name) && <span className={'required'}>{}</span>}
+
+                                        </div>
                                         <div className="form-group col-md-6">
-                                            <Input label={'Tên'} name={'staff_name'} required={true} value={model.staff_name || ''} handleInput={this.handleChange} />
-                                            <span>{}</span>
+                                            <Input label={'Email'} name={'email'} type={'text'} required={true} value={model.email || ''} handleInput={this.handleChange} />
                                         </div>
                                         {/* <div className="form-group col-md-6">
                                             <Select
@@ -92,22 +91,18 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
                                                 label='Transport'
                                                 addClass='form-control' />
                                         </div> */}
-
                                     </div>
                                     <div className="row">
-                                        <div className="form-group col-md-6">
-                                            <Input label={'Email'} name={'email'} required={true} value={model.email || ''} handleInput={this.handleChange} />
+                                        <div className="form-group col-md-6 h70">
+                                            <Input label={'Điện thoại'} name={'phone'} type={'text'} required={true} value={model.phone || ''} handleInput={this.handleChange} />
                                         </div>
-                                        <div className="form-group col-md-6">
-                                            <Input label={'Mật khẩu'} name={'password'} required={true} value={model.password || ''} handleInput={this.handleChange} />
+                                        <div className="form-group col-md-6 h70">
+                                            <Input label={'Mật khẩu'} name={'password'} type={'password'} required={isCreate ? true : false} value={model.password || ''} handleInput={this.handleChange} />
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="form-group col-md-6">
-                                            <Input label={'Điện thoại'} name={'phone'} required={true} value={model.phone || ''} handleInput={this.handleChange} />
-                                        </div>
-                                        <div className="form-group col-md-6">
-                                            <Input label={'Địa chỉ'} name={'address'} required={true} value={model.address || ''} handleInput={this.handleChange} />
+                                        <div className="form-group col-md-12 h70">
+                                            <Input label={'Địa chỉ'} name={'address'} type={'text'} required={true} value={model.address || ''} handleInput={this.handleChange} />
                                         </div>
                                     </div>
                                 </form>
@@ -124,16 +119,4 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
             </>
         );
     }
-
-    // private getListTransport = async () => {
-    // const response = await HandleRequest.GetList(urlGetListTransport);
-
-    // if (response.isError) {
-    //     return this.setState({ isError: response.isError, errorInfo: response.message });
-    // }
-
-    // this.setState({
-    //     source: response.result.data
-    // }, () => this.props.onSaveSource(response.result.data));
-    // }
 }

@@ -76,6 +76,18 @@
     align-items: center;
 }
 
+.w900 {
+    width:900px;
+}
+
+.w800 {
+    width:800px;
+}
+
+.w700 {
+    width:700px;
+}
+
 .w200 {
     width:200px;
 }
@@ -117,6 +129,10 @@
 
 .w30 {
     width:30px;
+}
+
+.h70 {
+    height: 70px;
 }
 
 .pd6 {
@@ -211,10 +227,15 @@
 
 /* css for form */
 
+.form-group span.required {
+    color: red;
+    font-size: 13px;
+}
+
 .form-input {
     display: block;
-    padding-top: .9375rem;
-    margin-bottom: 1.25rem;
+    padding-top: 15px;
+    margin-bottom: 4px;
     position: relative
 }
 
@@ -224,7 +245,7 @@
     display: block;
     width: 100%;
     color: rgba(0, 0, 0, .54);
-    font-size: .75rem;
+    font-size: 13px;
     font-weight: 400;
     line-height: .9375rem;
     overflow-x: hidden;
@@ -240,7 +261,10 @@
 .form-input>textarea:focus~label {
     color: #2196F3
 }
-
+.form-input .is-not-empty {
+    border-color: #2196F3;
+    border-width: 1px;
+}
 .float-label>label {
     position: absolute;
     -webkit-transform: translate(0, .9375rem);
@@ -271,20 +295,44 @@
     line-height: .9375rem;
     text-overflow: ellipsis
 }
+//.form-input.is-not-empty input {
+//    border-width: 1px;
+//    border-color: #2196F3;
+//}
 
-.float-label>input:not(:focus).is-not-empty~label,
-.float-label>input:not(:focus):not(:empty):not(.is-empty):not(.is-not-empty)~label,
-.float-label>input:not(:focus)[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label,
-.float-label>textarea:not(:focus).is-not-empty~label,
-.float-label>textarea:not(:focus):not(:empty):not(.is-empty):not(.is-not-empty)~label,
-.float-label>textarea:not(:focus)[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label {
-    color: rgba(0, 0, 0, .54);
+.form-input.is-not-empty label {
+    transform: translate(0, 0);
+    font-size: 14px;
+    line-height: .9375rem;
+    text-overflow: ellipsis;
+    color: #2196F3;
+}
+
+.float-label > input:focus ~ label, .float-label > textarea:focus ~ label {
+    transform: translate(0, 0);
     font-size: .75rem;
     line-height: .9375rem;
-    -webkit-transform: translate(0, 0);
-    transform: translate(0, 0);
-    text-overflow: ellipsis
+    text-overflow: ellipsis;
 }
+
+.form-input.is-empty.required input {
+    border-width: 1px;
+    border-color: red;
+}
+//.float-label>input:not(:focus).is-not-empty~label,
+//.float-label>input:not(:focus):not(:empty):not(.is-empty):not(.is-not-empty)~label,
+//.float-label>input:not(:focus)[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label,
+//.float-label>textarea:not(:focus).is-not-empty~label,
+//.float-label>textarea:not(:focus):not(:empty):not(.is-empty):not(.is-not-empty)~label,
+//.float-label>textarea:not(:focus)[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label {
+//    color: rgba(0, 0, 0, .54);
+//    font-size: .75rem;
+//    line-height: .9375rem;
+//    -webkit-transform: translate(0, 0);
+//    transform: translate(0, 0);
+//    text-overflow: ellipsis;
+//    color: #2196F3;
+//}
 
 .wrap-label {
     display: table;
@@ -323,7 +371,7 @@
 .form-input>input:focus,
 .form-input>textarea:focus {
     border-color: #2196F3;
-    border-width: 2px
+    border-width: 1px
 }
 
 .form-input>input:-moz-read-only,
@@ -372,89 +420,75 @@
     height: 2rem
 }
 
-.form-input>input:focus {
-    height: calc(2rem + 1px);
-    margin-bottom: -1px
-}
-
 .form-input>textarea {
     min-height: 4rem
 }
 
-.form-input>textarea[rows]:not([rows="2"]):focus {
-    margin-bottom: -1px
-}
+//.form-input>input:invalid:not(:focus):not(:required),
+//.form-input>input:invalid:not(:focus):required.is-empty.mui--is-touched,
+//.form-input>input:invalid:not(:focus):required.is-not-empty,
+//.form-input>input:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty),
+//.form-input>input:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
+//.form-input>input:not(:focus).is-invalid:not(:required),
+//.form-input>input:not(:focus).is-invalid:required.is-empty.mui--is-touched,
+//.form-input>input:not(:focus).is-invalid:required.is-not-empty,
+//.form-input>input:not(:focus).is-invalid:required:not(:empty):not(.is-empty):not(.is-not-empty),
+//.form-input>input:not(:focus).is-invalid:required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
+//.form-input>textarea:invalid:not(:focus):not(:required),
+//.form-input>textarea:invalid:not(:focus):required.is-empty.mui--is-touched,
+//.form-input>textarea:invalid:not(:focus):required.is-not-empty,
+//.form-input>textarea:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty),
+//.form-input>textarea:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
+//.form-input>textarea:not(:focus).is-invalid:not(:required),
+//.form-input>textarea:not(:focus).is-invalid:required.is-empty.mui--is-touched,
+//.form-input>textarea:not(:focus).is-invalid:required.is-not-empty,
+//.form-input>textarea:not(:focus).is-invalid:required:not(:empty):not(.is-empty):not(.is-not-empty),
+//.form-input>textarea:not(:focus).is-invalid:required[value]:not([value=""]):not(.is-empty):not(.is-not-empty) {
+//    border-color: #F44336;
+//    border-width: 2px
+//}
 
-.form-input>input:focus {
-    height: calc(2rem + 1px);
-    margin-bottom: -1px
-}
+//.form-input>input:invalid:not(:focus):not(:required),
+//.form-input>input:invalid:not(:focus):required.is-empty.mui--is-touched,
+//.form-input>input:invalid:not(:focus):required.is-not-empty,
+//.form-input>input:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty),
+//.form-input>input:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
+//.form-input>input:not(:focus).is-invalid:not(:required),
+//.form-input>input:not(:focus).is-invalid:required.is-empty.mui--is-touched,
+//.form-input>input:not(:focus).is-invalid:required.is-not-empty,
+//.form-input>input:not(:focus).is-invalid:required:not(:empty):not(.is-empty):not(.is-not-empty),
+//.form-input>input:not(:focus).is-invalid:required[value]:not([value=""]):not(.is-empty):not(.is-not-empty) {
+//    height: calc(2rem + 1px);
+//    margin-bottom: -1px
+//}
 
-.form-input>input:invalid:not(:focus):not(:required),
-.form-input>input:invalid:not(:focus):required.is-empty.mui--is-touched,
-.form-input>input:invalid:not(:focus):required.is-not-empty,
-.form-input>input:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty),
-.form-input>input:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
-.form-input>input:not(:focus).is-invalid:not(:required),
-.form-input>input:not(:focus).is-invalid:required.is-empty.mui--is-touched,
-.form-input>input:not(:focus).is-invalid:required.is-not-empty,
-.form-input>input:not(:focus).is-invalid:required:not(:empty):not(.is-empty):not(.is-not-empty),
-.form-input>input:not(:focus).is-invalid:required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
-.form-input>textarea:invalid:not(:focus):not(:required),
-.form-input>textarea:invalid:not(:focus):required.is-empty.mui--is-touched,
-.form-input>textarea:invalid:not(:focus):required.is-not-empty,
-.form-input>textarea:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty),
-.form-input>textarea:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
-.form-input>textarea:not(:focus).is-invalid:not(:required),
-.form-input>textarea:not(:focus).is-invalid:required.is-empty.mui--is-touched,
-.form-input>textarea:not(:focus).is-invalid:required.is-not-empty,
-.form-input>textarea:not(:focus).is-invalid:required:not(:empty):not(.is-empty):not(.is-not-empty),
-.form-input>textarea:not(:focus).is-invalid:required[value]:not([value=""]):not(.is-empty):not(.is-not-empty) {
-    border-color: #F44336;
-    border-width: 2px
-}
+//.form-input.float-label>input:invalid:not(:focus):not(:required)~label,
+//.form-input.float-label>input:invalid:not(:focus):required.is-not-empty~label,
+//.form-input.float-label>input:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty)~label,
+//.form-input.float-label>input:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label,
+//.form-input.float-label>textarea:invalid:not(:focus):not(:required)~label,
+//.form-input.float-label>textarea:invalid:not(:focus):required.is-not-empty~label,
+//.form-input.float-label>textarea:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty)~label,
+//.form-input.float-label>textarea:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label {
+//    color: #F44336
+//}
 
-.form-input>input:invalid:not(:focus):not(:required),
-.form-input>input:invalid:not(:focus):required.is-empty.mui--is-touched,
-.form-input>input:invalid:not(:focus):required.is-not-empty,
-.form-input>input:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty),
-.form-input>input:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty),
-.form-input>input:not(:focus).is-invalid:not(:required),
-.form-input>input:not(:focus).is-invalid:required.is-empty.mui--is-touched,
-.form-input>input:not(:focus).is-invalid:required.is-not-empty,
-.form-input>input:not(:focus).is-invalid:required:not(:empty):not(.is-empty):not(.is-not-empty),
-.form-input>input:not(:focus).is-invalid:required[value]:not([value=""]):not(.is-empty):not(.is-not-empty) {
-    height: calc(2rem + 1px);
-    margin-bottom: -1px
-}
+//.form-input:not(.float-label)>input:invalid:not(:focus):not(:required)~label,
+//.form-input:not(.float-label)>input:invalid:not(:focus):required.is-empty.mui--is-touched~label,
+//.form-input:not(.float-label)>input:invalid:not(:focus):required.is-not-empty~label,
+//.form-input:not(.float-label)>textarea:invalid:not(:focus):not(:required)~label,
+//.form-input:not(.float-label)>textarea:invalid:not(:focus):required.is-empty.mui--is-touched~label,
+//.form-input:not(.float-label)>textarea:invalid:not(:focus):required.is-not-empty~label {
+//    color: #F44336
+//}
 
-.form-input.float-label>input:invalid:not(:focus):not(:required)~label,
-.form-input.float-label>input:invalid:not(:focus):required.is-not-empty~label,
-.form-input.float-label>input:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty)~label,
-.form-input.float-label>input:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label,
-.form-input.float-label>textarea:invalid:not(:focus):not(:required)~label,
-.form-input.float-label>textarea:invalid:not(:focus):required.is-not-empty~label,
-.form-input.float-label>textarea:invalid:not(:focus):required:not(:empty):not(.is-empty):not(.is-not-empty)~label,
-.form-input.float-label>textarea:invalid:not(:focus):required[value]:not([value=""]):not(.is-empty):not(.is-not-empty)~label {
-    color: #F44336
-}
-
-.form-input:not(.float-label)>input:invalid:not(:focus):not(:required)~label,
-.form-input:not(.float-label)>input:invalid:not(:focus):required.is-empty.mui--is-touched~label,
-.form-input:not(.float-label)>input:invalid:not(:focus):required.is-not-empty~label,
-.form-input:not(.float-label)>textarea:invalid:not(:focus):not(:required)~label,
-.form-input:not(.float-label)>textarea:invalid:not(:focus):required.is-empty.mui--is-touched~label,
-.form-input:not(.float-label)>textarea:invalid:not(:focus):required.is-not-empty~label {
-    color: #F44336
-}
-
-.form-input.float-label>.is-invalid.is-not-empty:not(:focus)~label {
-    color: #F44336
-}
-
-.form-input:not(.float-label)>.is-invalid:not(:focus)~label {
-    color: #F44336
-}
+//.form-input.float-label>.is-invalid.is-not-empty:not(:focus)~label {
+//    color: #F44336
+//}
+//
+//.form-input:not(.float-label)>.is-invalid:not(:focus)~label {
+//    color: #F44336
+//}
 
 .no-transition {
     -webkit-transition: none !important;

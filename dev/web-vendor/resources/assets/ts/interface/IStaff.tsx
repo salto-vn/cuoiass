@@ -28,6 +28,15 @@ export interface IStaffFilter {
     role_name?: string;
 }
 
+export interface IValidateField {
+    staff_id: number;
+    staff_name?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+    role_name?: string;
+}
+
 export interface IStaffState {
     staffGrid: IStaffList[];
     model: IStaff;
@@ -40,6 +49,11 @@ export interface IStaffState {
     totalItem: number;
     pageRange: number;
     isError: boolean;
+    isErrorList: boolean;
+    isValidate: boolean;
+    validateMessage: {
+        [key: string]: string
+    };
     errorInfo: null | string;
     activePage: number;
     tableHeader: ITh[];

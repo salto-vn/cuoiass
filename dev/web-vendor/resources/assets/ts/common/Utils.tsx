@@ -10,3 +10,13 @@
 export const objectToQueryString = (params: object | any, glue: string = ':', delimiter: string = ';') => {
     return Object.keys(JSON.parse(JSON.stringify(params))).map(key => key + `${glue}` + params[key]).join(delimiter);
 };
+
+/**
+ * 
+ * @param value 
+ * 
+ * @return boolean
+ */
+export const isEmpty = (value: any) => {
+    return (value === undefined || value === null || value === '');
+}

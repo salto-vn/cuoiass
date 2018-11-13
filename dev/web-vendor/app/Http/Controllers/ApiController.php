@@ -22,6 +22,7 @@ class ApiController extends Controller
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ],
+            'verify' => false
         ]);
 
         $routeName = str_replace(config('wedding.api_prefix').'/', '', $request->path());

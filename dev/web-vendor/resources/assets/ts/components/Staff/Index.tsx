@@ -36,7 +36,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         totalItem: CONSTANT.TOTAL_COUNT,
         pageRange: CONSTANT.PAGE_RANGE_DISPLAY,
         isError: false,
+        isErrorList: false,
+        isValidate: false,
         errorInfo: '',
+        validateMessage: {},
         activePage: CONSTANT.CURRENT_PAGE,
         tableHeader: [],
         filters: CONSTANT.UNDEFINED,
@@ -58,7 +61,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, tableHeader, isShowModal } = this.state;
+        const { staffGrid, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, isErrorList, tableHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -99,11 +102,12 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         totalItem={totalItem}
                                         pageRange={pageRange}
                                         dataSet={listdata}
-                                        limit={limit} isError={isError}
+                                        limit={limit}
+                                        isError={isErrorList}
                                         isLoading={isLoading}
                                         isCLickPaginate={isCLickPaginate}
                                         errorInfo={errorInfo}
-                                        desc='Feedback data' onSort={this.handleSort}
+                                        desc='Staff data' onSort={this.handleSort}
                                         canEdit={true} onEdit={this.handleEdit}
                                         canDelete={true} onDelete={this.handleDelete}
                                         canView={false} onView={this.handleEdit}
@@ -116,12 +120,15 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                     </div>
                     <div className="row">
                         {
-                            isShowModal &&
+                            this.state.isShowModal &&
                             <StaffModal
                                 modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
                                 model={this.state.model}
                                 onToggleModal={this.onToggleModal}
                                 onSaveModel={this.onSave}
+                                isCreate={this.state.isCreate}
+                                isValidate={this.state.isValidate}
+                                errorInfo={this.state.errorInfo}
                             />
                         }
                     </div>
@@ -148,7 +155,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Get staff data
-     * Return: not need to return set to state is OK
+     * @return not need to return set to state is OK
      */
     private getListStaff = async () => {
         const { activePage, limit, filters } = this.state;
@@ -158,7 +165,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, undefined, undefined, filters);
 
         if (response.isError) {
-            return this.setState({ isError: response.isError, errorInfo: response.message });
+            return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }
 
         this.setState({
@@ -174,7 +181,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      */
     private handleEdit = async (id: string | number) => {
         if (this.state.isHandleEvent) {
-            console.log('Need to handle to show message when user call api multiple times');
             return;
         }
 
@@ -189,10 +195,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({
             model: response.result,
             isHandleEvent: false,
-            isCreate: true
-        });
-
-        this.onToggleModal();
+        }, () => this.onToggleModal());
     }
 
     private handleDelete = (id: any) => {
@@ -211,11 +214,17 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
 
         if (response.isError) {
-            return this.setState({ isError: response.isError, errorInfo: response.message });
+            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        if (response.isValidate) {
+            return this.setState({
+                isValidate: response.isValidate,
+                // validateMessage: { response.validateMessage }
+            });
         }
 
         this.setState({
-            model: response.result,
             isHandleEvent: false,
             isCreate: false
         }, () => {
