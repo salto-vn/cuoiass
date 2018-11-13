@@ -68,9 +68,9 @@ export interface ISourceProp {
     pageClicked?: any;
     filterFlag?: boolean;
     onSort?: any;
-    canEdit?: boolean;
-    canView?: boolean;
-    canDelete?: boolean;
+    canEdit: boolean;
+    canView: boolean;
+    canDelete: boolean;
     onEdit?: any;
     onView?: any;
     onDelete?: any;
@@ -124,9 +124,9 @@ export interface IRowState {
     isLoading: boolean;
     isError: boolean;
     errorInfo: string;
-    canEdit?: boolean;
-    canView?: boolean;
-    canDelete?: boolean;
+    canEdit: boolean;
+    canView: boolean;
+    canDelete: boolean;
     onEdit?: any;
     onView?: any;
     onDelete?: any;
@@ -251,7 +251,7 @@ export class Header extends React.Component<IHeader>{
                 <tr role="row" key={0}>
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
-                            <div onClick={() => this.handleSortClicked(thdata.id, key)} data-key={thdata.id} data-index={key}>
+                            <div onClick={this.handleSortClicked.bind(this, thdata.id, key)}>
                                 {thdata.title}
                                 {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
                             </div>
@@ -284,48 +284,40 @@ export class Header extends React.Component<IHeader>{
 export class Body extends React.Component<IRowState> {
     /**
      * Change Page click event
-     * @param event: any
+     * @param id: string | number
      * @event call event via properties
      */
-    handleViewClicked = (event: any) => {
-        const { onView } = this.props;
-        if (typeof onView !== "undefined") {
-            const id = event.currentTarget.getAttribute('data-index');
+    handleViewClicked = (id: number | string) => {
+        if (this.props.canView) {
             this.props.onView(id);
         }
     }
 
     /**
       * Change Page click event
-      * @param event: any
+      * @param id: string | number
       * @event call event via properties
       */
-    handleEditClicked = (event: any) => {
-        const { onEdit } = this.props;
-        if (typeof onEdit !== "undefined") {
-            const id = event.currentTarget.getAttribute('data-index');
+    handleEditClicked = (id: number | string) => {
+        if (this.props.canEdit) {
             this.props.onEdit(id);
         }
     }
 
     /**
       * Change Page click event
-      * @param event: any
+      * @param id: string | number
       * @event call event via properties
       */
-    handleDeleteClicked = (event: any) => {
-        const { onDelete } = this.props;
-        if (typeof onDelete !== "undefined") {
-            const id = event.currentTarget.getAttribute('data-index');
+    handleDeleteClicked = (id: number | string) => {
+        if (this.props.canDelete) {
             this.props.onDelete(id);
         }
     }
 
     public render() {
-        const { dataSet, isError, isLoading, errorInfo, colsNo } = this.props;
-        const canEdit: boolean = Boolean(this.props.canEdit);
-        const canView: boolean = Boolean(this.props.canView);
-        const canDelete: boolean = Boolean(this.props.canDelete);
+        const { dataSet, isError, isLoading, errorInfo, colsNo, canEdit, canView, canDelete } = this.props;
+
         if (isError) {
             return <tbody><tr className={'flex-full-height'}><td colSpan={colsNo}>{errorInfo}</td></tr></tbody>;
         }
@@ -347,9 +339,9 @@ export class Body extends React.Component<IRowState> {
                                 k < rows.length - 1 ?
                                     <td key={k}>{d}</td> :
                                     <td key={rows.length + 1} className="text-center">
-                                        {canView === true ? <a data-index={d} onClick={this.handleViewClicked} className="action-icon"><FontAwesomeIcon title="Chi tiết" icon='sticky-note' /></a> : ''}
-                                        {canEdit === true ? <a data-index={d} onClick={this.handleEditClicked} className="action-icon"><FontAwesomeIcon title="Chỉnh sửa" icon='edit' /></a> : ''}
-                                        {canDelete === true ? <a data-index={d} onClick={this.handleDeleteClicked} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
+                                        {canView === true ? <a onClick={this.handleViewClicked.bind(this, d)} className="action-icon"><FontAwesomeIcon title="Chi tiết" icon='sticky-note' /></a> : ''}
+                                        {canEdit === true ? <a onClick={this.handleEditClicked.bind(this, d)} className="action-icon"><FontAwesomeIcon title="Chỉnh sửa" icon='edit' /></a> : ''}
+                                        {canDelete === true ? <a onClick={this.handleDeleteClicked.bind(this, d)} className="action-icon"><FontAwesomeIcon title="Xoá" icon='trash-alt' /></a> : ''}
                                     </td>
                             )}
                         </tr>
@@ -379,20 +371,20 @@ export class Table extends React.Component<ISourceProp, {}> {
     }
 
     public render() {
-        const { headers, dataSet, desc, onSort, headerClass, filterFlag } = this.props;
-        const isLoading: boolean = Boolean(this.props.isLoading);
-        const isCLickPaginate: boolean = Boolean(this.props.isCLickPaginate);
-        const isError: boolean = Boolean(this.props.isError);
-        const canEdit: boolean = Boolean(this.props.canEdit);
-        const canView: boolean = Boolean(this.props.canView);
-        const canDelete: boolean = Boolean(this.props.canDelete);
-        const errorInfo: string = String(this.props.errorInfo);
+        const { headers, dataSet, desc, onSort, headerClass, filterFlag, isLoading, isCLickPaginate, isError,
+            canEdit, canView, canDelete, errorInfo } = this.props;
 
         return (
             <div className="table-responsive">
                 <table id="tabledata" className="table table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
                     <Header onFilter={this.props.onFilter} filterFlag={filterFlag} dataSet={headers} onSort={onSort} className={headerClass} />
-                    <Body canEdit={canEdit} onView={this.props.onView} canView={canView} canDelete={canDelete} dataSet={dataSet} colsNo={headers.length} isLoading={isLoading} isError={isError} errorInfo={errorInfo} />
+                    <Body
+                        canEdit={canEdit} onEdit={this.props.onEdit}
+                        canView={canView} onView={this.props.onView}
+                        canDelete={canDelete} onDelete={this.props.onDelete}
+                        dataSet={dataSet} colsNo={headers.length}
+                        isLoading={isLoading} isError={isError} errorInfo={errorInfo}
+                    />
                 </table>
                 <div className="text-center">{this.paginate(isLoading, isCLickPaginate)}</div>
             </div>

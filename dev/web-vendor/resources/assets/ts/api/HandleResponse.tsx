@@ -17,6 +17,7 @@ const HandleResponse = async (res: Response) => {
         isError = false;
         result = await res.json();
     }
+
     return { isError, message: res.statusText, result } as IHandleResponse;
 };
 

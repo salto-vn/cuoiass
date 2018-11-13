@@ -102,8 +102,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         isCLickPaginate={isCLickPaginate}
                                         errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
-                                        canEdit={true}
-                                        canDelete={true}
+                                        canEdit={true} onEdit={this.handleEdit}
+                                        canDelete={true} onDelete={this.handleDelete}
+                                        canView={false} onView={this.handleEdit}
                                         filterFlag={true}
                                         onFilter={this.handleFilter}
                                     />
@@ -225,6 +226,14 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         this.setState({ isShowModal: !this.state.isShowModal });
+    }
+
+    private handleEdit = (id: string | number) => {
+        console.log(id);
+    }
+
+    private handleDelete = (id: any) => {
+        console.log(id);
     }
 
     /**

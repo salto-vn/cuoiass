@@ -112,8 +112,9 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
                                         isLoading={isLoading} isCLickPaginate={isCLickPaginate}
                                         isError={isError} errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
-                                        canView={true}
-                                        onView={this.handleView}
+                                        canView={true} onView={this.handleView}
+                                        canEdit={false}
+                                        canDelete={false}
                                         filterFlag={true}
                                         onFilter={this.handleFilter}
                                     />
@@ -173,9 +174,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
     * @return Get list staff
     */
     private handleFilter = (filtes: any) => {
-        console.log(filtes);
         const search = objectToQueryString(filtes);
-        console.log(search);
         this.setState({
             search, isCLickPaginate: false
         }, () => {

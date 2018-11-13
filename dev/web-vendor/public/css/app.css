@@ -17696,12 +17696,20 @@ _::-webkit-full-page-media, _:future, :root .page-inner {
   width: 70px;
 }
 
+.w60 {
+  width: 60px;
+}
+
 .w50 {
   width: 50px;
 }
 
 .w30 {
   width: 30px;
+}
+
+.pd6 {
+  padding: 6px;
 }
 
 .is-loadding {
@@ -17711,6 +17719,10 @@ _::-webkit-full-page-media, _:future, :root .page-inner {
 
 .is-loadding .timeline-item {
   border: none;
+}
+
+.table-responsive {
+  min-height: calc(100vh - 260px);
 }
 
 .custom-table > thead > tr {
