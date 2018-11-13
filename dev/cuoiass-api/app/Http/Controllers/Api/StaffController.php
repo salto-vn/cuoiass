@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\StoreStaff;
 use App\Http\Requests\Staff\UpdateStaff;
-use App\Http\Resources\StaffCollection;
 use App\Models\Staff;
 use App\Repositories\StaffRepo;
 use Illuminate\Http\Request;
@@ -32,8 +31,8 @@ class StaffController extends Controller
      */
     public function index(Request $request)
     {
-        $page = (int)$request->get('page', \Constant::MIN_PAGE);
-        $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
+        $page = (int)$request->get('page');
+        $limit = (int)$request->get('limit');
         $orderBy = $request->get('orderBy', null);
         $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');

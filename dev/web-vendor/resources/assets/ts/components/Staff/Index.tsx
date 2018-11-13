@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { IStaffState, IStaffList } from '../../interface/IStaff';
+import { IStaffState, IStaffList, IStaffFilter } from '../../interface/IStaff';
 import { StaffModel } from '../../model/StaffModel';
 import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
 import { Table } from '../../common/Grid/Table';
+import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
 import StaffModal from './Edit';
+import { objectToQueryString } from '../../common/Utils';
 
 library.add(faSortUp)
 
@@ -15,17 +17,18 @@ const subjectPage = 'Quản lý nhân viên'; //Header Content page
 
 /**
  * Feedback Screen Component
- * Display Feedback list data, include paging 
+ * Display Staff list data, include paging 
  * Properties: N/A
- * State: Required IFeedbackState , Optional another variale 
+ * State: Required IStaffState , Optional another variale
  */
 export class StaffScreen extends React.Component<{}, IStaffState> {
 
     // inital state varialble using in this Component, 
     public state = {
         staffGrid: [],
-        model: new StaffModel(),
+        model: new StaffModel,
         isLoading: false,
+        isCLickPaginate: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
         isShowModal: false,
@@ -34,9 +37,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         isError: false,
         errorInfo: '',
         activePage: CONSTANT.CURRENT_PAGE,
-        tableHeader: []
+        tableHeader: [],
+        filters: CONSTANT.UNDEFINED
     };
-
 
     /**
      * Event usualy mount data to State variale
@@ -47,14 +50,13 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.getListStaff();
     }
 
-
     /**
      * Render event will be run first time, 
      * on initial this Component 
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, errorInfo, tableHeader, isShowModal } = this.state;
+        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, tableHeader, isShowModal } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -76,6 +78,16 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                             <div className="panel panel-white">
                                 <div className="panel-heading flex justify-content-between align-items-center">
                                     <h4 className="panel-title">Danh sách nhân viên</h4>
+                                    <div>
+                                        <DisplayNoPage
+                                            onChange={this.handleDisplayNoPage}
+                                            name={'perpage'}
+                                            addClass={'w60 form-control pd6'}
+                                            options={[10, 20, 50, 100]}
+                                            displayDefault={10}
+                                            selectedValue={limit}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="panel-body">
                                     <Table
@@ -86,10 +98,13 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         pageRange={pageRange}
                                         dataSet={listdata}
                                         limit={limit} isError={isError}
-                                        isLoading={isLoading} errorInfo={errorInfo}
+                                        isLoading={isLoading}
+                                        isCLickPaginate={isCLickPaginate}
+                                        errorInfo={errorInfo}
                                         desc='Feedback data' onSort={this.handleSort}
-                                        canEdit={true}
-                                        canDelete={true}
+                                        canEdit={true} onEdit={this.handleEdit}
+                                        canDelete={true} onDelete={this.handleDelete}
+                                        canView={false} onView={this.handleEdit}
                                         filterFlag={true}
                                         onFilter={this.handleFilter}
                                     />
@@ -113,16 +128,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         );
     }
 
-    private handleSort = () => {
-        console.log('Call API Sort');
-    }
-
-    private handleFilter = async (value: string) => {
-        const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec));
-        await sleep(3000)
-        console.log('filter ' + value);
-    }
-
     /**
      * Set header for table
      */
@@ -144,11 +149,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Return: not need to return set to state is OK
      */
     private getListStaff = async () => {
-        const { activePage, limit } = this.state;
+        const { activePage, limit, filters } = this.state;
 
         this.setState({ isLoading: true });
 
-        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit);
+        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, undefined, undefined, filters);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
@@ -159,7 +164,50 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
             totalItem: response.result.total,
             isLoading: false
         });
+    }
 
+    private handleEdit = async (id: string | number) => {
+        const response = await HandleRequest.Edit(APP_URL.STAFF, id);
+
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message });
+        }
+
+        // console.log(response.result);
+        // this.setState({
+        //     model: { ...this.state.model, response.result }
+        // });
+
+    }
+
+    private handleDelete = (id: any) => {
+        console.log(id);
+    }
+
+    /**
+     * Save model
+     */
+    public onSave = (dataChild: any) => {
+        console.log(dataChild);
+    }
+
+    private handleSort = () => {
+        console.log('Call API Sort');
+    }
+
+    /**
+     * Set state for array filters and isCLickPaginate to make it paginate
+     * @param filtes
+     * 
+     * @return Get list staff
+     */
+    private handleFilter = (filtes: IStaffFilter) => {
+        const filters = objectToQueryString(filtes);
+        this.setState({
+            filters, isCLickPaginate: false
+        }, () => {
+            this.getListStaff();
+        })
     }
 
     /**
@@ -173,12 +221,24 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber
+            ...prevState, activePage: pageNumber, isCLickPaginate: true
         }), () => {
             this.getListStaff()
         });
     }
 
+    /**
+     * @event Change perpage
+     * 
+     * @return Get list staff
+     */
+    private handleDisplayNoPage = (limit: number) => {
+        this.setState({ limit }, () => this.getListStaff());
+    }
+
+    /**
+     * Show popup modal
+     */
     private onToggleModal = () => {
         const { isShowModal } = this.state;
 
@@ -191,9 +251,5 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         this.setState({ isShowModal: !this.state.isShowModal });
-    }
-
-    public onSave = (dataChild: any) => {
-        console.log(dataChild);
     }
 }

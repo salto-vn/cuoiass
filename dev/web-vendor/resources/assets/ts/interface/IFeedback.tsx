@@ -56,6 +56,7 @@ export interface IFeedbackList {
 export interface IFeedbackState {
     feedbackGrid: IFeedbackList[],
     isLoading: boolean,
+    isCLickPaginate: boolean,
     limit: number,
     isShowModal: boolean,
     totalItem: number,
@@ -65,7 +66,7 @@ export interface IFeedbackState {
     feedbacHeader: ITh[],
     sortbyc: string,
     sortby: string,
-    search: string[],
+    search?: string,
     sortedIndex: number,
     pageRange: number,
 }

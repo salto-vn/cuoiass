@@ -4,6 +4,11 @@ interface IHandleResponse {
     result: any;
 }
 
+/**
+ * 
+ * @param res 
+ * @return IHandleResponse
+ */
 const HandleResponse = async (res: Response) => {
     let isError = true;
     let result = null;
@@ -12,6 +17,7 @@ const HandleResponse = async (res: Response) => {
         isError = false;
         result = await res.json();
     }
+
     return { isError, message: res.statusText, result } as IHandleResponse;
 };
 
