@@ -100,11 +100,12 @@ export const Edit = async (url: string, id: number | string) => {
  * @method GET
  * @param url
  * @param model
+ * @param id
  * 
  * @return HandleResponse
  */
-export const Update = async (url: string, model: object) => {
-    const result = await fetch(`${url}`, {
+export const Update = async (url: string, model: object, id: string | number) => {
+    const result = await fetch(`${url}/${id}`, {
         method: "PUT",
         headers: headerOptions,
         body: JSON.stringify(model)

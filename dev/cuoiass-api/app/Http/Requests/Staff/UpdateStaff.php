@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Staff;
 
-use App\Utils\TableName;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateStaff extends FormRequest
 {

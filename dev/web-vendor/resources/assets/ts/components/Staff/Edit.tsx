@@ -11,7 +11,7 @@ import { IStaff } from '../../interface/IStaff';
 
 interface IStaffModalProp {
     modalTitle?: string;
-    model: IStaff
+    model: IStaff;
     onToggleModal: any;
     onSaveModel: any;
     // onSaveSource: any;
@@ -31,14 +31,12 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
         // source: this.props.source,
         model: this.props.model,
         isError: false,
-        errorInfo: null
+        errorInfo: null,
+
     }
 
     public componentDidMount() {
-        // if (!this.state.source.length) {
-        //     this.getListTransport();
 
-        // }
     }
 
     public handleSubmit = (evt: any) => {
@@ -81,7 +79,8 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
                                 <form className="form-inline">
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Tên'} name={'title'} required={true} value={model.staff_name || ''} handleInput={this.handleChange} />
+                                            <Input label={'Tên'} name={'staff_name'} required={true} value={model.staff_name || ''} handleInput={this.handleChange} />
+                                            <span>{}</span>
                                         </div>
                                         {/* <div className="form-group col-md-6">
                                             <Select
@@ -97,18 +96,18 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
                                     </div>
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Type'} name={'type'} required={true} value={model.email || ''} handleInput={this.handleChange} />
+                                            <Input label={'Email'} name={'email'} required={true} value={model.email || ''} handleInput={this.handleChange} />
                                         </div>
                                         <div className="form-group col-md-6">
-                                            <Input label={'Style'} name={'style'} required={true} value={model.password || ''} handleInput={this.handleChange} />
+                                            <Input label={'Mật khẩu'} name={'password'} required={true} value={model.password || ''} handleInput={this.handleChange} />
                                         </div>
                                     </div>
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Type'} name={'type'} required={true} value={model.phone || ''} handleInput={this.handleChange} />
+                                            <Input label={'Điện thoại'} name={'phone'} required={true} value={model.phone || ''} handleInput={this.handleChange} />
                                         </div>
                                         <div className="form-group col-md-6">
-                                            <Input label={'Style'} name={'style'} required={true} value={model.address || ''} handleInput={this.handleChange} />
+                                            <Input label={'Địa chỉ'} name={'address'} required={true} value={model.address || ''} handleInput={this.handleChange} />
                                         </div>
                                     </div>
                                 </form>

@@ -29,6 +29,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         model: new StaffModel,
         isLoading: false,
         isCLickPaginate: false,
+        isHandleEvent: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
         isShowModal: false,
@@ -38,7 +39,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         errorInfo: '',
         activePage: CONSTANT.CURRENT_PAGE,
         tableHeader: [],
-        filters: CONSTANT.UNDEFINED
+        filters: CONSTANT.UNDEFINED,
+        isCreate: false
     };
 
     /**
@@ -116,7 +118,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                         {
                             isShowModal &&
                             <StaffModal
-                                modalTitle={"Add title"}
+                                modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
                                 model={this.state.model}
                                 onToggleModal={this.onToggleModal}
                                 onSaveModel={this.onSave}
@@ -166,18 +168,31 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         });
     }
 
+    /**
+     * @param id: string | number
+     * @return model
+     */
     private handleEdit = async (id: string | number) => {
+        if (this.state.isHandleEvent) {
+            console.log('Need to handle to show message when user call api multiple times');
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
         const response = await HandleRequest.Edit(APP_URL.STAFF, id);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
 
-        // console.log(response.result);
-        // this.setState({
-        //     model: { ...this.state.model, response.result }
-        // });
+        this.setState({
+            model: response.result,
+            isHandleEvent: false,
+            isCreate: true
+        });
 
+        this.onToggleModal();
     }
 
     private handleDelete = (id: any) => {
@@ -187,8 +202,26 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * Save model
      */
-    public onSave = (dataChild: any) => {
-        console.log(dataChild);
+    public onSave = async (model: any) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+        const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
+
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message });
+        }
+
+        this.setState({
+            model: response.result,
+            isHandleEvent: false,
+            isCreate: false
+        }, () => {
+            this.onToggleModal();
+            this.getListStaff();
+        });
     }
 
     private handleSort = () => {

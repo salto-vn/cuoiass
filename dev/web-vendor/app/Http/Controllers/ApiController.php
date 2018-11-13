@@ -15,9 +15,8 @@ class ApiController extends Controller
      */
     public function index(Request $request)
     {
-        $baseUrl = env('API_URL', '127.0.0.1');
         $client = new Client([
-            'base_uri' => $baseUrl,
+            'base_uri' => config('wedding.api_url'),
             'http_errors' => false,
             'headers' => [
                 'Accept' => 'application/json',
@@ -34,7 +33,6 @@ class ApiController extends Controller
         return response($response->getBody(), $response->getStatusCode());
     }
 
-
     /**
      * @param $apiName
      * @param $params
@@ -47,6 +45,7 @@ class ApiController extends Controller
                 $columns = $this->reviewColumns();
                 return $this->buildSearchColumn($params, $columns);
             default:
+                return $params;
                 break;
         }
     }
