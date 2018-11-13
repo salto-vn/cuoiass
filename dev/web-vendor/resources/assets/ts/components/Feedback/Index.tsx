@@ -183,8 +183,6 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
             search.push(col + ":" + value);
         }
 
-
-
         return this.setState((prevState) => ({
             ...prevState, search: search
         }), () => {

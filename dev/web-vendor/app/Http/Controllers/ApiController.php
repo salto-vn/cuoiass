@@ -27,8 +27,6 @@ class ApiController extends Controller
                 'json' => $request->input()
             ] );
 
-        //return $response->getBody();
-
         return response($response->getBody(), $response->getStatusCode());
     }
 

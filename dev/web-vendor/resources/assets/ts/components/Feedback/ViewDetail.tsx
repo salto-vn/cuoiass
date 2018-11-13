@@ -48,7 +48,6 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
 
     async componentDidMount() {
         const { id } = this.state;
-
         //TODO: Hard Data
         // const response = {
         //     feedbackId: params.id,
