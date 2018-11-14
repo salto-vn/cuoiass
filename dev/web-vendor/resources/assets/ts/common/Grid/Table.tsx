@@ -90,6 +90,7 @@ export interface ITh {
     className: string;
     dataType: string;
     sortClass?: any;
+    allowSort: boolean;
 
 }
 
@@ -150,7 +151,11 @@ export class Header extends React.Component<IHeader>{
      * @event Change Page click event
      * call event via properties
      */
-    handleSortClicked = (key: any, index: any) => {
+    handleSortClicked = (key: any, index: any, allowSort: boolean) => {
+        if (!allowSort) {
+            return;
+        }
+
         const { onSort } = this.props;
         //Call event onSort if have set
         if (typeof onSort !== "undefined") {
@@ -252,7 +257,7 @@ export class Header extends React.Component<IHeader>{
                 <tr role="row" key={0}>
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
-                            <div onClick={this.handleSortClicked.bind(this, thdata.id, key)}>
+                            <div onClick={this.handleSortClicked.bind(this, thdata.id, key, thdata.allowSort)}>
                                 {thdata.title}
                                 {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
                             </div>

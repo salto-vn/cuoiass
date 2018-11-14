@@ -142,13 +142,13 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      */
     private setTableHeader = (sortIcon: string = 'sort') => {
         const tableHeader = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon },
-            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon },
-            { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon },
-            { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon },
-            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon }
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon, allowSort: false },
+            { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon, allowSort: true },
+            { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'action', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false }
         ];
         this.setState({ tableHeader });
     }

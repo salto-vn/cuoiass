@@ -17908,7 +17908,7 @@ _::-webkit-full-page-media, _:future, :root .page-inner {
 
 .form-input.is-empty.required input {
   border-width: 1px;
-  border-color: blue;
+  border-color: red;
 }
 
 .wrap-label {
