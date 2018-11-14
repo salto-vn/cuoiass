@@ -1,8 +1,11 @@
+interface IErr {
+    errors: string[]
+}
 interface IHandleResponse {
     isError: boolean;
     isValidate: boolean;
     message: string;
-    validateMessage: string;
+    validateMessage: IErr;
     result: any;
 }
 

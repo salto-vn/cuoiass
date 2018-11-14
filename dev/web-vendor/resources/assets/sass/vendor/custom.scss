@@ -135,6 +135,10 @@
     height: 70px;
 }
 
+.h85 {
+    height: 85px;
+}
+
 .pd6 {
     padding: 6px;
 }
@@ -235,7 +239,7 @@
 .form-input {
     display: block;
     padding-top: 15px;
-    margin-bottom: 4px;
+    margin-bottom: 10px;
     position: relative
 }
 
@@ -248,7 +252,6 @@
     font-size: 13px;
     font-weight: 400;
     line-height: .9375rem;
-    overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
 }
@@ -287,11 +290,10 @@
     text-overflow: ellipsis;
 }
 
-.float-label>input:focus~label,
-.float-label>textarea:focus~label {
+.float-label>input:focus~label, .float-label>textarea:focus~label {
     -webkit-transform: translate(0, 0);
     transform: translate(0, 0);
-    font-size: .75rem;
+    font-size: 14px;
     line-height: .9375rem;
     text-overflow: ellipsis
 }
@@ -306,13 +308,6 @@
     line-height: .9375rem;
     text-overflow: ellipsis;
     color: #2196F3;
-}
-
-.float-label > input:focus ~ label, .float-label > textarea:focus ~ label {
-    transform: translate(0, 0);
-    font-size: .75rem;
-    line-height: .9375rem;
-    text-overflow: ellipsis;
 }
 
 .form-input.is-empty.required input {

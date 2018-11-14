@@ -20,3 +20,17 @@ export const objectToQueryString = (params: object | any, glue: string = ':', de
 export const isEmpty = (value: any) => {
     return (value === undefined || value === null || value === '');
 }
+
+/**
+ * 
+ * @param value 
+ * 
+ * @return boolean
+ */
+export const showError = (errorInfo: any, key: string) => {
+    if (errorInfo.errors[key] && Array.isArray(errorInfo.errors[key])) {
+        return errorInfo.errors[key][0];
+    }
+
+    return '';
+}

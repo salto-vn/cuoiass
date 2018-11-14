@@ -39,7 +39,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         isErrorList: false,
         isValidate: false,
         errorInfo: '',
-        validateMessage: {},
+        validateMessage: { errors: '' },
         activePage: CONSTANT.CURRENT_PAGE,
         tableHeader: [],
         filters: CONSTANT.UNDEFINED,
@@ -128,7 +128,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                 onSaveModel={this.onSave}
                                 isCreate={this.state.isCreate}
                                 isValidate={this.state.isValidate}
-                                errorInfo={this.state.errorInfo}
+                                errorInfo={this.state.validateMessage}
                             />
                         }
                     </div>
@@ -220,7 +220,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         if (response.isValidate) {
             return this.setState({
                 isValidate: response.isValidate,
-                // validateMessage: { response.validateMessage }
+                validateMessage: response.validateMessage,
+                isHandleEvent: false
             });
         }
 
@@ -286,10 +287,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
         if (!isShowModal) {
             document.body.classList.add('modal-open');
-            document.body.style.paddingRight = '17px';
         } else {
             document.body.attributes.removeNamedItem('class');
-            document.body.attributes.removeNamedItem('style');
         }
 
         this.setState({ isShowModal: !this.state.isShowModal });

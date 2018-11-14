@@ -185,7 +185,6 @@ export class Header extends React.Component<IHeader>{
         clearTimeout(this.state.time);
         const that = this;
         const timeout = setTimeout(() => {
-            console.log('auto');
             that.props.onFilter(that.state.filters);
         }, 800);
         this.setState({ time: timeout });
