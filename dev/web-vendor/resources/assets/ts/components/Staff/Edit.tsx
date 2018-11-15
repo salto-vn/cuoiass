@@ -2,9 +2,10 @@ import * as React from 'react';
 // import { Select } from '../../common/FormControls/Select';
 import Input from '../../common/FormControls/Input';
 // import * as HandleRequest from '../../api/HandleRequest';
-import { IStaff } from '../../interface/IStaff';
+import { IStaff, IValidateModel } from '../../interface/IStaff';
 import { isEmpty, showError } from '../../common/Utils';
-import StaffValidate from '../../common/Validate/StaffValidate';
+import ValidateStaff from '../../common/Validate/StaffValidate';
+import { ValidateModel } from '../../model/StaffModel';
 
 // interface ISourceDropdown {
 //     id: number;
@@ -27,9 +28,7 @@ interface IinitState {
     // source: ISourceDropdown[];
     model: IStaff;
     isDisableSave: boolean;
-    errors: {
-        [key: string]: string
-    }
+    clientError: IValidateModel
 }
 
 export default class StaffModal extends React.Component<IStaffModalProp, IinitState> {
@@ -38,7 +37,7 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
         // source: this.props.source,
         model: this.props.model,
         isDisableSave: this.props.isValidate,
-        errors: {}
+        clientError: new ValidateModel
     }
 
     static getDerivedStateFromProps(props: { isValidate: boolean }, state: { isDisableSave: boolean }) {
@@ -62,31 +61,24 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
 
     public handleSelect = (selectedValue: number) => {
         this.setState({
-            model: {
-                ...this.state.model,
-                album_id: selectedValue
-            }
+            model: { ...this.state.model, album_id: selectedValue }
         });
     }
 
     public handleChange = (isRequired: boolean, name: string, value: string) => {
         const isDisableSave = isEmpty(value) && isRequired;
+        const errMessage = ValidateStaff(isRequired, name, value);
 
-        const errors = StaffValidate(isDisableSave, isRequired, name, value);
-
-        console.log(isDisableSave);
         this.setState({
-            model: {
-                ...this.state.model,
-                [name]: value
-            },
+            model: { ...this.state.model, [name]: value },
+            clientError: { ...this.state.clientError, [name]: errMessage },
             isDisableSave
         });
     }
 
     public render() {
         const { modalTitle, onToggleModal, isCreate, errorInfo } = this.props;
-        const { model, isDisableSave } = this.state;
+        const { model, isDisableSave, clientError } = this.state;
 
         return (
             <>
@@ -102,11 +94,11 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
                                     <div className="row">
                                         <div className="form-group col-md-6 h85">
                                             <Input label={'Tên'} name={'staff_name'} type={'text'} required={true} value={model.staff_name || ''} handleInput={this.handleChange.bind(this, true)} />
-                                            {<span className={'required'}>{showError(errorInfo, 'staff_name')}</span>}
+                                            {<span className={'required'}>{showError(clientError, errorInfo, 'staff_name')}</span>}
                                         </div>
                                         <div className="form-group col-md-6 h85">
                                             <Input label={'Email'} name={'email'} type={'text'} required={true} value={model.email || ''} handleInput={this.handleChange.bind(this, true)} />
-                                            {<span className={'required'}>{showError(errorInfo, 'email')}</span>}
+                                            {<span className={'required'}>{showError(clientError, errorInfo, 'email')}</span>}
                                         </div>
                                         {/* <div className="form-group col-md-6">
                                             <Select
@@ -122,17 +114,17 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
                                     <div className="row">
                                         <div className="form-group col-md-6 h85">
                                             <Input label={'Điện thoại'} name={'phone'} type={'text'} required={true} value={model.phone || ''} handleInput={this.handleChange.bind(this, true)} />
-                                            {<span className={'required'}>{showError(errorInfo, 'phone')}</span>}
+                                            {<span className={'required'}>{showError(clientError, errorInfo, 'phone')}</span>}
                                         </div>
                                         <div className="form-group col-md-6 h85">
                                             <Input label={'Mật khẩu'} name={'password'} type={'password'} required={isCreate ? true : false} value={model.password || ''} handleInput={this.handleChange.bind(this, isCreate ? true : false)} />
-                                            {<span className={'required'}>{showError(errorInfo, 'phone')}</span>}
+                                            {<span className={'required'}>{showError(clientError, errorInfo, 'phone')}</span>}
                                         </div>
                                     </div>
                                     <div className="row">
                                         <div className="form-group col-md-12 h85">
                                             <Input label={'Địa chỉ'} name={'address'} type={'text'} required={false} value={model.address || ''} handleInput={this.handleChange.bind(this, false)} />
-                                            {<span className={'required'}>{showError(errorInfo, 'phone')}</span>}
+                                            {<span className={'required'}>{showError(clientError, errorInfo, 'phone')}</span>}
                                         </div>
                                     </div>
                                 </form>

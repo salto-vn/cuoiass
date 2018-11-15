@@ -17,8 +17,16 @@ export const objectToQueryString = (params: object | any, glue: string = ':', de
  * 
  * @return boolean
  */
-export const isEmpty = (value: any) => {
-    return (value === undefined || value === null || value === '');
+export const showError = (clientError: any, errorInfo: any, key: string) => {
+    if (clientError[key] && !isEmpty(clientError[key])) {
+        return clientError[key];
+    }
+
+    if (errorInfo.errors[key] && Array.isArray(errorInfo.errors[key])) {
+        return errorInfo.errors[key][0];
+    }
+
+    return '';
 }
 
 /**
@@ -27,10 +35,10 @@ export const isEmpty = (value: any) => {
  * 
  * @return boolean
  */
-export const showError = (errorInfo: any, key: string) => {
-    if (errorInfo.errors[key] && Array.isArray(errorInfo.errors[key])) {
-        return errorInfo.errors[key][0];
-    }
+export const isEmpty = (value: any) => {
+    return (value === undefined || value === null || value === '');
+}
 
-    return '';
+export const isEmail = (email: string) => {
+    return email.match(/^[a-z][a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/g);
 }

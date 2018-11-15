@@ -31,6 +31,18 @@ export interface IStaffFilter {
 export interface IValidateField {
     errors: any
 }
+
+export interface IValidateModel {
+    staff_id: string;
+    vendor_id: string;
+    role_id: string;
+    staff_name: string;
+    email: string;
+    password: string;
+    phone: string;
+    address: string;
+}
+
 export interface IStaffState {
     staffGrid: IStaffList[];
     model: IStaff;
