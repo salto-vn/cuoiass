@@ -12,6 +12,23 @@ export const objectToQueryString = (params: object | any, glue: string = ':', de
 };
 
 /**
+ * Check key in object not empty value
+ * 
+ * @param params 
+ * @param glue 
+ * @param delimiter 
+ * 
+ * @return boolean
+ */
+export const isEmptyKeyInObject = (params: object) => {
+    if (Object.keys(JSON.parse(JSON.stringify(params))).length) {
+        return true;
+    }
+
+    return false;
+};
+
+/**
  * 
  * @param value 
  * 
@@ -37,8 +54,4 @@ export const showError = (clientError: any, errorInfo: any, key: string) => {
  */
 export const isEmpty = (value: any) => {
     return (value === undefined || value === null || value === '');
-}
-
-export const isEmail = (email: string) => {
-    return email.match(/^[a-z][a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/g);
 }

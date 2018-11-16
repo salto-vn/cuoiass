@@ -82,7 +82,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                         <div className="col-md-12">
                             <div className="panel panel-white">
                                 <div className="panel-heading flex justify-content-between align-items-center">
-                                    <h4 className="panel-title">Danh sách nhân viên</h4>
+                                    <button type="button" className="btn btn-success" onClick={this.onToggleModal.bind(this, true)}>Thêm mới</button>
                                     <div>
                                         <DisplayNoPage
                                             onChange={this.handleDisplayNoPage}
@@ -125,7 +125,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                 modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
                                 model={this.state.model}
                                 onToggleModal={this.onToggleModal}
-                                onSaveModel={this.onSave}
+                                onCreate={this.onCreate}
+                                onUpdate={this.onUpdate}
                                 isCreate={this.state.isCreate}
                                 isValidate={this.state.isValidate}
                                 errorInfo={this.state.validateMessage}
@@ -205,12 +206,46 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * Save model
      */
-    public onSave = async (model: any) => {
+    public onCreate = async (model: any) => {
         if (this.state.isHandleEvent) {
             return;
         }
 
         this.setState({ isHandleEvent: true });
+
+        const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
+
+        if (response.isError) {
+            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        if (response.isValidate) {
+            return this.setState({
+                isValidate: response.isValidate,
+                validateMessage: response.validateMessage,
+                isHandleEvent: false
+            });
+        }
+
+        this.setState({
+            isHandleEvent: false,
+            isCreate: false
+        }, () => {
+            this.onToggleModal();
+            this.getListStaff();
+        });
+    }
+
+    /**
+     * Save model
+     */
+    public onUpdate = async (model: any) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
         const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
 
         if (response.isError) {
@@ -247,7 +282,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     private handleFilter = (filtes: IStaffFilter) => {
         const filters = objectToQueryString(filtes);
         this.setState({
-            filters, isCLickPaginate: false
+            filters: filters ? filters : undefined,
+            isCLickPaginate: false
         }, () => {
             this.getListStaff();
         })
@@ -282,7 +318,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * Show popup modal
      */
-    private onToggleModal = () => {
+    private onToggleModal = (isCreate: boolean = false) => {
         const { isShowModal } = this.state;
 
         if (!isShowModal) {
@@ -291,6 +327,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
             document.body.attributes.removeNamedItem('class');
         }
 
-        this.setState({ isShowModal: !this.state.isShowModal });
+        const model = isCreate ? new StaffModel : this.state.model;
+        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate });
     }
 }

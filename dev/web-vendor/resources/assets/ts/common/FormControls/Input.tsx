@@ -37,6 +37,7 @@ export default class InputText extends React.Component<IInputTextProps, { isEmpt
                     type={type}
                     value={value}
                     onChange={this.onChange}
+                    onBlur={this.onChange}
                     defaultValue={defaultValue}
                 />
                 <label>{label}</label>
