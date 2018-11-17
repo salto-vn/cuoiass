@@ -7,13 +7,13 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
         }
 
         if (max(value, 100)) {
-            return "Tên không được vượt quá 100 ký tự";
+            return "Tên nhân viên không được vượt quá 100 ký tự";
         }
     }
 
     if (isRequired && name === "email") {
         if (required(value)) {
-            return "Vui lòng nhập email";
+            return "Email không được để trống";
         }
 
         if (!email(value)) {
@@ -25,10 +25,6 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
         if (required(value)) {
             return "Vui lòng nhập số điện thoại";
         }
-
-        // if (!isEmail(value)) {
-        //     return "Định dạng email không đúng";
-        // }
     }
 
 
@@ -47,7 +43,8 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
     }
 
     if (!isRequired && name === "password") {
-        if (min(value, 1) && max(value, 6)) {
+
+        if (value && min(value, 6)) {
             return "Mật khẩu phải nhiều hơn 6 ký tự";
         }
 

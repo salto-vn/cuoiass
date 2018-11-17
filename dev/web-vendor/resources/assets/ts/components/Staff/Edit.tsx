@@ -70,12 +70,12 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
             clientError: { ...this.state.clientError, [name]: errMessage },
         }, () => {
             this.canSubmit();
-        });
+        }
+        );
     }
 
     public canSubmit = () => {
         const { clientError } = this.state;
-        console.log(clientError);
         if (isEmptyKeyInObject(clientError)) {
             console.log(isEmptyKeyInObject(clientError))
             return this.setState({ isSubmitDisabled: false });
