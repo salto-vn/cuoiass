@@ -54,7 +54,8 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
             return;
         }
 
-        this.props.isCreate ? this.props.onCreate(this.state.model) : this.props.onUpdate(this.state.model);
+        const { model } = this.state;
+        this.props.isCreate ? this.props.onCreate(model) : this.props.onUpdate(model);
     }
 
     public handleSelect = (selectedValue: number) => {
@@ -70,14 +71,12 @@ export default class StaffModal extends React.Component<IStaffModalProp, IinitSt
             clientError: { ...this.state.clientError, [name]: errMessage },
         }, () => {
             this.canSubmit();
-        }
-        );
+        });
     }
 
     public canSubmit = () => {
         const { clientError } = this.state;
         if (isEmptyKeyInObject(clientError)) {
-            console.log(isEmptyKeyInObject(clientError))
             return this.setState({ isSubmitDisabled: false });
         }
 

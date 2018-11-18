@@ -196,11 +196,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({
             model: response.result,
             isHandleEvent: false,
-        }, () => this.onToggleModal());
-    }
-
-    private handleDelete = (id: any) => {
-        console.log(id);
+        }, () => this.onToggleModal()
+        );
     }
 
     /**
@@ -213,7 +210,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
         this.setState({ isHandleEvent: true });
 
-        const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
+        const response = await HandleRequest.Store(APP_URL.STAFF, model);
 
         if (response.isError) {
             return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
@@ -262,11 +259,30 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
         this.setState({
             isHandleEvent: false,
-            isCreate: false
         }, () => {
             this.onToggleModal();
             this.getListStaff();
         });
+    }
+
+    /**
+     * 
+     */
+    private handleDelete = async (id: string) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
+        const response = await HandleRequest.Destroy(APP_URL.STAFF, id);
+
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        this.setState({ isHandleEvent: false });
+        this.getListStaff();
     }
 
     private handleSort = () => {

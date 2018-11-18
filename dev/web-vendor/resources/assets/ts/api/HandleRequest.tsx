@@ -121,8 +121,8 @@ export const Update = async (url: string, model: object, id: string | number) =>
  * 
  * @return HandleResponse
  */
-export const Destroy = async (url: string) => {
-    const result = await fetch(`${url}`, {
+export const Destroy = async (url: string, id: string) => {
+    const result = await fetch(`${url}/${id}`, {
         method: "DELETE",
         headers: headerOptions
     });
