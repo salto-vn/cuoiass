@@ -29,7 +29,6 @@ class StaffRepo extends Repository
         return Staff::class;
     }
 
-
     /**
      * @param $search
      * @param $offset

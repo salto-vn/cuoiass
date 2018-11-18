@@ -29,16 +29,21 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         model: new StaffModel,
         isLoading: false,
         isCLickPaginate: false,
+        isHandleEvent: false,
         itemRepeat: CONSTANT.ITEM_REPEAT,
         limit: CONSTANT.LIMIT,
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
         pageRange: CONSTANT.PAGE_RANGE_DISPLAY,
         isError: false,
+        isErrorList: false,
+        isValidate: false,
         errorInfo: '',
+        validateMessage: { errors: '' },
         activePage: CONSTANT.CURRENT_PAGE,
         tableHeader: [],
-        filters: CONSTANT.UNDEFINED
+        filters: CONSTANT.UNDEFINED,
+        isCreate: false
     };
 
     /**
@@ -56,7 +61,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * Render view
      */
     public render() {
-        const { staffGrid, isError, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, tableHeader, isShowModal } = this.state;
+        const { staffGrid, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, isErrorList, tableHeader } = this.state;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -77,7 +82,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                         <div className="col-md-12">
                             <div className="panel panel-white">
                                 <div className="panel-heading flex justify-content-between align-items-center">
-                                    <h4 className="panel-title">Danh sách nhân viên</h4>
+                                    <button type="button" className="btn btn-success" onClick={this.onToggleModal.bind(this, true)}>Thêm mới</button>
                                     <div>
                                         <DisplayNoPage
                                             onChange={this.handleDisplayNoPage}
@@ -97,11 +102,12 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                                         totalItem={totalItem}
                                         pageRange={pageRange}
                                         dataSet={listdata}
-                                        limit={limit} isError={isError}
+                                        limit={limit}
+                                        isError={isErrorList}
                                         isLoading={isLoading}
                                         isCLickPaginate={isCLickPaginate}
                                         errorInfo={errorInfo}
-                                        desc='Feedback data' onSort={this.handleSort}
+                                        desc='Staff data' onSort={this.handleSort}
                                         canEdit={true} onEdit={this.handleEdit}
                                         canDelete={true} onDelete={this.handleDelete}
                                         canView={false} onView={this.handleEdit}
@@ -114,12 +120,16 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
                     </div>
                     <div className="row">
                         {
-                            isShowModal &&
+                            this.state.isShowModal &&
                             <StaffModal
-                                modalTitle={"Add title"}
+                                modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
                                 model={this.state.model}
                                 onToggleModal={this.onToggleModal}
-                                onSaveModel={this.onSave}
+                                onCreate={this.onCreate}
+                                onUpdate={this.onUpdate}
+                                isCreate={this.state.isCreate}
+                                isValidate={this.state.isValidate}
+                                errorInfo={this.state.validateMessage}
                             />
                         }
                     </div>
@@ -133,20 +143,20 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      */
     private setTableHeader = (sortIcon: string = 'sort') => {
         const tableHeader = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon },
-            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon },
-            { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon },
-            { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon },
-            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon }
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon, allowSort: false },
+            { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon, allowSort: true },
+            { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'action', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false }
         ];
         this.setState({ tableHeader });
     }
 
     /**
      * Get staff data
-     * Return: not need to return set to state is OK
+     * @return not need to return set to state is OK
      */
     private getListStaff = async () => {
         const { activePage, limit, filters } = this.state;
@@ -156,7 +166,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, undefined, undefined, filters);
 
         if (response.isError) {
-            return this.setState({ isError: response.isError, errorInfo: response.message });
+            return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }
 
         this.setState({
@@ -166,29 +176,113 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         });
     }
 
+    /**
+     * @param id: string | number
+     * @return model
+     */
     private handleEdit = async (id: string | number) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
         const response = await HandleRequest.Edit(APP_URL.STAFF, id);
 
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
 
-        // console.log(response.result);
-        // this.setState({
-        //     model: { ...this.state.model, response.result }
-        // });
-
-    }
-
-    private handleDelete = (id: any) => {
-        console.log(id);
+        this.setState({
+            model: response.result,
+            isHandleEvent: false,
+        }, () => this.onToggleModal()
+        );
     }
 
     /**
      * Save model
      */
-    public onSave = (dataChild: any) => {
-        console.log(dataChild);
+    public onCreate = async (model: any) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
+        const response = await HandleRequest.Store(APP_URL.STAFF, model);
+
+        if (response.isError) {
+            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        if (response.isValidate) {
+            return this.setState({
+                isValidate: response.isValidate,
+                validateMessage: response.validateMessage,
+                isHandleEvent: false
+            });
+        }
+
+        this.setState({
+            isHandleEvent: false,
+            isCreate: false
+        }, () => {
+            this.onToggleModal();
+            this.getListStaff();
+        });
+    }
+
+    /**
+     * Save model
+     */
+    public onUpdate = async (model: any) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
+        const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
+
+        if (response.isError) {
+            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        if (response.isValidate) {
+            return this.setState({
+                isValidate: response.isValidate,
+                validateMessage: response.validateMessage,
+                isHandleEvent: false
+            });
+        }
+
+        this.setState({
+            isHandleEvent: false,
+        }, () => {
+            this.onToggleModal();
+            this.getListStaff();
+        });
+    }
+
+    /**
+     * 
+     */
+    private handleDelete = async (id: string) => {
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        this.setState({ isHandleEvent: true });
+
+        const response = await HandleRequest.Destroy(APP_URL.STAFF, id);
+
+        if (response.isError) {
+            return this.setState({ isError: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        this.setState({ isHandleEvent: false });
+        this.getListStaff();
     }
 
     private handleSort = () => {
@@ -204,7 +298,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     private handleFilter = (filtes: IStaffFilter) => {
         const filters = objectToQueryString(filtes);
         this.setState({
-            filters, isCLickPaginate: false
+            filters: filters ? filters : undefined,
+            isCLickPaginate: false
         }, () => {
             this.getListStaff();
         })
@@ -239,17 +334,16 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * Show popup modal
      */
-    private onToggleModal = () => {
+    private onToggleModal = (isCreate: boolean = false) => {
         const { isShowModal } = this.state;
 
         if (!isShowModal) {
             document.body.classList.add('modal-open');
-            document.body.style.paddingRight = '17px';
         } else {
             document.body.attributes.removeNamedItem('class');
-            document.body.attributes.removeNamedItem('style');
         }
 
-        this.setState({ isShowModal: !this.state.isShowModal });
+        const model = isCreate ? new StaffModel : this.state.model;
+        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate });
     }
 }
