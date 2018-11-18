@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Review\GetRequest;
+use App\Models\Image;
 use App\Models\Review;
 use App\Repositories\ReviewRepo;
 use Illuminate\Http\Request;
@@ -72,8 +73,35 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        //
-        return $review;
+
+        $review['product'] = $review->product()->get(["prd_id","prd_cd","prd_name","prd_desc", "prd_images"]);
+        if (isset($review['product'][0])) {
+            $images = explode(",",$review['product'][0]["prd_images"]);
+            $imgs = array();
+            foreach ($images as $img) {
+                $img_url = Image::query()->find($img,["img_url"]);
+                if (isset($img_url)) {
+                    $imgs[] = $img_url->value("img_url");
+                }
+
+            }
+            $review['product'][0]["prd_images"] = $imgs;
+        }
+        if (isset($review['review_imgs'])) {
+            $images = explode(",",$review['review_imgs']);
+            $imgs = array();
+            foreach ($images as $img) {
+                $img_url = Image::query()->find($img,["img_url"]);
+                if (isset($img_url)) {
+                    $imgs[] = $img_url->value("img_url");
+                }
+
+            }
+            $review['review_imgs'] = $imgs;
+        }
+        $review['customer'] = $review->customer()->get(["customer_id","first_name","last_name","email"]);
+        $review['booking'] = $review->booking()->get(["try_date", "activate_date","booked_date", "booked_cd","booked_pro_name"]);
+        return response()->json($review);
     }
 
     /**

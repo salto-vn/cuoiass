@@ -61,7 +61,7 @@ class Review extends Eloquent
 
 	public function customer()
 	{
-		return $this->belongsTo(\App\Models\Customer::class);
+		return $this->belongsTo(\App\Models\Customer::class, 'customer_id');
 	}
 
 	public function booking()

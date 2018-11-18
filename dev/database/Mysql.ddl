@@ -243,6 +243,9 @@ drop table if exists `reviews` cascade;
 ##* restorefromtemptable
 create table `reviews` (
     `review_id` int(11) auto_increment not null comment 'review id'
+  , `review_title` longtext comment 'review title'
+  , `review_response_vendor_id` int null comment 'review vendor id'
+  , `review_response_content` longtext null comment 'review response'
   , `review_content` longtext not null comment 'review content'
   , `review_date` date not null comment 'review date'
   , `review_rate` float not null comment 'review rate'

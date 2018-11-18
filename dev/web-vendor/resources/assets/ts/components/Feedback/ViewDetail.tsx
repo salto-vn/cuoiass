@@ -76,8 +76,7 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
         // };
 
         const response = await HandleRequest.findOne(API_URL.REVIEW, id);
-
-        let model = Object.assign(new FeedbackModel(), response);
+        let model = Object.assign(new FeedbackModel(), response.result);
         this.setState({
             model
         })
@@ -85,7 +84,7 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
 
     public handleClickPhoto = (index: any) => {
         const { model } = this.state;
-        this.setState({ isShowImageModal: true, image: model.images[index] });
+        this.setState({ isShowImageModal: true, image: model.review_imgs[index] });
     }
 
     public onToggle = (event: any) => {
@@ -99,10 +98,23 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
 
     render() {
         const { model, image, isShowImageModal } = this.state;
-
+        var product_info;
+        if (model.product[0] !== undefined) {
+            product_info = <div className="row">
+                <div className="col-md-2 text-center no-p">
+                    <img width="100" alt="100x100" title="100x100" src={model.product[0].prd_images[0]} />
+                </div>
+                <div className="col-md-10 no-p" >
+                    <h5 className="mt-0">{model.product[0].prd_name}</h5>
+                    <p>{model.product[0].prd_desc}</p>
+                </div>
+            </div>;
+        } else {
+            product_info = <div className="row"></div>;
+        }
         return <>
             <div className="page-title" >
-                <h3 className="breadcrumb-header">Mã số đánh giá: {model.feedbackId}</h3>
+                <h3 className="breadcrumb-header">Mã số đánh giá: {model.review_id}</h3>
             </div>
             <div id="main-wrapper">
                 <div className="row">
@@ -111,15 +123,7 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
                             <div className="panel-heading flex justify-content-between align-items-center">
                                 <h4 className="panel-title">Sản phẩm</h4>
                             </div>
-                            <div className="row">
-                                <div className="col-md-2 text-center no-p">
-                                    <img width="100" alt="100x100" title="100x100" src={model.product.image_urls[0]} />
-                                </div>
-                                <div className="col-md-10 no-p" >
-                                    <h5 className="mt-0">{model.product.name}</h5>
-                                    <p>{model.product.description}</p>
-                                </div>
-                            </div>
+                            {product_info}
 
                         </div>
                         <div className="panel panel-white">
@@ -129,51 +133,53 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
                             <div className="panel-body " >
                                 <div className="row">
                                     <div className="col-md-4">
-                                        <Carousel onClickItem={this.handleClickPhoto}>
-                                            {model.images.map((image, key) =>
-                                                <div key={key}>
-                                                    <img key={key} src={image} />
-                                                </div>
-                                            )}
-                                        </Carousel>
-
+                                        {model.review_imgs !== undefined ?
+                                            <Carousel onClickItem={this.handleClickPhoto}>
+                                                {model.review_imgs.map((image, key) =>
+                                                    <div key={key}>
+                                                        <img key={key} src={image} />
+                                                    </div>
+                                                )}
+                                            </Carousel>
+                                            : ''}
                                     </div>
                                     <div className="col-md-8 no-p">
                                         <div>
                                             <h4 className="mt-0">
-                                                <Link to="/booking/1"> {model.booking.id}</Link>
+                                                {model.booking[0] !== undefined ? <Link to={"/booking/" + model.booking[0].booked_id}> {model.booking[0].booked_id}</Link> : ''}
                                             </h4>
                                             <div className="row">
                                                 <label className="col-md-2">Ngày đặt </label>
-                                                <div className="col-md-10">{model.booking.booked_date}</div>
+                                                <div className="col-md-10">{model.booking[0] !== undefined ? model.booking[0].booked_date : ''}</div>
+
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Ngày tổ chức</label>
-                                                <div className="col-md-10">{model.booking.activate_date}</div>
+                                                <div className="col-md-10">{model.booking[0] !== undefined ? model.booking[0].activate_date : ''}</div>
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Đánh giá</label>
-                                                <div className="col-md-10 f-size-40"><StartRate disabled={true} value={4.5} /></div>
+                                                <div className="col-md-10 f-size-40"><StartRate disabled={true} value={model.review_rate} /></div>
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Tên</label>
-                                                <div className="col-md-10">{model.customer.name}</div>
+                                                <div className="col-md-10">{model.customer[0] !== undefined ? model.customer[0].first_name + " " + model.customer[0].last_name : ''}</div>
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Email</label>
-                                                <div className="col-md-10 ">{model.customer.email}</div>
+                                                <div className="col-md-10">{model.customer[0] !== undefined ? model.customer[0].email : ''}</div>
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Ngày</label>
-                                                <div className="col-md-10">{model.date}</div>
+                                                <div className="col-md-10">{model.review_date}</div>
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Tiêu đề</label>
-                                                <div className="col-md-10">{model.title}</div>
+                                                <div className="col-md-10">{model.review_title}</div>
                                             </div>
                                             <div className="row">
                                                 <label className="col-md-2">Nội dung</label>
-                                                <div className="col-md-10">{model.content}</div>
+                                                <div className="col-md-10">{model.review_content}</div>
                                             </div>
                                         </div>
                                         <div className="m-t-md">

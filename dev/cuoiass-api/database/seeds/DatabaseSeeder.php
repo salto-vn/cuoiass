@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         Vendor::truncate();
         Role::truncate();
         Product::truncate();
+        \App\Models\Booking::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
 
 

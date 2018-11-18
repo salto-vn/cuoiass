@@ -18,11 +18,11 @@ export class StartRate extends React.Component<{ disabled: boolean, value: numbe
         })
     }
 
+
     render() {
         const stars = [];
-        const { value } = this.state;
+        const value = (this.props.value === undefined) ? this.state.value : this.props.value;
         const { disabled } = this.props;
-
         for (let index = 1; index <= 5; index++) {
             if (value >= index) {
                 if (disabled) {

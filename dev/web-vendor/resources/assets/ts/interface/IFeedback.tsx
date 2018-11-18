@@ -29,15 +29,22 @@ export interface FeedbackItem {
 
 
 export interface IFeedback {
-    feedbackId: string;
-    date: string;
-    title: string;
-    content: string;
-    images: string[];
-    rate: number;
-    product: IProduct;
-    customer: ICustomer;
-    booking: IBooking;
+    review_id: number;
+    review_content: string;
+    review_title: string;
+    review_date: string;
+    review_rate: number;
+    review_imgs?: string[];
+    prd_id: number;
+    booked_id: number;
+    customer_id: number;
+    created_by: string;
+    created_at: string;
+    updated_by: string;
+    updated_at: string;
+    product: IProduct[];
+    customer: ICustomer[];
+    booking: IBooking[];
 }
 
 export interface IFeedbackList {
