@@ -48,14 +48,14 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         //TODO
         const sortIcon: string = 'sort';
         var feedbacHeader = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon },
-            { id: 'msp', title: 'MSP', className: 'w100', dataType: 'text', sortClass: sortIcon },
-            { id: 'tsp', title: 'Tên sản phẩm', className: 'w150', dataType: 'text', sortClass: sortIcon },
-            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'w150', sortClass: sortIcon },
-            { id: 'ngay', title: 'Ngày', className: 'w100', dataType: 'date', sortClass: sortIcon },
-            { id: 'nd', title: 'Nội dung', className: '', dataType: 'text', sortClass: sortIcon },
-            { id: 'tl', title: 'Tỷ lệ', className: 'w100', dataType: 'text', sortClass: sortIcon },
-            { id: '', title: 'Actions', className: 'w100', dataType: 'none', sortClass: sortIcon }
+            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon, allowSort: false },
+            { id: 'msp', title: 'MSP', className: 'w100', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'tsp', title: 'Tên sản phẩm', className: 'w150', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'tnd', title: 'Tên người dùng', dataType: 'text', className: 'w150', sortClass: sortIcon, allowSort: true },
+            { id: 'ngay', title: 'Ngày', className: 'w100', dataType: 'date', sortClass: sortIcon, allowSort: true },
+            { id: 'nd', title: 'Nội dung', className: '', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'tl', title: 'Tỷ lệ', className: 'w100', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: '', title: 'Actions', className: 'w100', dataType: 'none', sortClass: sortIcon, allowSort: false }
         ];
         this.setState({ feedbacHeader })
         this.getListFeedback();

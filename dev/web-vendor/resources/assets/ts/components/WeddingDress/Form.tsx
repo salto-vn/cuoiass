@@ -82,7 +82,7 @@ export default class WeddingDressModal extends React.Component<IWeddingDressModa
                                 <form className="form-inline">
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Tên'} name={'title'} required={true} value={model.title || ''} handleInput={this.handleChange} />
+                                            <Input label={'Tên'} name={'title'} type={'text'} required={true} value={model.title || ''} handleInput={this.handleChange} />
                                         </div>
                                         <div className="form-group col-md-6">
                                             <Select
@@ -98,10 +98,10 @@ export default class WeddingDressModal extends React.Component<IWeddingDressModa
                                     </div>
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Type'} name={'type'} required={true} value={model.type || ''} handleInput={this.handleChange} />
+                                            <Input label={'Type'} name={'type'} type={'text'} required={true} value={model.type || ''} handleInput={this.handleChange} />
                                         </div>
                                         <div className="form-group col-md-6">
-                                            <Input label={'Style'} name={'style'} required={true} value={model.style || ''} handleInput={this.handleChange} />
+                                            <Input label={'Style'} name={'style'} type={'text'} required={true} value={model.style || ''} handleInput={this.handleChange} />
                                         </div>
                                     </div>
                                 </form>

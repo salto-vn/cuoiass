@@ -50,4 +50,32 @@ class Handler extends ExceptionHandler
     {
         return parent::render($request, $exception);
     }
+
+    /**
+     * Prepare a response for the given exception.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception $e
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function prepareResponse($request, Exception $e)
+    {
+        if (!app()->isLocal()) {
+            return response('DO NOT ALLl');
+        }
+
+        return parent::prepareResponse($request, $e);
+    }
+
+    /**
+     * Convert a validation exception into a JSON response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Validation\ValidationException  $exception
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        return response()->json(['errors' => $exception->errors()], $exception->status);
+    }
 }

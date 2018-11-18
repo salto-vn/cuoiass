@@ -90,6 +90,7 @@ export interface ITh {
     className: string;
     dataType: string;
     sortClass?: any;
+    allowSort: boolean;
 
 }
 
@@ -150,7 +151,11 @@ export class Header extends React.Component<IHeader>{
      * @event Change Page click event
      * call event via properties
      */
-    handleSortClicked = (key: any, index: any) => {
+    handleSortClicked = (key: any, index: any, allowSort: boolean) => {
+        if (!allowSort) {
+            return;
+        }
+
         const { onSort } = this.props;
         //Call event onSort if have set
         if (typeof onSort !== "undefined") {
@@ -159,9 +164,10 @@ export class Header extends React.Component<IHeader>{
     }
 
     /**
-     * @event Get all filter and set state: filters
+     * @param evt: any
+     * @event onFilter through props
      */
-    handleGetFilter = (evt: any) => {
+    handleFilter = (evt: any) => {
         const { onFilter } = this.props;
         if (typeof onFilter === "undefined") {
             return;
@@ -172,17 +178,16 @@ export class Header extends React.Component<IHeader>{
                 ...this.state.filters,
                 [evt.target.name]: evt.target.value ? evt.target.value : undefined
             }
+        }, () => {
+            return;
         });
-    }
 
-    /**
-     * @param evt: any
-     * @event onFilter through props
-     */
-    handleFilter = (evt: any) => {
-        if (evt.charCode === 13 || evt.type === 'Enter') {
-            this.props.onFilter(this.state.filters);
-        }
+        clearTimeout(this.state.time);
+        const that = this;
+        const timeout = setTimeout(() => {
+            that.props.onFilter(that.state.filters);
+        }, 800);
+        this.setState({ time: timeout });
     }
 
     /**
@@ -230,13 +235,13 @@ export class Header extends React.Component<IHeader>{
                 value={this.state.date}
             />;
         } else if (dataType === "list") {
-            return <select onChange={this.handleGetFilter} id={id} name={id} className="form-control form-select-options">
+            return <select onChange={this.handleFilter} id={id} name={id} className="form-control form-select-options">
                 {ds.map((data, key) => (
                     <option key={key}>{data}</option>
                 ))}
             </select>;
         } else if (dataType === "text") {
-            return <input onChange={this.handleGetFilter} onKeyPress={this.handleFilter} className="form-control" id={id} name={id} type="text" />
+            return <input onKeyUp={this.handleFilter} className="form-control" id={id} name={id} type="text" />
         } else if (dataType === "none") {
             return null;
         } else {
@@ -251,7 +256,7 @@ export class Header extends React.Component<IHeader>{
                 <tr role="row" key={0}>
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
-                            <div onClick={this.handleSortClicked.bind(this, thdata.id, key)}>
+                            <div onClick={this.handleSortClicked.bind(this, thdata.id, key, thdata.allowSort)}>
                                 {thdata.title}
                                 {key === 0 || key === dataSet.length - 1 ? '' : <FontAwesomeIcon icon={thdata.sortClass} />}
                             </div>
@@ -373,7 +378,6 @@ export class Table extends React.Component<ISourceProp, {}> {
     public render() {
         const { headers, dataSet, desc, onSort, headerClass, filterFlag, isLoading, isCLickPaginate, isError,
             canEdit, canView, canDelete, errorInfo } = this.props;
-
         return (
             <div className="table-responsive">
                 <table id="tabledata" className="table table-bordered table-hover custom-table" role="grid" aria-describedby={desc}>
@@ -426,7 +430,7 @@ export class Table extends React.Component<ISourceProp, {}> {
             return <LoadingPaginate width={300} height={30} />;
         }
 
-        if (totalItem === 0) {
+        if (totalItem === 0 || totalItem <= limit) {
             return null;
         }
 
