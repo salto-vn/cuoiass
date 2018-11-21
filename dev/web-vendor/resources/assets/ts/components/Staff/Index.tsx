@@ -4,7 +4,7 @@ import { StaffModel } from '../../model/StaffModel';
 import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
-import { Table } from '../../common/Grid/Table';
+import { Table, ITh } from '../../common/Grid/Table';
 import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -43,7 +43,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         activePage: CONSTANT.CURRENT_PAGE,
         tableHeader: [],
         filters: CONSTANT.UNDEFINED,
-        isCreate: false
+        isCreate: false,
+        sortbyc: 'staff_id',
+        sortby: 'desc',
+        sortedIndex: 0
     };
 
     /**
@@ -159,11 +162,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * @return not need to return set to state is OK
      */
     private getListStaff = async () => {
-        const { activePage, limit, filters } = this.state;
+        const { activePage, limit, sortbyc, sortby, filters } = this.state;
 
         this.setState({ isLoading: true });
 
-        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, undefined, undefined, filters);
+        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, sortbyc, sortby, filters);
 
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
@@ -285,8 +288,40 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.getListStaff();
     }
 
-    private handleSort = () => {
-        console.log('Call API Sort');
+    private handleSort = (key: any, index: any) => {
+        const feedbacHeader: ITh[] = this.state.tableHeader;
+        let sortClass = feedbacHeader[index].sortClass;
+        const { sortedIndex } = this.state;
+
+        feedbacHeader[sortedIndex].sortClass = "sort";
+        switch (sortClass) {
+            case "sort":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-up":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-down":
+                feedbacHeader[index].sortClass = "sort-up"
+                break;
+            default:
+                feedbacHeader[index].sortClass = "sort"
+                break;
+        }
+
+        let sortby: string = "";
+        if ((sortClass === "sort") || (sortClass === "sort-up")) {
+            sortby = 'asc';
+        } else {
+            sortby = 'desc';
+        }
+
+        return this.setState((prevState) => ({
+            ...prevState, sortbyc: key, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+        }), () => {
+
+            this.getListStaff();
+        });
     }
 
     /**
@@ -344,6 +379,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         const model = isCreate ? new StaffModel : this.state.model;
-        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate });
+        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate, validateMessage: { errors: '' } });
     }
 }
