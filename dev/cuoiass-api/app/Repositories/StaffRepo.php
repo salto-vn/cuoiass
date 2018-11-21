@@ -31,7 +31,7 @@ class StaffRepo extends Repository
 
     /**
      * @param $search
-     * @param $offset
+     * @param $page
      * @param $limit
      * @param $orderBy
      * @param $sortBy
