@@ -71,7 +71,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         for (let i: number = 0; i < staffGrid.length; i++) {
             let item: IStaffList = staffGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.role_name, item.staff_id];
+            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.staff_id];
             listdata.push(data);
         }
 
@@ -151,7 +151,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
             { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon, allowSort: true },
             { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
             { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
             { id: 'action', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false }
         ];
         this.setState({ tableHeader });
