@@ -16,7 +16,7 @@ library.add(faSortUp)
 const subjectPage = 'Quản lý nhân viên'; //Header Content page
 
 /**
- * Feedback Screen Component
+ * Staff Screen Component
  * Display Staff list data, include paging 
  * Properties: N/A
  * State: Required IStaffState , Optional another variale
@@ -204,6 +204,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Save model
+     * 
+     * @return List staff have new record
      */
     public onCreate = async (model: any) => {
         if (this.state.isHandleEvent) {
@@ -237,6 +239,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Save model
+     * @param model
+     * 
+     * @return List staff
      */
     public onUpdate = async (model: any) => {
         if (this.state.isHandleEvent) {
@@ -268,7 +273,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     }
 
     /**
+     * @param id
      * 
+     * @return List staff
      */
     private handleDelete = async (id: string) => {
         if (this.state.isHandleEvent) {
@@ -287,6 +294,12 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.getListStaff();
     }
 
+    /**
+     * @param key
+     * @param index
+     * 
+     * @return List staff
+     */
     private handleSort = (key: any, index: any) => {
         const feedbacHeader: ITh[] = this.state.tableHeader;
         let sortClass = feedbacHeader[index].sortClass;
@@ -325,6 +338,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Set state for array filters and isCLickPaginate to make it paginate
+     * 
      * @param filtes
      * 
      * @return Get list staff
@@ -340,8 +354,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     }
 
     /**
-     * Event handle Page change
-     * Return: not need to return set to state is OK
+     * @event handle Page change
+     * @param pageNumber: number
+     * 
+     * @return List staff
      */
     private handlePageChange = (pageNumber: number) => {
         const { activePage } = this.state;
@@ -359,7 +375,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * @event Change perpage
      * 
-     * @return Get list staff
+     * @return List staf
      */
     private handleDisplayNoPage = (limit: number) => {
         this.setState({ limit }, () => this.getListStaff());
@@ -367,6 +383,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Show popup modal
+     * @param isCreate: boolean
      */
     private onToggleModal = (isCreate: boolean = false) => {
         const { isShowModal } = this.state;
