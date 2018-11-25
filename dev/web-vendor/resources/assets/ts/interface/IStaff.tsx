@@ -17,7 +17,6 @@ export interface IStaffList {
     email: string;
     phone: string;
     address: string;
-    role_name: string;
 }
 
 export interface IStaffFilter {

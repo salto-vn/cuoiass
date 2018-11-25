@@ -33,11 +33,11 @@ class StaffController extends Controller
     {
         $page = (int)$request->get('page');
         $limit = (int)$request->get('limit');
-        $orderBy = $request->get('orderBy', null);
-        $sortBy = $request->get('orderBy', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('sortbyc', null);
+        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
 
-        $data = $this->staffRepo->getList($search, $page, $limit, $orderBy, $sortBy);
+        $data = $this->staffRepo->getListStaffByVendor($search, $page, $limit, $orderBy, $sortBy);
 
         return $this->toJsonPaginate($data);
     }

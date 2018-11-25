@@ -31,23 +31,25 @@ class StaffRepo extends Repository
 
     /**
      * @param $search
-     * @param $offset
+     * @param $page
      * @param $limit
      * @param $orderBy
      * @param $sortBy
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getList($search, $page, $limit, $orderBy, $sortBy)
+    public function getListStaffByVendor($search, $page, $limit, $orderBy, $sortBy)
     {
+        //$vendorId = auth()->user()->vendor_id;
+        $vendorId = 1;
+
         $fieldsSearchable = $this->model->fieldsSearchable();
         $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
         $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
 
         $tblStaff = $this->getTable();
-        $tblRole = TBL::TBL_ROLES;
 
         $model = $this->model->newQuery();
-        $model->join($tblRole, "$tblStaff.role_id", '=', "$tblRole.role_id");
+        $model->where('vendor_id', $vendorId);
 
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
@@ -68,7 +70,6 @@ class StaffRepo extends Repository
             "$tblStaff.phone",
             "$tblStaff.email",
             "$tblStaff.address",
-            "$tblRole.role_name"
         ]);
 
 

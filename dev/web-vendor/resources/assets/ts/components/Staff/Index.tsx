@@ -4,7 +4,7 @@ import { StaffModel } from '../../model/StaffModel';
 import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
-import { Table } from '../../common/Grid/Table';
+import { Table, ITh } from '../../common/Grid/Table';
 import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +16,7 @@ library.add(faSortUp)
 const subjectPage = 'Quản lý nhân viên'; //Header Content page
 
 /**
- * Feedback Screen Component
+ * Staff Screen Component
  * Display Staff list data, include paging 
  * Properties: N/A
  * State: Required IStaffState , Optional another variale
@@ -43,7 +43,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         activePage: CONSTANT.CURRENT_PAGE,
         tableHeader: [],
         filters: CONSTANT.UNDEFINED,
-        isCreate: false
+        isCreate: false,
+        sortbyc: 'staff_id',
+        sortby: 'desc',
+        sortedIndex: 0
     };
 
     /**
@@ -68,7 +71,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         for (let i: number = 0; i < staffGrid.length; i++) {
             let item: IStaffList = staffGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.role_name, item.staff_id];
+            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.staff_id];
             listdata.push(data);
         }
 
@@ -143,12 +146,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      */
     private setTableHeader = (sortIcon: string = 'sort') => {
         const tableHeader = [
-            { id: 'id', title: '#', className: '', dataType: 'none', sortClass: sortIcon, allowSort: false },
+            { id: 'id', title: '#', className: 'w35 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false },
             { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'phone', title: 'Điện thoại', dataType: 'text', className: 'w150 text-center', sortClass: sortIcon, allowSort: true },
-            { id: 'email', title: 'Email', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'phone', title: 'Điện thoại', className: 'w150 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'email', title: 'Email', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
             { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'role_name', title: 'Quyền', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
             { id: 'action', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false }
         ];
         this.setState({ tableHeader });
@@ -159,11 +161,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * @return not need to return set to state is OK
      */
     private getListStaff = async () => {
-        const { activePage, limit, filters } = this.state;
+        const { activePage, limit, sortbyc, sortby, filters } = this.state;
 
         this.setState({ isLoading: true });
 
-        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, undefined, undefined, filters);
+        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, sortbyc, sortby, filters);
 
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
@@ -202,6 +204,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Save model
+     * 
+     * @return List staff have new record
      */
     public onCreate = async (model: any) => {
         if (this.state.isHandleEvent) {
@@ -235,6 +239,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Save model
+     * @param model
+     * 
+     * @return List staff
      */
     public onUpdate = async (model: any) => {
         if (this.state.isHandleEvent) {
@@ -266,7 +273,9 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     }
 
     /**
+     * @param id
      * 
+     * @return List staff
      */
     private handleDelete = async (id: string) => {
         if (this.state.isHandleEvent) {
@@ -285,12 +294,51 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.getListStaff();
     }
 
-    private handleSort = () => {
-        console.log('Call API Sort');
+    /**
+     * @param key
+     * @param index
+     * 
+     * @return List staff
+     */
+    private handleSort = (key: any, index: any) => {
+        const feedbacHeader: ITh[] = this.state.tableHeader;
+        let sortClass = feedbacHeader[index].sortClass;
+        const { sortedIndex } = this.state;
+
+        feedbacHeader[sortedIndex].sortClass = "sort";
+        switch (sortClass) {
+            case "sort":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-up":
+                feedbacHeader[index].sortClass = "sort-down"
+                break;
+            case "sort-down":
+                feedbacHeader[index].sortClass = "sort-up"
+                break;
+            default:
+                feedbacHeader[index].sortClass = "sort"
+                break;
+        }
+
+        let sortby: string = "";
+        if ((sortClass === "sort") || (sortClass === "sort-up")) {
+            sortby = 'asc';
+        } else {
+            sortby = 'desc';
+        }
+
+        return this.setState((prevState) => ({
+            ...prevState, sortbyc: key, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+        }), () => {
+
+            this.getListStaff();
+        });
     }
 
     /**
      * Set state for array filters and isCLickPaginate to make it paginate
+     * 
      * @param filtes
      * 
      * @return Get list staff
@@ -306,8 +354,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     }
 
     /**
-     * Event handle Page change
-     * Return: not need to return set to state is OK
+     * @event handle Page change
+     * @param pageNumber: number
+     * 
+     * @return List staff
      */
     private handlePageChange = (pageNumber: number) => {
         const { activePage } = this.state;
@@ -325,7 +375,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
     /**
      * @event Change perpage
      * 
-     * @return Get list staff
+     * @return List staf
      */
     private handleDisplayNoPage = (limit: number) => {
         this.setState({ limit }, () => this.getListStaff());
@@ -333,6 +383,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
 
     /**
      * Show popup modal
+     * @param isCreate: boolean
      */
     private onToggleModal = (isCreate: boolean = false) => {
         const { isShowModal } = this.state;
@@ -344,6 +395,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         }
 
         const model = isCreate ? new StaffModel : this.state.model;
-        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate });
+        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate, validateMessage: { errors: '' } });
     }
 }
