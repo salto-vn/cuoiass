@@ -40532,6 +40532,8 @@ var StarRate_1 = __webpack_require__(146);
 var react_router_dom_1 = __webpack_require__(24);
 var HandleRequest = tslib_1.__importStar(__webpack_require__(11));
 var Url_1 = tslib_1.__importDefault(__webpack_require__(35));
+var Utils_1 = __webpack_require__(16);
+var MessageModal_1 = __webpack_require__(154);
 var ViewImageModal = /** @class */ (function (_super) {
     tslib_1.__extends(ViewImageModal, _super);
     function ViewImageModal() {
@@ -40568,8 +40570,48 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
             model: new FeedbackModel_1.FeedbackModel(),
             isShowImageModal: false,
             image: '',
-            id: _this.props.match.params.id
+            id: _this.props.match.params.id,
+            clientError: new FeedbackModel_1.ValidateModel,
+            isSubmitDisabled: false,
+            isHandleEvent: false,
+            isError: false,
+            isErrorList: false,
+            isValidate: false,
+            validateMessage: { errors: "" },
+            errorInfo: '',
         };
+        _this.handleSubmit = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var _a, id, model, response;
+            return tslib_1.__generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (this.state.isHandleEvent) {
+                            return [2 /*return*/];
+                        }
+                        _a = this.state, id = _a.id, model = _a.model;
+                        this.setState({ isHandleEvent: true });
+                        return [4 /*yield*/, HandleRequest.Update(Url_1.default.REVIEW, model, id)];
+                    case 1:
+                        response = _b.sent();
+                        if (response.isError) {
+                            return [2 /*return*/, this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false })];
+                        }
+                        if (response.isValidate) {
+                            this.setState({
+                                isValidate: response.isValidate,
+                                validateMessage: response.validateMessage,
+                                isHandleEvent: false
+                            });
+                        }
+                        this.setState({
+                            isHandleEvent: false,
+                        }, function () {
+                            //
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        }); };
         _this.handleClickPhoto = function (index) {
             var model = _this.state.model;
             _this.setState({ isShowImageModal: true, image: model.review_imgs[index] });
@@ -40578,8 +40620,28 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
             var isShowImageModal = _this.state.isShowImageModal;
             _this.setState({ isShowImageModal: isShowImageModal ? false : true });
         };
+        _this.onShowError = function (event) {
+            var isValidate = _this.state.isValidate;
+            _this.setState({ isValidate: isValidate ? false : true });
+        };
         _this.handleRate = function (even) {
             console.log(even);
+        };
+        _this.onChangeInput = function (isRequired, item) {
+            var _a;
+            // const errMessage = ReviewValidate(isRequired, name, value);
+            _this.setState({
+                model: tslib_1.__assign({}, _this.state.model, (_a = {}, _a[item.target.name] = item.target.value ? item.target.value : undefined, _a)),
+            }, function () {
+                _this.canSubmit();
+            });
+        };
+        _this.canSubmit = function () {
+            var clientError = _this.state.clientError;
+            if (Utils_1.isEmptyKeyInObject(clientError)) {
+                return _this.setState({ isSubmitDisabled: false });
+            }
+            return _this.setState({ isSubmitDisabled: true });
         };
         return _this;
     }
@@ -40603,8 +40665,15 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
         });
     };
     ViewDetailFeedback.prototype.render = function () {
-        var _a = this.state, model = _a.model, image = _a.image, isShowImageModal = _a.isShowImageModal;
+        var _a = this.state, model = _a.model, image = _a.image, isShowImageModal = _a.isShowImageModal, validateMessage = _a.validateMessage, isValidate = _a.isValidate;
         var product_info;
+        var messages = [];
+        if (validateMessage.errors.hasOwnProperty("review_response_content")) {
+            messages.push(validateMessage.errors.review_response_content);
+        }
+        if (validateMessage.errors.hasOwnProperty("review_response_vendor_id")) {
+            messages.push(validateMessage.errors.review_response_vendor_id);
+        }
         if (model.product[0] !== undefined) {
             product_info = React.createElement("div", { className: "row" },
                 React.createElement("div", { className: "col-md-2 text-center no-p" },
@@ -40675,10 +40744,11 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
                                                     React.createElement("div", { className: "form-group col-md-11" },
                                                         React.createElement("label", { className: "no-m" }, "Tr\u1EA3 l\u1EDDi:"),
                                                         React.createElement("br", null),
-                                                        React.createElement("textarea", { style: { width: "100%" }, rows: 5 }))),
+                                                        React.createElement("textarea", { name: "review_response_content", style: { width: "100%" }, rows: 5, onChange: this.onChangeInput.bind(this, true), defaultValue: model.review_response_content }))),
                                                 React.createElement("div", null,
-                                                    React.createElement("button", { type: "button", id: "add-row", className: "btn btn-success" }, "L\u01B0u")))))))))),
-                React.createElement("div", { className: "row" }, isShowImageModal && React.createElement(ViewImageModal, { image: image, onToggle: this.onToggle }))));
+                                                    React.createElement("button", { type: "button", id: "add-row", onClick: this.handleSubmit, className: "btn btn-success " + (!this.state.isSubmitDisabled ? 'disabled' : '') }, "L\u01B0u")))))))))),
+                React.createElement("div", { className: "row" }, isShowImageModal && React.createElement(ViewImageModal, { image: image, onToggle: this.onToggle })),
+                React.createElement("div", { className: "row" }, (isValidate) && React.createElement(MessageModal_1.MessageModal, { onShowError: this.onShowError, title: "L\u1ED7i", message: messages }))));
     };
     return ViewDetailFeedback;
 }(React.Component));
@@ -40708,6 +40778,8 @@ var FeedbackModel = /** @class */ (function () {
         this.updated_by = "";
         this.updated_at = "";
         this.title = '';
+        this.review_response_vendor_id = 0;
+        this.review_response_content = '';
         this.product = [];
         this.customer = [];
         this.booking = [];
@@ -40715,6 +40787,15 @@ var FeedbackModel = /** @class */ (function () {
     return FeedbackModel;
 }());
 exports.FeedbackModel = FeedbackModel;
+var ValidateModel = /** @class */ (function () {
+    function ValidateModel() {
+        this.review_id = undefined;
+        this.review_response_vendor_id = undefined;
+        this.review_response_content = undefined;
+    }
+    return ValidateModel;
+}());
+exports.ValidateModel = ValidateModel;
 
 
 /***/ }),
@@ -42488,6 +42569,53 @@ exports.digitsBetween = function (value, min, max) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 152 */,
+/* 153 */,
+/* 154 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(2);
+var React = tslib_1.__importStar(__webpack_require__(0));
+var MessageModal = /** @class */ (function (_super) {
+    tslib_1.__extends(MessageModal, _super);
+    function MessageModal() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        /**
+         * handleToggle
+        */
+        _this.handleToggle = function (event) {
+            _this.props.onShowError(event);
+        };
+        return _this;
+    }
+    MessageModal.prototype.render = function () {
+        var message = this.props.message;
+        return React.createElement(React.Fragment, null,
+            React.createElement("div", { className: "modal fade in", ref: "message-box", style: { display: "block" } },
+                React.createElement("div", { className: "modal-dialog modal-sm" },
+                    React.createElement("div", { className: "modal-content" },
+                        React.createElement("div", { className: "modal-header" },
+                            React.createElement("button", { type: "button", className: "close", onClick: this.handleToggle },
+                                React.createElement("span", { "aria-hidden": "true" }, "\u00D7")),
+                            React.createElement("h4", { className: "modal-title" }, "L\u1ED7i")),
+                        React.createElement("div", { className: "modal-body" }, message.map(function (v, k) {
+                            return React.createElement("p", { key: k },
+                                v,
+                                React.createElement("br", null));
+                        })),
+                        React.createElement("div", { className: "modal-footer" },
+                            React.createElement("button", { type: "button", onClick: this.handleToggle, className: "btn btn-default" }, "Hu\u1EF7"))))),
+            React.createElement("div", { className: "modal-backdrop fade in", ref: "message-box-background", style: { display: "block" } }));
+    };
+    return MessageModal;
+}(React.Component));
+exports.MessageModal = MessageModal;
+
 
 /***/ })
 /******/ ]);

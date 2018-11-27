@@ -17,7 +17,15 @@ export class FeedbackModel implements IFeedback {
     public updated_by: string = "";
     public updated_at: string = "";
     public title: string = '';
+    public review_response_vendor_id: number = 0;
+    public review_response_content: string = '';
     public product: IProduct[] = [];
     public customer: ICustomer[] = [];
     public booking: IBooking[] = [];
+}
+
+export class ValidateModel {
+    public review_id = undefined;
+    public review_response_vendor_id = undefined;
+    public review_response_content = undefined;
 }

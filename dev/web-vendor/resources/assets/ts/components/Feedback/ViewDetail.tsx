@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { IVFeedbackState } from '../../interface/IFeedback';
-import { FeedbackModel } from '../../model/FeedbackModel';
+import { FeedbackModel, ValidateModel } from '../../model/FeedbackModel';
 import { Carousel } from 'react-responsive-carousel';
 import { StartRate } from '../../common/FormControls/StarRate';
 import { Link } from 'react-router-dom';
 import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
+import { isEmptyKeyInObject } from '../../common/Utils';
+import { MessageModal } from '../../common/Modals/MessageModal';
 
 export class ViewImageModal extends React.Component<{ image: string, onToggle: any }, {}>{
 
@@ -43,43 +45,54 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
         model: new FeedbackModel(),
         isShowImageModal: false,
         image: '',
-        id: this.props.match.params.id
+        id: this.props.match.params.id,
+        clientError: new ValidateModel,
+        isSubmitDisabled: false,
+        isHandleEvent:false,
+        isError: false,
+        isErrorList: false,
+        isValidate: false,
+        validateMessage: { errors: "" },
+        errorInfo:'',
     }
 
     async componentDidMount() {
         const { id } = this.state;
-        //TODO: Hard Data
-        // const response = {
-        //     feedbackId: params.id,
-        //     date: '2018-12-12',
-        //     title: 'Feedback Title',
-        //     content: 'Review content, Good Job!,',
-        //     images: ['https://apod.nasa.gov/apod/image/1502/HDR_MVMQ20Feb2015ouellet1024.jpg', 'http://apod.nasa.gov/apod/image/1502/2015_02_20_conj_bourque1024.jpg'],
-        //     rate: 4.5,
-        //     product: {
-        //         id: '1',
-        //         product_code: 'ABC001',
-        //         name: 'Product Name',
-        //         description: 'descriptiondescription',
-        //         image_urls: ['https://connec-place.com/wp-content/uploads/2018/08/2018-08-30-15.17.22.jpg', '']
-        //     },
-        //     customer: {
-        //         id: '1',
-        //         name: 'Ngo Tuan Anh2',
-        //         email: 'ngoanh@mulodo.com'
-        //     },
-        //     booking: {
-        //         id: 'CAS-0001',
-        //         booked_date: '2018-12-12',
-        //         activate_date: '2018-12-12',
-        //     }
-        // };
-
         const response = await HandleRequest.findOne(API_URL.REVIEW, id);
         let model = Object.assign(new FeedbackModel(), response.result);
         this.setState({
             model
         })
+    }
+
+
+    public handleSubmit = async () => {
+        
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        const { id, model } = this.state;
+        this.setState({ isHandleEvent: true });
+        const response = await HandleRequest.Update(API_URL.REVIEW,model, id);
+        if (response.isError) {
+            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+        }
+
+        if (response.isValidate) {
+            this.setState({
+                isValidate: response.isValidate,
+                validateMessage: response.validateMessage,
+                isHandleEvent: false
+            });
+        }
+        
+        this.setState({
+            isHandleEvent: false,
+        }, () => {
+            //
+        });
+        
     }
 
     public handleClickPhoto = (index: any) => {
@@ -92,13 +105,46 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
         this.setState({ isShowImageModal: isShowImageModal ? false : true });
     }
 
+    public onShowError = (event: any) => {
+        const { isValidate } = this.state;
+        this.setState({ isValidate: isValidate ? false : true });
+    }
+
     public handleRate = (even: any) => {
         console.log(even);
     }
 
+
+    public onChangeInput = (isRequired: boolean, item:any) => {
+        // const errMessage = ReviewValidate(isRequired, name, value);
+        this.setState({
+            model: { ...this.state.model, [item.target.name]: item.target.value ? item.target.value : undefined },
+        }, () => {
+            this.canSubmit();
+        });
+    }
+
+    public canSubmit = () => {
+        const { clientError } = this.state;
+        if (isEmptyKeyInObject(clientError)) {
+            return this.setState({ isSubmitDisabled: false });
+        }
+
+        return this.setState({ isSubmitDisabled: true });
+    }
+
     render() {
-        const { model, image, isShowImageModal } = this.state;
+        
+        const { model, image, isShowImageModal, validateMessage,isValidate } = this.state;
         var product_info;
+        var messages = [];
+        if (validateMessage.errors.hasOwnProperty("review_response_content")) {
+            messages.push(validateMessage.errors.review_response_content)
+        } 
+        if (validateMessage.errors.hasOwnProperty("review_response_vendor_id")) {
+            messages.push(validateMessage.errors.review_response_vendor_id)
+        }
+        
         if (model.product[0] !== undefined) {
             product_info = <div className="row">
                 <div className="col-md-2 text-center no-p">
@@ -124,7 +170,6 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
                                 <h4 className="panel-title">Sản phẩm</h4>
                             </div>
                             {product_info}
-
                         </div>
                         <div className="panel panel-white">
                             <div className="panel-heading flex justify-content-between align-items-center">
@@ -187,11 +232,12 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
                                                 <div className="row">
                                                     <div className="form-group col-md-11">
                                                         <label className="no-m">Trả lời:</label><br></br>
-                                                        <textarea style={{ width: "100%" }} rows={5} ></textarea>
+                                                        <textarea name="review_response_content" style={{ width: "100%" }} rows={5} onChange={this.onChangeInput.bind(this, true)} defaultValue={model.review_response_content}>
+                                                        </textarea>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <button type="button" id="add-row" className="btn btn-success">Lưu</button>
+                                                    <button type="button" id="add-row" onClick={this.handleSubmit} className={`btn btn-success ${!this.state.isSubmitDisabled ? 'disabled' : ''}`}>Lưu</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -203,6 +249,10 @@ export class ViewDetailFeedback extends React.Component<{ match: any }, IVFeedba
                 </div>
                 <div className="row">
                     {isShowImageModal && <ViewImageModal image={image} onToggle={this.onToggle} />}
+                </div>
+                <div className="row">
+                {(isValidate)&&<MessageModal onShowError={this.onShowError} title="Lỗi" message={messages}/>}
+                    
                 </div>
             </div>
         </>;

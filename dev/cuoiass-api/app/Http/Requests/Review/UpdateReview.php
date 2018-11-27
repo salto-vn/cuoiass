@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Staff;
+namespace App\Http\Requests\Review;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStaff extends FormRequest
+class UpdateReview extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,9 @@ class UpdateStaff extends FormRequest
     public function rules()
     {
         return [
-            'vendor_id' => 'required|integer|exists:vendors',
-            'staff_name' => 'required|string|min:6|max:255',
-            'phone' => 'required|string|max:14',
-            'address' => 'nullable|string|max:255',
-            'role_id' => 'required|exists:roles',
-            'email' => ['required', 'email', 'string', 'min:6', 'max:255'],
-            'password' =>  'nullable|string|min:6|max:255',
+            'review_id' => 'required',
+            'review_response_vendor_id' => 'required|integer|exists:vendors',
+            'review_response_content' => 'required|string|max:255|min:10',
         ];
     }
 }

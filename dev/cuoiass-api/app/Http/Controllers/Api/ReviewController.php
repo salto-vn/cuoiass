@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Review\GetRequest;
+use App\Http\Requests\Review\UpdateReview;
 use App\Models\Image;
 use App\Models\Review;
 use App\Repositories\ReviewRepo;
@@ -118,14 +119,20 @@ class ReviewController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param UpdateReview $request
      * @param  Review $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(UpdateReview $request, Review $review)
     {
         //
-        
+        $input = array_filter($request->validated());
+
+        $input['updated_by'] = 'test@gmail.com';
+
+
+        return tap($review)->update($input);
+
     }
 
     /**

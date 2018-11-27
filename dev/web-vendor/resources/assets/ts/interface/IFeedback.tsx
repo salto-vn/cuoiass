@@ -2,6 +2,7 @@ import { ITh } from '../common/Grid/Table';
 import { IProduct } from './IProduct';
 import { ICustomer } from './ICustomer';
 import { IBooking } from './IBooking';
+import { ValidateModel } from '../model/FeedbackModel';
 
 
 export interface Feedbacks {
@@ -82,5 +83,11 @@ export interface IVFeedbackState {
     model: any,
     isShowImageModal: boolean,
     image: string,
-    id: string
+    id: string,
+    isSubmitDisabled: boolean,
+    clientError: ValidateModel,
+    isHandleEvent: boolean,
+    isValidate: boolean,
+    validateMessage: any,
+    errorInfo:string
 }
