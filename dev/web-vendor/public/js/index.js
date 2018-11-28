@@ -35593,6 +35593,7 @@ var HandleRequest = tslib_1.__importStar(__webpack_require__(11));
 var Url_1 = tslib_1.__importDefault(__webpack_require__(35));
 var DisplayNoPage_1 = __webpack_require__(55);
 var Utils_1 = __webpack_require__(16);
+var BackButton_1 = __webpack_require__(156);
 fontawesome_svg_core_1.library.add(free_solid_svg_icons_1.faSortUp);
 var subjectPage = 'Phản hồi của người dùng'; //Header Content page
 /**
@@ -35762,7 +35763,8 @@ var Feedback = /** @class */ (function (_super) {
         }
         return (React.createElement(React.Fragment, null,
             React.createElement("div", { className: "page-title" },
-                React.createElement("h3", { className: "breadcrumb-header" }, subjectPage)),
+                React.createElement("span", { className: "breadcrumb-header" }, subjectPage),
+                React.createElement(BackButton_1.BackButton, { history: this.props.history })),
             React.createElement("div", { id: "main-wrapper" },
                 React.createElement("div", { className: "row" },
                     React.createElement("div", { className: "col-md-12" },
@@ -40534,6 +40536,9 @@ var HandleRequest = tslib_1.__importStar(__webpack_require__(11));
 var Url_1 = tslib_1.__importDefault(__webpack_require__(35));
 var Utils_1 = __webpack_require__(16);
 var MessageModal_1 = __webpack_require__(154);
+var ReviewValidate_1 = __webpack_require__(153);
+var LoadingForm_1 = tslib_1.__importDefault(__webpack_require__(155));
+var BackButton_1 = __webpack_require__(156);
 var ViewImageModal = /** @class */ (function (_super) {
     tslib_1.__extends(ViewImageModal, _super);
     function ViewImageModal() {
@@ -40577,9 +40582,16 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
             isError: false,
             isErrorList: false,
             isValidate: false,
+            showMessage: false,
+            messages: [],
+            messageTitle: '',
+            isLoading: true,
             validateMessage: { errors: "" },
             errorInfo: '',
         };
+        /**
+         * Submit Answer Feedback of User
+         */
         _this.handleSubmit = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
             var _a, id, model, response;
             return tslib_1.__generator(this, function (_b) {
@@ -40589,25 +40601,38 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
                             return [2 /*return*/];
                         }
                         _a = this.state, id = _a.id, model = _a.model;
+                        model.review_response_vendor_id = 1; //Logon User TODO
                         this.setState({ isHandleEvent: true });
                         return [4 /*yield*/, HandleRequest.Update(Url_1.default.REVIEW, model, id)];
                     case 1:
                         response = _b.sent();
+                        debugger;
                         if (response.isError) {
-                            return [2 /*return*/, this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false })];
+                            return [2 /*return*/, this.setState({
+                                    isValidate: response.isError,
+                                    showMessage: response.isError,
+                                    messages: [response.message],
+                                    isHandleEvent: false,
+                                    messageTitle: 'Lỗi'
+                                })];
                         }
                         if (response.isValidate) {
-                            this.setState({
-                                isValidate: response.isValidate,
-                                validateMessage: response.validateMessage,
-                                isHandleEvent: false
-                            });
+                            return [2 /*return*/, this.setState({
+                                    isValidate: response.isValidate,
+                                    showMessage: response.isValidate,
+                                    validateMessage: response.validateMessage,
+                                    isHandleEvent: false,
+                                    messageTitle: 'Lỗi'
+                                })];
                         }
-                        this.setState({
-                            isHandleEvent: false,
-                        }, function () {
-                            //
-                        });
+                        else {
+                            return [2 /*return*/, this.setState({
+                                    showMessage: !response.isValidate,
+                                    messages: ['Đã lưu thành công'],
+                                    isHandleEvent: false,
+                                    messageTitle: 'Thông báo'
+                                })];
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -40621,17 +40646,18 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
             _this.setState({ isShowImageModal: isShowImageModal ? false : true });
         };
         _this.onShowError = function (event) {
-            var isValidate = _this.state.isValidate;
-            _this.setState({ isValidate: isValidate ? false : true });
+            var showMessage = _this.state.showMessage;
+            _this.setState({ showMessage: showMessage ? false : true });
         };
         _this.handleRate = function (even) {
             console.log(even);
         };
         _this.onChangeInput = function (isRequired, item) {
-            var _a;
-            // const errMessage = ReviewValidate(isRequired, name, value);
+            var _a, _b;
+            var errMessage = ReviewValidate_1.ReviewValidate(isRequired, item.target.name, item.target.value);
             _this.setState({
                 model: tslib_1.__assign({}, _this.state.model, (_a = {}, _a[item.target.name] = item.target.value ? item.target.value : undefined, _a)),
+                clientError: tslib_1.__assign({}, _this.state.clientError, (_b = {}, _b[item.target.name] = errMessage, _b)),
             }, function () {
                 _this.canSubmit();
             });
@@ -40657,7 +40683,8 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
                         response = _a.sent();
                         model = Object.assign(new FeedbackModel_1.FeedbackModel(), response.result);
                         this.setState({
-                            model: model
+                            model: model,
+                            isLoading: false
                         });
                         return [2 /*return*/];
                 }
@@ -40665,31 +40692,26 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
         });
     };
     ViewDetailFeedback.prototype.render = function () {
-        var _a = this.state, model = _a.model, image = _a.image, isShowImageModal = _a.isShowImageModal, validateMessage = _a.validateMessage, isValidate = _a.isValidate;
+        var _a = this.state, model = _a.model, image = _a.image, isShowImageModal = _a.isShowImageModal, validateMessage = _a.validateMessage, clientError = _a.clientError, showMessage = _a.showMessage, isLoading = _a.isLoading, messages = _a.messages, messageTitle = _a.messageTitle;
         var product_info;
-        var messages = [];
-        if (validateMessage.errors.hasOwnProperty("review_response_content")) {
-            messages.push(validateMessage.errors.review_response_content);
-        }
         if (validateMessage.errors.hasOwnProperty("review_response_vendor_id")) {
             messages.push(validateMessage.errors.review_response_vendor_id);
         }
-        if (model.product[0] !== undefined) {
-            product_info = React.createElement("div", { className: "row" },
-                React.createElement("div", { className: "col-md-2 text-center no-p" },
-                    React.createElement("img", { width: "100", alt: "100x100", title: "100x100", src: model.product[0].prd_images[0] })),
-                React.createElement("div", { className: "col-md-10 no-p" },
-                    React.createElement("h5", { className: "mt-0" }, model.product[0].prd_name),
-                    React.createElement("p", null, model.product[0].prd_desc)));
-        }
-        else {
-            product_info = React.createElement("div", { className: "row" });
-        }
+        product_info = React.createElement("div", { className: "row" },
+            React.createElement("div", { className: "col-md-2 text-center no-p" },
+                React.createElement("div", { className: "p-h-xxl" }, isLoading ? React.createElement(LoadingForm_1.default, { key: "prd_images", width: 160, height: 100 }) :
+                    React.createElement("img", { width: "100", alt: "100x100", title: "100x100", src: model.product[0].prd_images[0] }))),
+            React.createElement("div", { className: "col-md-10 p-h-xxl" },
+                React.createElement("h5", { className: "mt-0" }, isLoading ? React.createElement(LoadingForm_1.default, { key: "prd_name", width: 200, height: 20 }) : model.product[0].prd_name),
+                isLoading ? React.createElement(LoadingForm_1.default, { width: 200, height: 20 }) : React.createElement("p", null,
+                    " ",
+                    model.product[0].prd_desc)));
         return React.createElement(React.Fragment, null,
             React.createElement("div", { className: "page-title" },
-                React.createElement("h3", { className: "breadcrumb-header" },
+                React.createElement("span", { className: "breadcrumb-header" },
                     "M\u00E3 s\u1ED1 \u0111\u00E1nh gi\u00E1: ",
-                    model.review_id)),
+                    model.review_id),
+                React.createElement(BackButton_1.BackButton, { history: this.props.history })),
             React.createElement("div", { id: "main-wrapper" },
                 React.createElement("div", { className: "row" },
                     React.createElement("div", { className: "col-md-12" },
@@ -40715,40 +40737,55 @@ var ViewDetailFeedback = /** @class */ (function (_super) {
                                                 model.booking[0].booked_id) : ''),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "Ng\u00E0y \u0111\u1EB7t "),
-                                                React.createElement("div", { className: "col-md-10" }, model.booking[0] !== undefined ? model.booking[0].booked_date : '')),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.booking[0] !== undefined ? model.booking[0].booked_date : '')),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "Ng\u00E0y t\u1ED5 ch\u1EE9c"),
-                                                React.createElement("div", { className: "col-md-10" }, model.booking[0] !== undefined ? model.booking[0].activate_date : '')),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.booking[0] !== undefined ? model.booking[0].activate_date : '')),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "\u0110\u00E1nh gi\u00E1"),
-                                                React.createElement("div", { className: "col-md-10 f-size-40" },
+                                                React.createElement("div", { className: "col-md-10 f-size-40" }, isLoading ? React.createElement(LoadingForm_1.default, { width: 200, height: 30 }) :
                                                     React.createElement(StarRate_1.StartRate, { disabled: true, value: model.review_rate }))),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "T\u00EAn"),
-                                                React.createElement("div", { className: "col-md-10" }, model.customer[0] !== undefined ? model.customer[0].first_name + " " + model.customer[0].last_name : '')),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.customer[0] !== undefined ? model.customer[0].first_name + " " + model.customer[0].last_name : '')),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "Email"),
-                                                React.createElement("div", { className: "col-md-10" }, model.customer[0] !== undefined ? model.customer[0].email : '')),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.customer[0] !== undefined ? model.customer[0].email : '')),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "Ng\u00E0y"),
-                                                React.createElement("div", { className: "col-md-10" }, model.review_date)),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.review_date)),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "Ti\u00EAu \u0111\u1EC1"),
-                                                React.createElement("div", { className: "col-md-10" }, model.review_title)),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.review_title)),
                                             React.createElement("div", { className: "row" },
                                                 React.createElement("label", { className: "col-md-2" }, "N\u1ED9i dung"),
-                                                React.createElement("div", { className: "col-md-10" }, model.review_content))),
+                                                React.createElement("div", { className: "col-md-10" },
+                                                    isLoading && React.createElement(LoadingForm_1.default, { width: 200, height: 20 }),
+                                                    model.review_content))),
                                         React.createElement("div", { className: "m-t-md" },
                                             React.createElement("form", { className: "form-inline" },
                                                 React.createElement("div", { className: "row" },
                                                     React.createElement("div", { className: "form-group col-md-11" },
                                                         React.createElement("label", { className: "no-m" }, "Tr\u1EA3 l\u1EDDi:"),
                                                         React.createElement("br", null),
-                                                        React.createElement("textarea", { name: "review_response_content", style: { width: "100%" }, rows: 5, onChange: this.onChangeInput.bind(this, true), defaultValue: model.review_response_content }))),
+                                                        React.createElement("textarea", { required: true, name: "review_response_content", style: { width: "100%" }, rows: 5, onChange: this.onChangeInput.bind(this, true), value: (model.review_response_content) ? model.review_response_content : "" }),
+                                                        React.createElement("span", { className: 'required' }, Utils_1.showError(clientError, validateMessage, 'review_response_content')))),
                                                 React.createElement("div", null,
                                                     React.createElement("button", { type: "button", id: "add-row", onClick: this.handleSubmit, className: "btn btn-success " + (!this.state.isSubmitDisabled ? 'disabled' : '') }, "L\u01B0u")))))))))),
                 React.createElement("div", { className: "row" }, isShowImageModal && React.createElement(ViewImageModal, { image: image, onToggle: this.onToggle })),
-                React.createElement("div", { className: "row" }, (isValidate) && React.createElement(MessageModal_1.MessageModal, { onShowError: this.onShowError, title: "L\u1ED7i", message: messages }))));
+                React.createElement("div", { className: "row" }, (messages.length !== 0 && showMessage) && React.createElement(MessageModal_1.MessageModal, { onShowError: this.onShowError, title: messageTitle, message: messages }))));
     };
     return ViewDetailFeedback;
 }(React.Component));
@@ -42572,7 +42609,37 @@ exports.digitsBetween = function (value, min, max) {
 
 /***/ }),
 /* 152 */,
-/* 153 */,
+/* 153 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Rules_1 = __webpack_require__(150);
+exports.ReviewValidate = function (isRequired, name, value) {
+    if (isRequired && name === "review_id") {
+        if (Rules_1.required(value)) {
+            return "Vui lòng nhập Review ID";
+        }
+    }
+    if (isRequired && name === "review_response_vendor_id") {
+        if (Rules_1.required(value)) {
+            return "Vui lòng nhập Vendor ID";
+        }
+    }
+    if (isRequired && name === "review_response_content") {
+        if (Rules_1.required(value)) {
+            return "Vui lòng nhập nội dung trả lời";
+        }
+        if (Rules_1.max(value, 255)) {
+            return "Mật khẩu quá dài";
+        }
+    }
+    return undefined;
+};
+
+
+/***/ }),
 /* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42597,12 +42664,12 @@ var MessageModal = /** @class */ (function (_super) {
         var message = this.props.message;
         return React.createElement(React.Fragment, null,
             React.createElement("div", { className: "modal fade in", ref: "message-box", style: { display: "block" } },
-                React.createElement("div", { className: "modal-dialog modal-sm" },
+                React.createElement("div", { className: "modal-dialog modal-sm modal-dialog-centered" },
                     React.createElement("div", { className: "modal-content" },
                         React.createElement("div", { className: "modal-header" },
                             React.createElement("button", { type: "button", className: "close", onClick: this.handleToggle },
                                 React.createElement("span", { "aria-hidden": "true" }, "\u00D7")),
-                            React.createElement("h4", { className: "modal-title" }, "L\u1ED7i")),
+                            React.createElement("h4", { className: "modal-title" }, this.props.title)),
                         React.createElement("div", { className: "modal-body" }, message.map(function (v, k) {
                             return React.createElement("p", { key: k },
                                 v,
@@ -42615,6 +42682,66 @@ var MessageModal = /** @class */ (function (_super) {
     return MessageModal;
 }(React.Component));
 exports.MessageModal = MessageModal;
+
+
+/***/ }),
+/* 155 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(2);
+var React = tslib_1.__importStar(__webpack_require__(0));
+/**
+ * LoadingForm Class
+ * Display loading if isLoading === true
+ * <LoadingForm width={} height={} />
+ * properties:IProp
+ */
+var LoadingForm = /** @class */ (function (_super) {
+    tslib_1.__extends(LoadingForm, _super);
+    function LoadingForm() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LoadingForm.prototype.render = function () {
+        var _a = this.props, width = _a.width, height = _a.height;
+        return (React.createElement("div", { className: "wrap-item" },
+            React.createElement("div", { className: "timeline-wrapper" },
+                React.createElement("div", { className: "", style: { width: width, minWidth: width, minHeight: height } },
+                    React.createElement("div", { className: "animated-background", style: { height: height } })))));
+    };
+    return LoadingForm;
+}(React.Component));
+exports.default = LoadingForm;
+;
+
+
+/***/ }),
+/* 156 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(2);
+var React = tslib_1.__importStar(__webpack_require__(0));
+var BackButton = /** @class */ (function (_super) {
+    tslib_1.__extends(BackButton, _super);
+    function BackButton() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.goBack = function () {
+            _this.props.history.goBack();
+        };
+        return _this;
+    }
+    BackButton.prototype.render = function () {
+        return (React.createElement("button", { className: "btn btn-default m-b-xxs w-xs f-right", type: "button", onClick: this.goBack },
+            React.createElement("i", { className: "fa fa-arrow-left" })));
+    };
+    return BackButton;
+}(React.Component));
+exports.BackButton = BackButton;
 
 
 /***/ })

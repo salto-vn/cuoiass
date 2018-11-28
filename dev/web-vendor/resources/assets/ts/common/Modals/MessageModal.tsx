@@ -14,11 +14,11 @@ export class MessageModal extends React.Component<{ title: string, message: Arra
         const { message } = this.props;
         return <>
             <div className="modal fade in" ref="message-box" style={{  display:"block"}}>
-                <div className="modal-dialog modal-sm">
+                <div className="modal-dialog modal-sm modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
                             <button type="button" className="close" onClick={this.handleToggle}><span aria-hidden="true">&times;</span></button>
-                            <h4 className="modal-title">Lỗi</h4>
+                            <h4 className="modal-title">{this.props.title}</h4>
                         </div>
                         <div className="modal-body">
                             {message.map((v, k) =>

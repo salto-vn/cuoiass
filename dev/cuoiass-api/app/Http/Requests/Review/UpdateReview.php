@@ -25,7 +25,7 @@ class UpdateReview extends FormRequest
     {
         return [
             'review_id' => 'required',
-            'review_response_vendor_id' => 'required|integer|exists:vendors',
+            'review_response_vendor_id' => 'required|integer',
             'review_response_content' => 'required|string|max:255|min:10',
         ];
     }

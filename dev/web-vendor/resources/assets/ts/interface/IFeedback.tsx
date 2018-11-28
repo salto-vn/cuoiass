@@ -88,6 +88,10 @@ export interface IVFeedbackState {
     clientError: ValidateModel,
     isHandleEvent: boolean,
     isValidate: boolean,
+    isLoading:boolean,
+    showMessage: boolean,
+    messages: any,
+    messageTitle: string,
     validateMessage: any,
     errorInfo:string
 }

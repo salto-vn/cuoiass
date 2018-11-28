@@ -145,7 +145,9 @@ return [
         'staff_name' => 'Tên nhân viên',
         'email' => 'Email',
         'phone' => 'Số điện thoại',
-        'password' => 'Mật khẩu'
+        'password' => 'Mật khẩu',
+        'review_response_content' => 'Trả lời',
+        'review_response_vendor_id' => 'Vendor ID'
     ],
 
 ];

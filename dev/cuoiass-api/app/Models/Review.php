@@ -66,6 +66,11 @@ class Review extends Eloquent
 		return $this->belongsTo(\App\Models\Customer::class, 'customer_id');
 	}
 
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\Vendor::class, 'review_response_vendor_id');
+    }
+
 	public function booking()
 	{
 		return $this->belongsTo(\App\Models\Booking::class, 'booked_id');
