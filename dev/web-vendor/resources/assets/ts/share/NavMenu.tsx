@@ -22,45 +22,45 @@ export class NavMenu extends React.Component<{}, {}> {
                                 <i className="menu-icon icon-info_outline" /><span>Nhân viên</span>
                             </NavLink>
                         </li>
+                        <li>
+                            <NavLink to="/product" activeClassName="active-page">
+                                <i className="menu-icon icon-info_outline" /><span>Product</span>
+                            </NavLink>
+                        </li>
                         {/*<li>*/}
-                            {/*<NavLink to="/wedding-dress" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Áo cưới</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/wedding-album" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Chụp hình</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         {/*<li>*/}
-                            {/*<NavLink to="/wedding-album" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Chụp hình</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/form" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Mâm quả ngày cưới</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         {/*<li>*/}
-                            {/*<NavLink to="/form" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Mâm quả ngày cưới</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/wedding-invitation" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Thiệp cưới</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         {/*<li>*/}
-                            {/*<NavLink to="/wedding-invitation" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Thiệp cưới</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/form" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Trang trí nhà</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         {/*<li>*/}
-                            {/*<NavLink to="/form" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Trang trí nhà</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/wedding-venue" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Nhà hàng tiệc cưới</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         {/*<li>*/}
-                            {/*<NavLink to="/wedding-venue" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Nhà hàng tiệc cưới</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/wedding-car" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Xe cưới</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         {/*<li>*/}
-                            {/*<NavLink to="/wedding-car" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Xe cưới</span>*/}
-                            {/*</NavLink>*/}
-                        {/*</li>*/}
-                        {/*<li>*/}
-                            {/*<NavLink to="/booking" activeClassName="active-page">*/}
-                                {/*<i className="menu-icon icon-info_outline" /><span>Travel, Resort, Hotel</span>*/}
-                            {/*</NavLink>*/}
+                        {/*<NavLink to="/booking" activeClassName="active-page">*/}
+                        {/*<i className="menu-icon icon-info_outline" /><span>Travel, Resort, Hotel</span>*/}
+                        {/*</NavLink>*/}
                         {/*</li>*/}
                         <li>
                             <NavLink to="/feedback" activeClassName="active-page">

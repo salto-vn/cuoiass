@@ -7,6 +7,7 @@
 
 namespace App\Models;
 
+use App\Utils\TableName;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
@@ -50,18 +51,19 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  */
 class Product extends Eloquent
 {
-	protected $casts = [
-		'price' => 'float',
-		'publish_flag' => 'int',
-		'prd_page' => 'int',
-		'vendor_service_id' => 'int'
-	];
-
-	protected $dates = [
-		'publish_date'
-	];
-
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
     protected $primaryKey = 'prd_id';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = TableName::TBL_PRODUCTS;
 
 	protected $fillable = [
 		'prd_cd',
@@ -83,12 +85,35 @@ class Product extends Eloquent
 		'updated_by'
 	];
 
-	public function master_service()
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password',
+        'created_by',
+        'created_at',
+        'updated_by',
+        'updated_at'
+    ];
+
+    /**
+     * Allow fields search
+     *
+     * @return array
+     */
+    public function fieldsSearchable()
+    {
+        return ['prd_id', 'prd_cd', 'price', 'publish_flag', 'prd_party_photo_size'];
+    }
+
+	public function masterService()
 	{
 		return $this->belongsTo(\App\Models\MasterService::class, 'service_code');
 	}
 
-	public function vendor_service()
+	public function vendorService()
 	{
 		return $this->belongsTo(\App\Models\VendorService::class);
 	}
@@ -103,7 +128,7 @@ class Product extends Eloquent
 		return $this->hasMany(\App\Models\Credit::class, 'prd_id');
 	}
 
-	public function customize_fields()
+	public function customizeFields()
 	{
 		return $this->hasMany(\App\Models\CustomizeField::class, 'prd_id');
 	}
@@ -137,7 +162,7 @@ class Product extends Eloquent
 		return $this->hasMany(\App\Models\Review::class, 'prd_id');
 	}
 
-	public function schedule_photos()
+	public function schedulePhotos()
 	{
 		return $this->hasMany(\App\Models\SchedulePhoto::class, 'prd_id');
 	}

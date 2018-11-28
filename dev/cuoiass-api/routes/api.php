@@ -21,5 +21,6 @@ use Illuminate\Http\Request;
     //Review Route
     Route::resource('reviews', 'Api\ReviewController');
     Route::resource('staffs','Api\StaffController')->except(['create', 'show']);
+    Route::resource('products','Api\ProductController')->except(['create']);
 //});
 

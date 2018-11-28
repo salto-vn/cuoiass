@@ -161,9 +161,6 @@ export class ViewDetailFeedback extends React.Component<{ match: any, history: a
 
         const { model, image, isShowImageModal, validateMessage, clientError, showMessage, isLoading, messages, messageTitle } = this.state;
         var product_info;
-        if (validateMessage.errors.hasOwnProperty("review_response_vendor_id")) {
-            messages.push(validateMessage.errors.review_response_vendor_id)
-        }
 
         product_info = <div className="row">
             <div className="col-md-2 text-center no-p">
@@ -180,7 +177,7 @@ export class ViewDetailFeedback extends React.Component<{ match: any, history: a
         return <>
             <div className="page-title" >
                 <span className="breadcrumb-header">Mã số đánh giá: {model.review_id}</span>
-                <BackButton history={this.props.history}/>
+                <BackButton history={this.props.history} />
             </div>
             <div id="main-wrapper">
                 <div className="row">
