@@ -91,7 +91,7 @@ export interface ITh {
     dataType: string;
     sortClass?: any;
     allowSort: boolean;
-
+    source?: IOption[]
 }
 
 /**
@@ -106,6 +106,11 @@ export interface IHeader {
     onSort?: any;
     filterFlag?: any;
     onFilter?: any
+}
+
+export interface IOption {
+    id: number;
+    title: string;
 }
 
 /**
@@ -222,8 +227,7 @@ export class Header extends React.Component<IHeader>{
      * @param id: string
      * @param dataSet: undefined or string[]
      */
-    private renderHeaderInputElement = (dataType: string, id: string, dataSet?: string[]) => {
-        const ds: string[] = dataSet as string[];
+    private renderHeaderInputElement = (dataType: string, id: string, dataSet?: IOption[]) => {
         const calIcon = <FontAwesomeIcon icon="calendar-alt" />
         const clearIcon = <FontAwesomeIcon icon="times" />;
         if (dataType === "date") {
@@ -235,10 +239,19 @@ export class Header extends React.Component<IHeader>{
                 value={this.state.date}
             />;
         } else if (dataType === "list") {
-            return <select onChange={this.handleFilter} id={id} name={id} className="form-control form-select-options">
-                {ds.map((data, key) => (
-                    <option key={key}>{data}</option>
-                ))}
+            const source = [
+                {
+                    id: 0,
+                    title: '-- SELECT ITEM --',
+                }, ...dataSet as IOption[]
+            ];
+
+            return <select onChange={this.handleFilter} name={id} className="form-control pd6">
+                {
+                    source.map((item, index) => (
+                        <option key={index} value={item.id} > {item.title}</option>
+                    ))
+                }
             </select>;
         } else if (dataType === "text") {
             return <input onKeyUp={this.handleFilter} className="form-control" id={id} name={id} type="text" />
@@ -267,7 +280,7 @@ export class Header extends React.Component<IHeader>{
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
                             {key === 0 || key === dataSet.length - 1 ? '' :
-                                filterFlag === true ? this.renderHeaderInputElement(thdata.dataType, thdata.id) : ''
+                                filterFlag === true ? this.renderHeaderInputElement(thdata.dataType, thdata.id, thdata.source) : ''
                             }
                         </th>
                     ))}
