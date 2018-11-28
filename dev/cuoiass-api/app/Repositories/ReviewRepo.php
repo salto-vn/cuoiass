@@ -85,9 +85,14 @@ class ReviewRepo extends Repository
                         $value = addslashes($value);
                         if (!empty($value)) {
                             $model->where(function ($query) use ($value, $tblCustomer) {
-                                $query->where("$tblCustomer.last_name", "like",  "%{$value}%")
-                                    ->orWhere("$tblCustomer.first_name", 'like',  "%{$value}%");
+                                $query->where("$tblCustomer.last_name", "like", "%{$value}%")
+                                    ->orWhere("$tblCustomer.first_name", 'like', "%{$value}%");
                             });
+                        }
+                    } else if ($field == "review_rate") {
+                        $value = addslashes($value);
+                        if (isset($value)) {
+                            $model->where($field, '=', "{$value}");
                         }
                     } else {
                         $value = addslashes($value);
@@ -105,4 +110,6 @@ class ReviewRepo extends Repository
         }
         return $model->paginate($limit, null, null, $page);
     }
+
+
 }

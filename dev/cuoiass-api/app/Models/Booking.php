@@ -65,7 +65,10 @@ class Booking extends Eloquent
 		'net_price' => 'float',
 		'gross_price' => 'float',
 		'prd_id' => 'int',
-		'vendor_service_id' => 'int'
+		'vendor_service_id' => 'int',
+        'try_date' => 'date:d-m-Y H:m:i',
+        'activate_date' => 'date:d-m-Y',
+        'booked_date' => 'date:d-m-Y'
 	];
 
 	protected $dates = [

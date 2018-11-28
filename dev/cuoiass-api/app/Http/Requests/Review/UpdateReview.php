@@ -3,9 +3,8 @@
 namespace App\Http\Requests\Review;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class GetRequest extends FormRequest
+class UpdateReview extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +24,9 @@ class GetRequest extends FormRequest
     public function rules()
     {
         return [
-            'limit' => 'integer',
-//            'search' => '',
-            'sortbyc' => Rule::in(['review_id', 'review_content', 'review_date'
-                    , 'bookings.booked_cd', 'bookings.booked_pro_name',
-                    'products.prd_cd', 'customers.first_name', 'customers.last_name']
-            ),
-            'sortby' => Rule::in(['asc', 'desc']),
+            'review_id' => 'required',
+            'review_response_vendor_id' => 'required|integer',
+            'review_response_content' => 'required|string|max:255|min:10',
         ];
     }
 }

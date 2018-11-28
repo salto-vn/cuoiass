@@ -61,6 +61,8 @@ class Product extends Eloquent
 		'publish_date'
 	];
 
+    protected $primaryKey = 'prd_id';
+
 	protected $fillable = [
 		'prd_cd',
 		'prd_name',

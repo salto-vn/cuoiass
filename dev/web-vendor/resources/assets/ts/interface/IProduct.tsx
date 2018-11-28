@@ -1,7 +1,7 @@
 export interface IProduct {
-    id: string;
-    product_code: string;
-    name: string;
-    description: string;
-    image_urls: string[];
+    prd_id: number;
+    prd_cd: string;
+    prd_name: string;
+    prd_desc: string;
+    prd_images: string[];
 }

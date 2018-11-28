@@ -8,7 +8,7 @@ $factory->define(\App\Models\Booking::class, function (Faker $faker) {
 
 
     return [
-        'booked_cd' => "CASS-" . $faker->unique()->numerify('#####'),
+        'booked_cd' => "CASS-" . $faker->unique()->numerify('########'),
         'booked_pro_name' => '',
         'booked_size' => '',
         'booked_color' => '',

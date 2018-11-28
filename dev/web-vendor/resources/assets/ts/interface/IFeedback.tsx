@@ -2,6 +2,7 @@ import { ITh } from '../common/Grid/Table';
 import { IProduct } from './IProduct';
 import { ICustomer } from './ICustomer';
 import { IBooking } from './IBooking';
+import { ValidateModel } from '../model/FeedbackModel';
 
 
 export interface Feedbacks {
@@ -29,15 +30,22 @@ export interface FeedbackItem {
 
 
 export interface IFeedback {
-    feedbackId: string;
-    date: string;
-    title: string;
-    content: string;
-    images: string[];
-    rate: number;
-    product: IProduct;
-    customer: ICustomer;
-    booking: IBooking;
+    review_id: number;
+    review_content: string;
+    review_title: string;
+    review_date: string;
+    review_rate: number;
+    review_imgs?: string[];
+    prd_id: number;
+    booked_id: number;
+    customer_id: number;
+    created_by: string;
+    created_at: string;
+    updated_by: string;
+    updated_at: string;
+    product: IProduct[];
+    customer: ICustomer[];
+    booking: IBooking[];
 }
 
 export interface IFeedbackList {
@@ -75,5 +83,15 @@ export interface IVFeedbackState {
     model: any,
     isShowImageModal: boolean,
     image: string,
-    id: string
+    id: string,
+    isSubmitDisabled: boolean,
+    clientError: ValidateModel,
+    isHandleEvent: boolean,
+    isValidate: boolean,
+    isLoading:boolean,
+    showMessage: boolean,
+    messages: any,
+    messageTitle: string,
+    validateMessage: any,
+    errorInfo:string
 }

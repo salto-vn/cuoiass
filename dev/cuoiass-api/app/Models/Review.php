@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Review
- * 
+ *
  * @property int $review_id
  * @property string $review_content
  * @property \Carbon\Carbon $review_date
@@ -24,7 +24,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Customer $customer
  * @property \App\Models\Booking $booking
  * @property \App\Models\Product $product
@@ -52,6 +52,8 @@ class Review extends Eloquent
 		'review_date',
 		'review_rate',
 		'review_imgs',
+        'review_response_vendor_id',
+        'review_response_content',
 		'prd_id',
 		'booked_id',
 		'customer_id',
@@ -61,8 +63,13 @@ class Review extends Eloquent
 
 	public function customer()
 	{
-		return $this->belongsTo(\App\Models\Customer::class);
+		return $this->belongsTo(\App\Models\Customer::class, 'customer_id');
 	}
+
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\Vendor::class, 'review_response_vendor_id');
+    }
 
 	public function booking()
 	{

@@ -18,9 +18,9 @@ const headerOptions = {
 export const findOne = async (url: string, id: string, columns?: string[]) => {
     var fullUrl: string = "";
     if (columns == undefined) {
-        fullUrl = `${url}?id=${id}`;
+        fullUrl = `${url}/${id}`;
     } else {
-        fullUrl = `${url}?id=${id}&columns=${columns}`;
+        fullUrl = `${url}/${id}/${columns}`;
     }
 
     const result = await fetch(fullUrl, {

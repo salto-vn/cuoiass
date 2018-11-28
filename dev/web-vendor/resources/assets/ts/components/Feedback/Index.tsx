@@ -8,6 +8,7 @@ import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
 import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { objectToQueryString } from '../../common/Utils';
+import { BackButton } from '../../common/FormControls/BackButton';
 
 library.add(faSortUp)
 
@@ -81,7 +82,8 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
         return (
             <>
                 <div className="page-title">
-                    <h3 className="breadcrumb-header">{subjectPage}</h3>
+                    <span className="breadcrumb-header">{subjectPage}</span>
+                    <BackButton history={this.props.history}/>
                 </div>
                 <div id="main-wrapper">
                     <div className="row">
@@ -166,6 +168,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
     private handleView = (feedbackId: number) => {
         this.props.history.push("/feedback/" + feedbackId);
     }
+
 
     /**
     * Set state for array filters and isCLickPaginate to make it paginate
