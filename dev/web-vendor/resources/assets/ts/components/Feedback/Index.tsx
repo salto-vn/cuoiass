@@ -227,7 +227,7 @@ export class Feedback extends React.Component<{ history: any }, IFeedbackState> 
             return;
         }
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber
+            ...prevState, activePage: pageNumber, isCLickPaginate: true
         }), () => {
 
             this.getListFeedback();

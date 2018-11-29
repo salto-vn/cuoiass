@@ -3,14 +3,11 @@ import { BackButton } from '../../common/FormControls/BackButton';
 import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { Table, ITh, IOption } from '../../common/Grid/Table';
 import CONSTANT from '../../bootstrap/Constant';
-import Input from '../../common/FormControls/Input';
-import DatePicker from 'react-date-picker';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import TextField from '@material-ui/core/TextField';
+import { IBookingManagerState } from '../../interface/IBooking';
 
-
-
-export class Booking extends React.Component<{ history: any }, {}> {
-
+export class Booking extends React.Component<{ history: any }, IBookingManagerState> {
+    
     public state = {
         isError: false,
         isLoading: false,
@@ -23,6 +20,15 @@ export class Booking extends React.Component<{ history: any }, {}> {
         dataSet: [],
         errorInfo: '',
         sortedIndex: 0,
+        searchForm: { 
+            booked_id: 0,
+            try_date: "",
+            activate_date: "",
+            booked_date: "",
+            booked_cd: "",
+            booked_pro_name: '',
+            status: '',
+            customer_name: ''} 
     }
 
     /**
@@ -88,8 +94,6 @@ export class Booking extends React.Component<{ history: any }, {}> {
             // let data: string[] = [String(item.review_id), item.prd_cd, item.booked_pro_name, item.first_name + " " + item.last_name, item.review_date, reviewContent, String(item.review_rate), String(item.review_id)];
             // listdata.push(data);
         }
-        const calIcon = <FontAwesomeIcon icon="calendar-alt" />
-        const clearIcon = <FontAwesomeIcon icon="times" />;
         return (
             <>
                 <div className="page-title">
@@ -104,50 +108,18 @@ export class Booking extends React.Component<{ history: any }, {}> {
                                     <span className="panel-title">Tìm kiếm</span>
                                 </div>
                                 <div className="panel-body ">
-                                    <form className="form-inline">
-                                        <div className="row">
-                                            <div className="form-group col-md-6 col-sm-12 h85">
-                                                <Input label={'Mã lịch hẹn'} name={'booked_cd'} type={'text'} required={true} value={''} />
-                                            </div>
-                                            {/* <div className="form-group col-md-6">
-                                            <Select
-                                                name={'album_id'}
-                                                options={this.state.source}
-                                                value={model.role_id}
-                                                placeholder={false}
-                                                getValue={this.handleSelect}
-                                                label='Transport'
-                                                addClass='form-control' />
-                                        </div> */}
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6 col-sm-12 h85">
-                                                <Input label={'Tên sản phẩm'} name={'booked_pro_name'} type={'text'} required={true} value={''} />
-                                            </div>
-                                            <div className="form-group col-md-6 col-sm-12  h85">
-                                                <Input label={'Tên khách hàng'} name={'customer_name'} type={'text'} required={true} value={''} />
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6 col-sm-12  h85">
-                                                <DatePicker className="form-control react-date-picker-header"
-                                                        name="booked_date"
-                                                        clearIcon={clearIcon}
-                                                        calendarIcon={calIcon}
-                                                        onChange={this.onChangeDate}
-                                                        value={this.state.date}
-                                                    />
-                                                <Input label={'Ngày đặt'} name={'booked_date'} required={false} type={'text'} value={''} />
-                                            </div>
-                                            <div className="form-group col-md-6 col-sm-12  h85">
-                                                <Input label={'Ngày thử'} name={'try_date'} required={false} type={'text'} value={''} />
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-12 h85">
-                                                <Input label={'Địa chỉ'} name={'address'} type={'text'} required={false} value={''} />
-                                            </div>
-                                        </div>
+                                    <form  noValidate autoComplete="off">
+                                        <TextField
+                                            id="standard-name"
+                                            type="date"
+                                            label="Name"
+                                            value={this.state.searchForm.booked_date}
+                                            onChange={this.onChangeDate}
+                                            margin="normal"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                              }}
+                                        />
                                     </form>
                                 </div>
                             </div>
@@ -271,15 +243,11 @@ export class Booking extends React.Component<{ history: any }, {}> {
      * @callback onFilter
      * @return filters
      */
-    onChangeDate = (date: any) => {
-        const d = new Date(date);
-
-        if (d.getFullYear() === 1970) {
-            return;
-        }
-
+    onChangeDate = (event: any) => {
+        const {searchForm} = this.state;
+        searchForm.booked_date = event.target.value;
         this.setState({
-            date,
+            searchForm,
         });
     }
 }

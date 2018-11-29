@@ -109,7 +109,7 @@ export interface IHeader {
 }
 
 export interface IOption {
-    id: number;
+    id: string;
     title: string;
 }
 

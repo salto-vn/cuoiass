@@ -6,7 +6,7 @@ interface IInputTextProps {
     value: string;
     type: string;
     defaultValue?: string;
-    handleInput: any;
+    handleInput?: any;
     required: boolean;
 }
 
@@ -23,8 +23,9 @@ export default class InputText extends React.Component<IInputTextProps, { isEmpt
         this.setState({
             isEmpty: this.isEmpty(evt.target.value),
         });
-
-        this.props.handleInput(evt.target.name, evt.target.value);
+        if (this.props.defaultValue !== undefined) {
+            this.props.handleInput(evt.target.name, evt.target.value);
+        }
     }
 
     public render() {

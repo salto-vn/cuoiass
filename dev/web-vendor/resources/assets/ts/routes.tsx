@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Layout } from './share/Layout';
+import Layout from './share/Layout';
 import { WeddingDress } from './components/WeddingDress/Index';
 import { Feedback } from './components/Feedback/Index';
 import { ViewDetailFeedback } from './components/Feedback/ViewDetail';
 import { StaffScreen } from './components/Staff/Index';
+import { Booking } from './components/Booking/Index';
 
 // import { WeddingInvitation } from './components/WeddingInvitation/Index';
 
@@ -32,11 +33,6 @@ const WeddingCar = () => (
     </div>
 );
 
-const Booking = () => (
-    <div>
-        <h2>Booking</h2>
-    </div>
-);
 
 export const Routes = () => (
     <Router>
