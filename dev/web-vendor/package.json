@@ -33,15 +33,17 @@
         "@fortawesome/react-fontawesome": "^0.1.3",
         "@material-ui/core": "^3.6.0",
         "@material-ui/icons": "^3.0.1",
+        "@types/classnames": "^2.2.6",
         "i": "^0.3.6",
         "npm": "^6.4.1",
+        "perfect-scrollbar": "^1.4.0",
         "react": "^16.6.0",
+        "react-chartist": "^0.13.1",
         "react-date-picker": "^7.0.0",
         "react-dom": "^16.6.0",
         "react-js-pagination": "^3.0.2",
         "react-responsive-carousel": "^3.1.43",
         "react-router-dom": "^4.3.1",
-        "react-scripts-ts": "^4.0.8",
-        "react-star-rating-input": "^8.0.1"
+        "react-scripts-ts": "^4.0.8"
     }
 }
