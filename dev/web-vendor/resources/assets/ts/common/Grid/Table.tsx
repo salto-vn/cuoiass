@@ -77,6 +77,16 @@ export interface ISourceProp {
     onFilter?: any;
 }
 
+export interface IOption {
+    id: string | number;
+    title: string;
+}
+
+export interface IDropdownSort {
+    placeHolder: string;
+    items: IOption[]
+}
+
 /**
  * Interface
  * Header <th></th> Properties
@@ -91,7 +101,7 @@ export interface ITh {
     dataType: string;
     sortClass?: any;
     allowSort: boolean;
-    source?: IOption[]
+    source?: IDropdownSort
 }
 
 /**
@@ -106,11 +116,6 @@ export interface IHeader {
     onSort?: any;
     filterFlag?: any;
     onFilter?: any
-}
-
-export interface IOption {
-    id: number;
-    title: string;
 }
 
 /**
@@ -227,7 +232,7 @@ export class Header extends React.Component<IHeader>{
      * @param id: string
      * @param dataSet: undefined or string[]
      */
-    private renderHeaderInputElement = (dataType: string, id: string, dataSet?: IOption[]) => {
+    private renderHeaderInputElement = (dataType: string, id: string, data: IDropdownSort) => {
         const calIcon = <FontAwesomeIcon icon="calendar-alt" />
         const clearIcon = <FontAwesomeIcon icon="times" />;
         if (dataType === "date") {
@@ -241,9 +246,9 @@ export class Header extends React.Component<IHeader>{
         } else if (dataType === "list") {
             const source = [
                 {
-                    id: 0,
-                    title: '-- SELECT ITEM --',
-                }, ...dataSet as IOption[]
+                    id: '--',
+                    title: data.placeHolder
+                }, ...data.items as IOption[]
             ];
 
             return <select onChange={this.handleFilter} name={id} className="form-control pd6">
@@ -280,7 +285,7 @@ export class Header extends React.Component<IHeader>{
                     {dataSet.map((thdata, key) => (
                         <th key={key} scope="col" className={thdata.className}>
                             {key === 0 || key === dataSet.length - 1 ? '' :
-                                filterFlag === true ? this.renderHeaderInputElement(thdata.dataType, thdata.id, thdata.source) : ''
+                                filterFlag === true ? this.renderHeaderInputElement(thdata.dataType, thdata.id, thdata.source as IDropdownSort) : ''
                             }
                         </th>
                     ))}

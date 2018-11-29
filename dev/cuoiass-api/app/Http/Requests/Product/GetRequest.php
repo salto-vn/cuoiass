@@ -27,7 +27,7 @@ class GetRequest extends FormRequest
         return [
             'page' => 'required|integer',
             'limit' => 'integer|min:1',
-            'sortbyc' => Rule::in(['prd_id', 'prd_cd', 'price', 'publish_flag', 'prd_party_photo_size']),
+            'sortbyc' => Rule::in(['prd_id', 'prd_cd', 'prd_name', 'price', 'publish_flag', 'prd_party_photo_size']),
             'sortby' => Rule::in(['asc', 'desc']),
         ];
     }

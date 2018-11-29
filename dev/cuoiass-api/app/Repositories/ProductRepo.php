@@ -55,6 +55,7 @@ class ProductRepo extends Repository
 
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
+
             if ($searchData) {
                 foreach ($searchData as $field => $value) {
                     if (!in_array($field, $fieldsSearchable)) {

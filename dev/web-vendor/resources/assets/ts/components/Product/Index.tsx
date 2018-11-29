@@ -14,14 +14,13 @@ library.add(faSortUp)
 const subjectPage = 'Quản lý Product';
 
 /**
- * Staff Screen Component
- * Display Staff list data, include paging 
+ * Product Screen Component
+ * Display Product list data, include paging
  * Properties: N/A
- * State: Required IStaffState , Optional another variale
+ * State: Required IProductState , Optional another variale
  */
-export class ProductScreen extends React.Component<{}, IProductState> {
+export class ProductScreen extends React.Component<{ history: any }, IProductState> {
 
-    // inital state varialble using in this Component, 
     public state = {
         productGrid: [],
         isLoading: false,
@@ -78,6 +77,7 @@ export class ProductScreen extends React.Component<{}, IProductState> {
                         <div className="col-md-12">
                             <div className="panel panel-white">
                                 <div className="panel-heading flex justify-content-between align-items-center">
+                                    <button type="button" className="btn btn-success">Thêm mới</button>
                                     <div>
                                         <DisplayNoPage
                                             onChange={this.handleDisplayNoPage}
@@ -122,16 +122,19 @@ export class ProductScreen extends React.Component<{}, IProductState> {
      * Set header for table
      */
     private setTableHeader = (sortIcon: string = 'sort') => {
-        const source = [
-            { id: 0, title: 'unpublish' },
-            { id: 1, title: 'published' }
-        ];
+        const source = {
+            placeHolder: '-----------',
+            items: [
+                { id: 0, title: 'unpublish' },
+                { id: 1, title: 'published' }
+            ]
+        };
 
         const tableHeader = [
             { id: 'id', title: '#', className: 'w35 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false },
             { id: 'prd_cd', title: 'Mã SP', className: 'w150 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
             { id: 'prd_name', title: 'Tên SP', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'price', title: 'Giá', className: 'w150 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
+            { id: 'price', title: 'Giá', className: 'w100 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
             { id: 'publish_flag', title: 'Trạng thái', className: 'w100 text-center', dataType: 'list', sortClass: sortIcon, source, allowSort: true },
             { id: 'action', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false }
         ];
@@ -165,7 +168,7 @@ export class ProductScreen extends React.Component<{}, IProductState> {
      * @return model
      */
     private handleEdit = async (id: string | number) => {
-        // TODO
+        this.props.history.push(`/product/update/${id}`);
     }
 
     /**

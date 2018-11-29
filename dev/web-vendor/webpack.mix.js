@@ -19,4 +19,5 @@ mix
         resolve: {
             extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
         },
-    }).disableSuccessNotifications();
+    });
+mix.disableNotifications();

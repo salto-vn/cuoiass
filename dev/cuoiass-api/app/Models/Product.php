@@ -105,7 +105,7 @@ class Product extends Eloquent
      */
     public function fieldsSearchable()
     {
-        return ['prd_id', 'prd_cd', 'price', 'publish_flag', 'prd_party_photo_size'];
+        return ['prd_id', 'prd_cd', 'prd_name', 'price', 'publish_flag', 'prd_party_photo_size'];
     }
 
 	public function masterService()
