@@ -43,7 +43,7 @@ const headerStyle = (theme:Theme) => createStyles({
     textTransform: "none",
     color: "inherit",
     margin: "0",
-    fontWeight: "normal",
+    fontWeight: 300,
     "&:hover,&:focus": {
       background: "transparent"
     }

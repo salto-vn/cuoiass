@@ -1,16 +1,17 @@
 import {
   drawerWidth,
   transition,
-  container
+  container, defaultFont
 } from "../material-dashboard-react";
 import { Theme, createStyles } from '@material-ui/core';
 
-const sidebarStyle = (theme:Theme) => createStyles({
+
+const sidebarStyle = (theme: Theme) => createStyles({
   wrapper: {
     position: "relative",
     top: "0",
     height: "100vh",
-    
+
   },
   mainPanel: {
     [theme.breakpoints.up("md")]: {
@@ -23,7 +24,8 @@ const sidebarStyle = (theme:Theme) => createStyles({
     maxHeight: "100%",
     width: "100%",
     overflowScrolling: "touch",
-    background:"#eee"
+    background: "#eee",
+    ...defaultFont
   },
   content: {
     marginTop: "70px",
@@ -35,5 +37,4 @@ const sidebarStyle = (theme:Theme) => createStyles({
     marginTop: "70px"
   }
 });
-
 export default sidebarStyle;

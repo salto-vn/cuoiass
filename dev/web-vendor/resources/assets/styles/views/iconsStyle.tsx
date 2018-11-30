@@ -33,8 +33,8 @@ const iconsStyle = createStyles({
     textDecoration: "none",
     "& small": {
       color: "#777",
-      fontWeight: "400",
-      lineHeight: "1"
+      fontWeight: 400,
+      lineHeight: "1",
     }
   }
 });

@@ -39,11 +39,15 @@ import CardBody from '../../common/Card/CardBody';
 import Table from '../../common/Table/Table';
 
 
-class Dashboard extends React.Component<{ classes: any }, { value: number }> {
+class Dashboard extends React.Component<{ classes: any }, { value: number,exampleListHeader:any  }> {
   public state = {
-    value: 0
+    value: 0,
+    exampleListHeader:[{}]
   };
  
+  componentDidMount() {
+    this.setTableHeader();
+  }
 
   handleChange = (event: any, value: any) => {
     this.setState({ value });
@@ -174,8 +178,9 @@ class Dashboard extends React.Component<{ classes: any }, { value: number }> {
               </CardHeader>
               <CardBody>
                 <Table
+                  hover={true}
                   tableHeaderColor="warning"
-                  tableHead={["ID", "Name", "Salary", "Country"]}
+                  tableHead={this.state.exampleListHeader}
                   tableData={[
                     ["1", "Dakota Rice", "$36,738", "Niger"],
                     ["2", "Minerva Hooper", "$23,789", "Curaçao"],
@@ -189,6 +194,18 @@ class Dashboard extends React.Component<{ classes: any }, { value: number }> {
         </GridContainer>
       </div>
     );
+  }
+   /**
+     * Set header for table
+     */
+    private setTableHeader = (sortIcon: string = 'sort') => {
+      const exampleListHeader = [
+          { id: '#', numeric: false, disablePadding: true, label: '#' },
+          { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
+          { id: 'money', numeric: false, disablePadding: true, label: 'Money' },
+          { id: 'country', numeric: false, disablePadding: true, label: 'Country' },
+      ];
+      this.setState({ exampleListHeader });
   }
 }
 

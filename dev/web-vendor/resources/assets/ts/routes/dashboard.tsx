@@ -1,6 +1,6 @@
 // @material-ui/icons
 import Dashboard from "@material-ui/icons/Dashboard";
-// import Person from "@material-ui/icons/Person";
+import Person from "@material-ui/icons/Person";
 // import ContentPaste from "@material-ui/icons/ContentPaste";
 // import LibraryBooks from "@material-ui/icons/LibraryBooks";
 // import BubbleChart from "@material-ui/icons/BubbleChart";
@@ -9,6 +9,7 @@ import Dashboard from "@material-ui/icons/Dashboard";
 // import Unarchive from "@material-ui/icons/Unarchive";
 // core components/views
 import DashboardPage from "../components/Dashboard/Dashboard";
+import StaffScreen from '../components/Staff/Index';
 // import UserProfile from "views/UserProfile/UserProfile.jsx";
 // import TableList from "views/TableList/TableList.jsx";
 
@@ -20,13 +21,13 @@ const dashboardRoutes = [
     icon: Dashboard,
     component: DashboardPage
   },
-  // {
-  //   path: "/user",
-  //   sidebarName: "User Profile",
-  //   navbarName: "Profile",
-  //   icon: Person,
-  //   component: UserProfile
-  // },
+  {
+    path: "/staff",
+    sidebarName: "Nhân Viên",
+    navbarName: "Quản lý nhân viên",
+    icon: Person,
+    component: StaffScreen
+  },
   // {
   //   path: "/table",
   //   sidebarName: "Table List",

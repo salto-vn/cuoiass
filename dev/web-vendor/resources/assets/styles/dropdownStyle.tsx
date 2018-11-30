@@ -3,7 +3,7 @@ import {
   primaryBoxShadow,
   defaultFont
 } from "./material-dashboard-react";
-import { createStyles, Theme, createMuiTheme } from '@material-ui/core';
+import { createStyles, Theme } from '@material-ui/core';
 
 const dropdownStyle = (theme:Theme) => createStyles({
   buttonLink: {

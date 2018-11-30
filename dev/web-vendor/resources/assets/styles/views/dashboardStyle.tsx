@@ -1,4 +1,4 @@
-import { successColor } from "../material-dashboard-react";
+import { successColor, defaultFont } from "../material-dashboard-react";
 import { createStyles } from '@material-ui/core';
 
 const dashboardStyle = createStyles({
@@ -49,8 +49,8 @@ const dashboardStyle = createStyles({
     color: "#3C4858",
     marginTop: "0px",
     minHeight: "auto",
+    ...defaultFont,
     fontWeight: 300,
-    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
     marginBottom: "3px",
     textDecoration: "none",
     "& small": {

@@ -1,19 +1,64 @@
 import * as React from 'react';
-import { IStaffState, IStaffList, IStaffFilter } from '../../interface/IStaff';
+import { IStaffState, IStaffFilter, IStaffList } from '../../interface/IStaff';
 import { StaffModel } from '../../model/StaffModel';
 import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
-import { Table, ITh } from '../../common/Grid/Table';
-import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
+// import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
 import StaffModal from './Edit';
 import { objectToQueryString } from '../../common/Utils';
+import GridContainer from '../../common/Grid/GridContainer';
+import GridItem from '../../common/Grid/GridItem';
+import Card from '../../common/Card/Card';
+import CardHeader from '../../common/Card/CardHeader';
+import CardBody from '../../common/Card/CardBody';
+import Table from '../../common/Table/Table';
+import { createStyles, withStyles, TablePagination, Modal, Typography, Theme } from '@material-ui/core';
 
 library.add(faSortUp)
 
-const subjectPage = 'Quản lý nhân viên'; //Header Content page
+
+const styles = (theme: Theme) => createStyles({
+    cardCategoryWhite: {
+        "&,& a,& a:hover,& a:focus": {
+            color: "rgba(255,255,255,.62)",
+            margin: "0",
+            fontSize: "14px",
+            marginTop: "0",
+            marginBottom: "0"
+        },
+        "& a,& a:hover,& a:focus": {
+            color: "#FFFFFF"
+        }
+    },
+    cardTitleWhite: {
+        color: "#FFFFFF",
+        marginTop: "0px",
+        minHeight: "auto",
+        fontWeight: 300,
+        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+        marginBottom: "3px",
+        textDecoration: "none",
+        "& small": {
+            color: "#777",
+            fontSize: "65%",
+            fontWeight: 400,
+            lineHeight: "1"
+        }
+    },
+    modal: {
+        position: 'absolute',
+        // width: theme.spacing.unit * 50,
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 4,
+        top: "50%",
+        left: "50%",
+        transform: `translate(-50%, -50%)`,
+    },
+});
 
 /**
  * Staff Screen Component
@@ -21,7 +66,7 @@ const subjectPage = 'Quản lý nhân viên'; //Header Content page
  * Properties: N/A
  * State: Required IStaffState , Optional another variale
  */
-export class StaffScreen extends React.Component<{}, IStaffState> {
+class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
     // inital state varialble using in this Component, 
     public state = {
@@ -34,7 +79,6 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         limit: CONSTANT.LIMIT,
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
-        pageRange: CONSTANT.PAGE_RANGE_DISPLAY,
         isError: false,
         isErrorList: false,
         isValidate: false,
@@ -44,9 +88,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         tableHeader: [],
         filters: CONSTANT.UNDEFINED,
         isCreate: false,
-        sortbyc: 'staff_id',
-        sortby: 'desc',
-        sortedIndex: 0
+        orderBy: 'staff_id',
+        order: 'desc',
+        sortedIndex: 0,
+
     };
 
     /**
@@ -63,95 +108,100 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * on initial this Component 
      * Render view
      */
-    public render() {
-        const { staffGrid, totalItem, pageRange, limit, activePage, isLoading, isCLickPaginate, errorInfo, isErrorList, tableHeader } = this.state;
+    render() {
+        const { staffGrid, totalItem, limit, activePage, order, orderBy, isLoading, isCLickPaginate, errorInfo, isErrorList, tableHeader } = this.state;
+        const { classes } = this.props
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < staffGrid.length; i++) {
             let item: IStaffList = staffGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.staff_id];
+            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.staff_id.toString()];
             listdata.push(data);
         }
-
         return (
-            <>
-                <div className="page-title">
-                    <h3 className="breadcrumb-header">{subjectPage}</h3>
-                </div>
-                <div id="main-wrapper">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className="panel panel-white">
-                                <div className="panel-heading flex justify-content-between align-items-center">
-                                    <button type="button" className="btn btn-success" onClick={this.onToggleModal.bind(this, true)}>Thêm mới</button>
-                                    <div>
-                                        <DisplayNoPage
-                                            onChange={this.handleDisplayNoPage}
-                                            name={'perpage'}
-                                            addClass={'w60 form-control pd6'}
-                                            options={[10, 20, 50, 100]}
-                                            displayDefault={10}
-                                            selectedValue={limit}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="panel-body">
-                                    <Table
-                                        pageClicked={this.handlePageChange}
-                                        headers={tableHeader}
-                                        activePage={activePage}
-                                        totalItem={totalItem}
-                                        pageRange={pageRange}
-                                        dataSet={listdata}
-                                        limit={limit}
-                                        isError={isErrorList}
-                                        isLoading={isLoading}
-                                        isCLickPaginate={isCLickPaginate}
-                                        errorInfo={errorInfo}
-                                        desc='Staff data' onSort={this.handleSort}
-                                        canEdit={true} onEdit={this.handleEdit}
-                                        canDelete={true} onDelete={this.handleDelete}
-                                        canView={false} onView={this.handleEdit}
-                                        filterFlag={true}
-                                        onFilter={this.handleFilter}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        {
-                            this.state.isShowModal &&
-                            <StaffModal
-                                modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
-                                model={this.state.model}
-                                onToggleModal={this.onToggleModal}
-                                onCreate={this.onCreate}
-                                onUpdate={this.onUpdate}
-                                isCreate={this.state.isCreate}
-                                isValidate={this.state.isValidate}
-                                errorInfo={this.state.validateMessage}
+            <><GridContainer>
+                <GridItem xs={12} sm={12} md={12}>
+                    <Card>
+                        <CardHeader color="primary">
+                            <h4 className={classes.cardTitleWhite}>Danh sách nhân viên</h4>
+                            <p className={classes.cardCategoryWhite}>
+                                Danh sách tài khoản đăng nhập của nhân viên
+                             </p>
+                        </CardHeader>
+                        <CardBody>
+                            <Table hover={true}
+                                tableHeaderColor="primary"
+                                tableHead={tableHeader}
+                                tableData={listdata}
+                                onEdit={this.handleEdit}
+                                onDelete={this.handleDelete}
+                                onSort={this.handleSort}
+                                order={order}
+                                orderBy={orderBy}
+                                onFilter={this.handleFilter}
                             />
-                        }
-                    </div>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 20, 50, 100]}
+                                component="div"
+                                count={totalItem}
+                                rowsPerPage={limit}
+                                page={activePage}
+                                backIconButtonProps={{
+                                    'aria-label': 'Previous Page',
+                                }}
+                                nextIconButtonProps={{
+                                    'aria-label': 'Next Page',
+                                }}
+                                onChangePage={this.handlePageChange}
+                                onChangeRowsPerPage={this.handleDisplayNoPage}
+                            />
+                        </CardBody>
+                    </Card>
+                </GridItem>
+            </GridContainer>
+                <div>
+                    <Modal
+                        aria-labelledby="simple-modal-title"
+                        aria-describedby="simple-modal-description"
+                        open={this.state.isShowModal}
+                        onClose={this.handleClose}
+                    >
+                        <div className={classes.modal}>
+                        <StaffModal
+                            modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
+                            model={this.state.model}
+                            onToggleModal={this.onToggleModal}
+                            onCreate={this.onCreate}
+                            onUpdate={this.onUpdate}
+                            isCreate={this.state.isCreate}
+                            isValidate={this.state.isValidate}
+                            errorInfo={this.state.validateMessage}
+                        />
+                        </div>
+                    </Modal>
                 </div>
             </>
         );
     }
+
+
+    handleClose = () => {
+        this.setState({ isShowModal: false });
+    };
 
     /**
      * Set header for table
      */
     private setTableHeader = (sortIcon: string = 'sort') => {
         const tableHeader = [
-            { id: 'id', title: '#', className: 'w35 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false },
-            { id: 'staff_name', title: 'Tên nhân viên', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'phone', title: 'Điện thoại', className: 'w150 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'email', title: 'Email', className: 'w200 text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'address', title: 'Địa chỉ', className: 'text-center', dataType: 'text', sortClass: sortIcon, allowSort: true },
-            { id: 'action', title: 'Actions', className: 'w100 text-center', dataType: 'none', sortClass: sortIcon, allowSort: false }
+            { id: 'name', numeric: false, disablePadding: true, label: '#' },
+            { id: 'staff_name', numeric: false, disablePadding: true, label: 'Tên nhân viên' },
+            { id: 'phone', numeric: false, disablePadding: true, label: 'Điện thoại' },
+            { id: 'email', numeric: false, disablePadding: true, label: 'Email' },
+            { id: 'address', numeric: false, disablePadding: true, label: 'Địa chỉ' },
+            { id: 'action', numeric: false, disablePadding: true, label: '' },
         ];
         this.setState({ tableHeader });
     }
@@ -161,11 +211,10 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * @return not need to return set to state is OK
      */
     private getListStaff = async () => {
-        const { activePage, limit, sortbyc, sortby, filters } = this.state;
+        const { activePage, limit, order, orderBy, filters } = this.state;
 
         this.setState({ isLoading: true });
-
-        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage, limit, sortbyc, sortby, filters);
+        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage + 1, limit, orderBy, order, filters);
 
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
@@ -174,7 +223,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({
             staffGrid: response.result.data,
             totalItem: response.result.total,
-            isLoading: false
+            isLoading: false,
         });
     }
 
@@ -182,7 +231,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * @param id: string | number
      * @return model
      */
-    private handleEdit = async (id: string | number) => {
+    public handleEdit = async (id: string | number) => {
         if (this.state.isHandleEvent) {
             return;
         }
@@ -198,7 +247,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({
             model: response.result,
             isHandleEvent: false,
-        }, () => this.onToggleModal()
+            isShowModal: true,
+        }
         );
     }
 
@@ -277,7 +327,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * 
      * @return List staff
      */
-    private handleDelete = async (id: string) => {
+    public handleDelete = async (id: string) => {
         if (this.state.isHandleEvent) {
             return;
         }
@@ -300,36 +350,15 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * 
      * @return List staff
      */
-    private handleSort = (key: any, index: any) => {
-        const feedbacHeader: ITh[] = this.state.tableHeader;
-        let sortClass = feedbacHeader[index].sortClass;
-        const { sortedIndex } = this.state;
-
-        feedbacHeader[sortedIndex].sortClass = "sort";
-        switch (sortClass) {
-            case "sort":
-                feedbacHeader[index].sortClass = "sort-down"
-                break;
-            case "sort-up":
-                feedbacHeader[index].sortClass = "sort-down"
-                break;
-            case "sort-down":
-                feedbacHeader[index].sortClass = "sort-up"
-                break;
-            default:
-                feedbacHeader[index].sortClass = "sort"
-                break;
-        }
-
-        let sortby: string = "";
-        if ((sortClass === "sort") || (sortClass === "sort-up")) {
-            sortby = 'asc';
-        } else {
-            sortby = 'desc';
+    public handleSort = (id: string) => {
+        const orderBy = id;
+        let order = 'desc';
+        if (this.state.orderBy === id && this.state.order === 'desc') {
+            order = 'asc';
         }
 
         return this.setState((prevState) => ({
-            ...prevState, sortbyc: key, sortby: sortby, feedbacHeader: feedbacHeader, sortedIndex: index
+            ...prevState, orderBy: orderBy, order: order
         }), () => {
 
             this.getListStaff();
@@ -343,7 +372,7 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * 
      * @return Get list staff
      */
-    private handleFilter = (filtes: IStaffFilter) => {
+    public handleFilter = (filtes: IStaffFilter) => {
         const filters = objectToQueryString(filtes);
         this.setState({
             filters: filters ? filters : undefined,
@@ -359,12 +388,11 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * 
      * @return List staff
      */
-    private handlePageChange = (pageNumber: number) => {
+    public handlePageChange = (event: any, pageNumber: number) => {
         const { activePage } = this.state;
         if (activePage === pageNumber) {
             return;
         }
-
         return this.setState((prevState) => ({
             ...prevState, activePage: pageNumber, isCLickPaginate: true
         }), () => {
@@ -377,8 +405,8 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
      * 
      * @return List staf
      */
-    private handleDisplayNoPage = (limit: number) => {
-        this.setState({ limit }, () => this.getListStaff());
+    public handleDisplayNoPage = (event: any) => {
+        this.setState({ limit: event.target.value }, () => this.getListStaff());
     }
 
     /**
@@ -398,3 +426,5 @@ export class StaffScreen extends React.Component<{}, IStaffState> {
         this.setState({ isShowModal: !this.state.isShowModal, model, isCreate, validateMessage: { errors: '' } });
     }
 }
+
+export default withStyles(styles)(StaffScreen);

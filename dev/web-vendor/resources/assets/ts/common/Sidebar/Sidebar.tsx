@@ -15,29 +15,22 @@ import Icon from "@material-ui/core/Icon";
 import sidebarStyle from "../../../styles/components/sidebarStyle";
 import HeaderLinks from '../Header/HeaderLinks';
 
-class Sidebar extends React.Component<{location?:any, classes:any, logo:string,color:string, image:string, logoText:string, routes:any, handleDrawerToggle?:any, open?:any},{}>{
+class Sidebar extends React.Component<{ location?: any, classes: any, logo: string, color: string, image?: string, logoText: string, routes: any, handleDrawerToggle?: any, open?: any }, {}>{
   private activeRoute = (routeName: string) => {
     return this.props.location.pathname.indexOf(routeName) > -1 ? true : false;
   }
 
-  public render () {
+  public render() {
     const { classes, color, logo, image, logoText, routes } = this.props;
     var links = (
       <List className={classes.list}>
-        {routes.map((prop:any, key:any) => {
+        {routes.map((prop: any, key: any) => {
           if (prop.redirect) return null;
           var activePro = " ";
           var listItemClasses;
-          if (prop.path === "/upgrade-to-pro") {
-            activePro = classes.activePro + " ";
-            listItemClasses = classNames({
-              [" " + classes[color]]: true
-            });
-          } else {
-            listItemClasses = classNames({
-              [" " + classes[color]]: this.activeRoute(prop.path)
-            });
-          }
+          listItemClasses = classNames({
+            [" " + classes[color]]: this.activeRoute(prop.path)
+          });
           const whiteFontClasses = classNames({
             [" " + classes.whiteFont]: this.activeRoute(prop.path)
           });
@@ -70,7 +63,7 @@ class Sidebar extends React.Component<{location?:any, classes:any, logo:string,c
 
     var brand = (
       <div className={classes.logo}>
-        <a href="https://www.creative-tim.com" className={classes.logoLink}>
+        <a href="/" className={classes.logoLink}>
           <div className={classes.logoImage}>
             <img src={logo} alt="logo" className={classes.img} />
           </div>

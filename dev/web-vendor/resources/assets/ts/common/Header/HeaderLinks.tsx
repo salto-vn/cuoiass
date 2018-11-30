@@ -20,16 +20,20 @@ import Button from "../FormControls/CustomButtons/Button";
 
 import headerLinksStyle from "../../../styles/components/headerLinksStyle";
 
-class HeaderLinks extends React.Component<{ classes?: any, handleClick?:any }, {open:any,anchorEl:any}> {
+class HeaderLinks extends React.Component<{ classes?: any, handleClick?: any }, { open: any, anchorEl: any }> {
   public state = {
-    open: false,anchorEl:null
+    open: false, anchorEl: null
   };
-  public handleToggle = () => {
-    this.setState(state => ({ open: !this.state.open }));
+  public handleToggle = (event: any) => {
+    this.setState(state => (
+      {
+        open: !this.state.open,
+      }
+    ));
   };
 
   handleClose = (event: any) => {
-    this.setState({ open: false });
+    this.setState({ open: false, anchorEl: null });
   };
 
   render() {
@@ -54,6 +58,9 @@ class HeaderLinks extends React.Component<{ classes?: any, handleClick?:any }, {
           </Button>
         </div>
         <Button
+          buttonRef={(node: any) => {
+            this.state.anchorEl = node;
+          }}
           color={window.innerWidth > 959 ? "transparent" : "white"}
           justIcon={window.innerWidth > 959}
           simple={!(window.innerWidth > 959)}

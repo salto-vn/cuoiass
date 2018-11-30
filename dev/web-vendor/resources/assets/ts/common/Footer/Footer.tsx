@@ -38,10 +38,10 @@ function Footer({ ...props }) {
         </div>
         <p className={classes.right}>
           <span>
-            &copy; {1900 + new Date().getFullYear()}{" "}
-            <a href="https://www.creative-tim.com" className={classes.a}>
-              Creative Tim
-            </a>, made with love for a better web
+            &copy; {new Date().getFullYear()}{" "}
+            <a href="http://baapcenter.com" className={classes.a}>
+              Implemented by B.A.A.P Team
+            </a>
           </span>
         </p>
       </div>

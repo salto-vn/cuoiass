@@ -6767,8 +6767,243 @@ var _default = Tablelvl2Context;
 exports.default = _default;
 
 /***/ }),
-/* 55 */,
-/* 56 */,
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var _this = this;
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(15);
+var HandleResponse_1 = tslib_1.__importDefault(__webpack_require__(531));
+var Utils_1 = __webpack_require__(56);
+var headerOptions = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+};
+/**
+ * Fine one by id and select dynamic columns
+ * @method GET
+ * @param url
+ * @param id
+ * @param columns
+ *
+ * @return HandleResponse
+ */
+exports.findOne = function (url, id, columns) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var fullUrl, result;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                fullUrl = "";
+                if (columns == undefined) {
+                    fullUrl = url + "/" + id;
+                }
+                else {
+                    fullUrl = url + "/" + id + "/" + columns;
+                }
+                return [4 /*yield*/, fetch(fullUrl, {
+                        method: "GET",
+                        headers: headerOptions,
+                    })];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, HandleResponse_1.default(result)];
+        }
+    });
+}); };
+/**
+ * Make request with method get
+ * @method GET
+ * @param url
+ * @param page
+ * @param limit
+ * @param sortbyc
+ * @param sortby
+ * @param search
+ * @param columns
+ *
+ * @return HandleResponse
+ */
+exports.GetList = function (url, page, limit, sortbyc, sortby, search, columns) {
+    if (page === void 0) { page = 1; }
+    if (limit === void 0) { limit = 10; }
+    return tslib_1.__awaiter(_this, void 0, void 0, function () {
+        var params, queryString, result;
+        return tslib_1.__generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    params = { page: page, limit: limit, sortbyc: sortbyc, sortby: sortby, search: search };
+                    queryString = Utils_1.objectToQueryString(params, '=', '&');
+                    return [4 /*yield*/, fetch(url + "?" + queryString, {
+                            method: "GET",
+                            headers: headerOptions,
+                        })];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, HandleResponse_1.default(result)];
+            }
+        });
+    });
+};
+/**
+ * Function store data
+ * @method POST
+ * @param url
+ * @param model
+ * @return HandleResponse
+ */
+exports.Store = function (url, model) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var result;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch("" + url, {
+                    method: "POST",
+                    headers: headerOptions,
+                    body: JSON.stringify(model)
+                })];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, HandleResponse_1.default(result)];
+        }
+    });
+}); };
+/**
+ * Function edit
+ * @param url
+ * @param id
+ */
+/**
+* Function edit
+* @method GET
+* @param url
+*
+* @return HandleResponse
+*/
+exports.Edit = function (url, id) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var result;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch(url + "/" + id + "/edit", {
+                    method: "GET",
+                    headers: headerOptions,
+                })];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, HandleResponse_1.default(result)];
+        }
+    });
+}); };
+/**
+ * Function update
+ * @method GET
+ * @param url
+ * @param model
+ * @param id
+ *
+ * @return HandleResponse
+ */
+exports.Update = function (url, model, id) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var result;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch(url + "/" + id, {
+                    method: "PUT",
+                    headers: headerOptions,
+                    body: JSON.stringify(model)
+                })];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, HandleResponse_1.default(result)];
+        }
+    });
+}); };
+/**
+ * Function delete
+ * @method GET
+ * @param url
+ *
+ * @return HandleResponse
+ */
+exports.Destroy = function (url, id) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var result;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch(url + "/" + id, {
+                    method: "DELETE",
+                    headers: headerOptions
+                })];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, HandleResponse_1.default(result)];
+        }
+    });
+}); };
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Convert object to query string: page=1&limit=20
+ *
+ * @param params
+ * @param glue
+ * @param delimiter
+ *
+ * @return string
+ */
+exports.objectToQueryString = function (params, glue, delimiter) {
+    if (glue === void 0) { glue = ':'; }
+    if (delimiter === void 0) { delimiter = ';'; }
+    return Object.keys(JSON.parse(JSON.stringify(params))).map(function (key) { return key + ("" + glue) + params[key]; }).join(delimiter);
+};
+/**
+ * Check key in object not empty value
+ *
+ * @param params
+ * @param glue
+ * @param delimiter
+ *
+ * @return boolean
+ */
+exports.isEmptyKeyInObject = function (params) {
+    if (Object.keys(JSON.parse(JSON.stringify(params))).length) {
+        return true;
+    }
+    return false;
+};
+/**
+ *
+ * @param value
+ *
+ * @return boolean
+ */
+exports.showError = function (clientError, errorInfo, key) {
+    if (clientError[key] && !exports.isEmpty(clientError[key])) {
+        return clientError[key];
+    }
+    if (errorInfo.errors[key] && Array.isArray(errorInfo.errors[key])) {
+        return errorInfo.errors[key][0];
+    }
+    return '';
+};
+/**
+ *
+ * @param value
+ *
+ * @return boolean
+ */
+exports.isEmpty = function (value) {
+    return (value === undefined || value === null || value === '');
+};
+
+
+/***/ }),
 /* 57 */,
 /* 58 */,
 /* 59 */
@@ -7425,7 +7660,26 @@ var _default = ListContext;
 exports.default = _default;
 
 /***/ }),
-/* 75 */,
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var CONSTANT = {
+    TOTAL_COUNT: 0,
+    PAGE: 1,
+    LIMIT: 10,
+    ITEM_REPEAT: 1,
+    CURRENT_PAGE: 0,
+    PAGE_RANGE_DISPLAY: 10,
+    PAGE_TITLE: 'Quản lý booking',
+    UNDEFINED: undefined
+};
+exports.default = CONSTANT;
+
+
+/***/ }),
 /* 76 */,
 /* 77 */,
 /* 78 */,
@@ -11204,7 +11458,20 @@ var _Select = _interopRequireDefault(__webpack_require__(471));
 /* 107 */,
 /* 108 */,
 /* 109 */,
-/* 110 */,
+/* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var API_URL = {
+    'STAFF': '/api/staffs',
+    'REVIEW': '/api/reviews'
+};
+exports.default = API_URL;
+
+
+/***/ }),
 /* 111 */,
 /* 112 */,
 /* 113 */
@@ -15257,8 +15524,132 @@ function updateLink (link, options, obj) {
 /* 187 */,
 /* 188 */,
 /* 189 */,
-/* 190 */,
-/* 191 */,
+/* 190 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ *
+ * @param value
+ *
+ * @return boolean
+ */
+exports.required = function (value) {
+    return (value === undefined || value === null || value === '' || !value.toString().trim().length);
+};
+/**
+ *
+ * @param value
+ */
+exports.boolean = function (value) {
+};
+/**
+ *
+ * @param value
+ *
+ * @return number
+ */
+exports.count = function (value) {
+    return value.toString().trim().length;
+};
+/**
+ *
+ * @param email
+ * @return null | string
+ */
+exports.email = function (email) {
+    return email.match(/^[a-z][a-z0-9_\.]{3,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/g);
+};
+/**
+ *
+ * @param value
+ * @param min
+ * @return boolean
+ */
+exports.min = function (value, min) {
+    return value.toString().trim().length < min;
+};
+/**
+ *
+ * @param value
+ * @param max
+ * @return boolean
+ */
+exports.max = function (value, max) {
+    return (value.toString().trim().length > max);
+};
+/**
+ *
+ * @param value
+ * @param parameters
+ *
+ * @return boolean
+ */
+exports.inArray = function (value, parameters) {
+    return parameters.includes(value);
+};
+/**
+ *
+ * @param value
+ * @param max
+ * @return boolean
+ */
+exports.between = function (value, min, max) {
+    return (value.toString().trim().length < min && value.toString().trim().length > max);
+};
+/**
+ *
+ * @param value
+ * @param min
+ * @param max
+ *
+ * @return boolean
+ */
+exports.digitsBetween = function (value, min, max) {
+    return (value >= min && value <= max);
+};
+
+
+/***/ }),
+/* 191 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var StaffModel = /** @class */ (function () {
+    function StaffModel() {
+        this.staff_id = 2;
+        this.vendor_id = 1;
+        this.role_id = 2;
+        this.staff_name = '';
+        this.email = '';
+        this.password = '';
+        this.phone = '';
+        this.address = '';
+    }
+    return StaffModel;
+}());
+exports.StaffModel = StaffModel;
+var ValidateModel = /** @class */ (function () {
+    function ValidateModel() {
+        this.staff_id = undefined;
+        this.vendor_id = undefined;
+        this.role_id = undefined;
+        this.staff_name = undefined;
+        this.email = undefined;
+        this.password = undefined;
+        this.phone = undefined;
+        this.address = undefined;
+    }
+    return ValidateModel;
+}());
+exports.ValidateModel = ValidateModel;
+
+
+/***/ }),
 /* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -75278,7 +75669,52 @@ exports.default = _default;
 /* 528 */,
 /* 529 */,
 /* 530 */,
-/* 531 */,
+/* 531 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var _this = this;
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(15);
+/**
+ *
+ * @param res:Response
+ * @return IHandleResponse
+ */
+var HandleResponse = function (res) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+    var isError, isValidate, result, validateMessage;
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                isError = false;
+                isValidate = false;
+                result = null;
+                validateMessage = null;
+                if (!(res.ok && res.status >= 200 && res.status < 300)) return [3 /*break*/, 2];
+                return [4 /*yield*/, res.json()];
+            case 1:
+                result = _a.sent();
+                _a.label = 2;
+            case 2:
+                if (!(!res.ok && res.status === 422)) return [3 /*break*/, 4];
+                isValidate = true;
+                return [4 /*yield*/, res.json()];
+            case 3:
+                validateMessage = _a.sent();
+                _a.label = 4;
+            case 4:
+                if (!res.ok && res.status === 500) {
+                    isError = true;
+                }
+                return [2 /*return*/, { isError: isError, message: res.statusText, isValidate: isValidate, validateMessage: validateMessage, result: result }];
+        }
+    });
+}); };
+exports.default = HandleResponse;
+
+
+/***/ }),
 /* 532 */,
 /* 533 */,
 /* 534 */,
@@ -75420,9 +75856,637 @@ module.exports = function (css) {
 /* 576 */,
 /* 577 */,
 /* 578 */,
-/* 579 */,
-/* 580 */,
-/* 581 */,
+/* 579 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(15);
+var React = tslib_1.__importStar(__webpack_require__(1));
+var StaffModel_1 = __webpack_require__(191);
+var HandleRequest = tslib_1.__importStar(__webpack_require__(55));
+var Constant_1 = tslib_1.__importDefault(__webpack_require__(75));
+var Url_1 = tslib_1.__importDefault(__webpack_require__(110));
+// import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
+var fontawesome_svg_core_1 = __webpack_require__(79);
+var free_solid_svg_icons_1 = __webpack_require__(24);
+var Edit_1 = tslib_1.__importDefault(__webpack_require__(580));
+var Utils_1 = __webpack_require__(56);
+var GridContainer_1 = tslib_1.__importDefault(__webpack_require__(615));
+var GridItem_1 = tslib_1.__importDefault(__webpack_require__(616));
+var Card_1 = tslib_1.__importDefault(__webpack_require__(591));
+var CardHeader_1 = tslib_1.__importDefault(__webpack_require__(592));
+var CardBody_1 = tslib_1.__importDefault(__webpack_require__(593));
+var Table_1 = tslib_1.__importDefault(__webpack_require__(628));
+var core_1 = __webpack_require__(228);
+fontawesome_svg_core_1.library.add(free_solid_svg_icons_1.faSortUp);
+var styles = function (theme) { return core_1.createStyles({
+    cardCategoryWhite: {
+        "&,& a,& a:hover,& a:focus": {
+            color: "rgba(255,255,255,.62)",
+            margin: "0",
+            fontSize: "14px",
+            marginTop: "0",
+            marginBottom: "0"
+        },
+        "& a,& a:hover,& a:focus": {
+            color: "#FFFFFF"
+        }
+    },
+    cardTitleWhite: {
+        color: "#FFFFFF",
+        marginTop: "0px",
+        minHeight: "auto",
+        fontWeight: 300,
+        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+        marginBottom: "3px",
+        textDecoration: "none",
+        "& small": {
+            color: "#777",
+            fontSize: "65%",
+            fontWeight: 400,
+            lineHeight: "1"
+        }
+    },
+    modal: {
+        position: 'absolute',
+        // width: theme.spacing.unit * 50,
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 4,
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+    },
+}); };
+/**
+ * Staff Screen Component
+ * Display Staff list data, include paging
+ * Properties: N/A
+ * State: Required IStaffState , Optional another variale
+ */
+var StaffScreen = /** @class */ (function (_super) {
+    tslib_1.__extends(StaffScreen, _super);
+    function StaffScreen() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        // inital state varialble using in this Component, 
+        _this.state = {
+            staffGrid: [],
+            model: new StaffModel_1.StaffModel,
+            isLoading: false,
+            isCLickPaginate: false,
+            isHandleEvent: false,
+            itemRepeat: Constant_1.default.ITEM_REPEAT,
+            limit: Constant_1.default.LIMIT,
+            isShowModal: false,
+            totalItem: Constant_1.default.TOTAL_COUNT,
+            isError: false,
+            isErrorList: false,
+            isValidate: false,
+            errorInfo: '',
+            validateMessage: { errors: '' },
+            activePage: Constant_1.default.CURRENT_PAGE,
+            tableHeader: [],
+            filters: Constant_1.default.UNDEFINED,
+            isCreate: false,
+            orderBy: 'staff_id',
+            order: 'desc',
+            sortedIndex: 0,
+        };
+        _this.handleClose = function () {
+            _this.setState({ isShowModal: false });
+        };
+        /**
+         * Set header for table
+         */
+        _this.setTableHeader = function (sortIcon) {
+            if (sortIcon === void 0) { sortIcon = 'sort'; }
+            var tableHeader = [
+                { id: 'name', numeric: false, disablePadding: true, label: '#' },
+                { id: 'staff_name', numeric: false, disablePadding: true, label: 'Tên nhân viên' },
+                { id: 'phone', numeric: false, disablePadding: true, label: 'Điện thoại' },
+                { id: 'email', numeric: false, disablePadding: true, label: 'Email' },
+                { id: 'address', numeric: false, disablePadding: true, label: 'Địa chỉ' },
+                { id: 'action', numeric: false, disablePadding: true, label: '' },
+            ];
+            _this.setState({ tableHeader: tableHeader });
+        };
+        /**
+         * Get staff data
+         * @return not need to return set to state is OK
+         */
+        _this.getListStaff = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var _a, activePage, limit, order, orderBy, filters, response;
+            return tslib_1.__generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.state, activePage = _a.activePage, limit = _a.limit, order = _a.order, orderBy = _a.orderBy, filters = _a.filters;
+                        this.setState({ isLoading: true });
+                        return [4 /*yield*/, HandleRequest.GetList(Url_1.default.STAFF, activePage + 1, limit, orderBy, order, filters)];
+                    case 1:
+                        response = _b.sent();
+                        if (response.isError) {
+                            return [2 /*return*/, this.setState({ isErrorList: response.isError, errorInfo: response.message })];
+                        }
+                        this.setState({
+                            staffGrid: response.result.data,
+                            totalItem: response.result.total,
+                            isLoading: false,
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        /**
+         * @param id: string | number
+         * @return model
+         */
+        _this.handleEdit = function (id) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var response;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.state.isHandleEvent) {
+                            return [2 /*return*/];
+                        }
+                        this.setState({ isHandleEvent: true });
+                        return [4 /*yield*/, HandleRequest.Edit(Url_1.default.STAFF, id)];
+                    case 1:
+                        response = _a.sent();
+                        if (response.isError) {
+                            return [2 /*return*/, this.setState({ isError: response.isError, errorInfo: response.message })];
+                        }
+                        this.setState({
+                            model: response.result,
+                            isHandleEvent: false,
+                            isShowModal: true,
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        /**
+         * Save model
+         *
+         * @return List staff have new record
+         */
+        _this.onCreate = function (model) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var response;
+            var _this = this;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.state.isHandleEvent) {
+                            return [2 /*return*/];
+                        }
+                        this.setState({ isHandleEvent: true });
+                        return [4 /*yield*/, HandleRequest.Store(Url_1.default.STAFF, model)];
+                    case 1:
+                        response = _a.sent();
+                        if (response.isError) {
+                            return [2 /*return*/, this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false })];
+                        }
+                        if (response.isValidate) {
+                            return [2 /*return*/, this.setState({
+                                    isValidate: response.isValidate,
+                                    validateMessage: response.validateMessage,
+                                    isHandleEvent: false
+                                })];
+                        }
+                        this.setState({
+                            isHandleEvent: false,
+                            isCreate: false
+                        }, function () {
+                            _this.onToggleModal();
+                            _this.getListStaff();
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        /**
+         * Save model
+         * @param model
+         *
+         * @return List staff
+         */
+        _this.onUpdate = function (model) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var response;
+            var _this = this;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.state.isHandleEvent) {
+                            return [2 /*return*/];
+                        }
+                        this.setState({ isHandleEvent: true });
+                        return [4 /*yield*/, HandleRequest.Update(Url_1.default.STAFF, model, model.staff_id)];
+                    case 1:
+                        response = _a.sent();
+                        if (response.isError) {
+                            return [2 /*return*/, this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false })];
+                        }
+                        if (response.isValidate) {
+                            return [2 /*return*/, this.setState({
+                                    isValidate: response.isValidate,
+                                    validateMessage: response.validateMessage,
+                                    isHandleEvent: false
+                                })];
+                        }
+                        this.setState({
+                            isHandleEvent: false,
+                        }, function () {
+                            _this.onToggleModal();
+                            _this.getListStaff();
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        /**
+         * @param id
+         *
+         * @return List staff
+         */
+        _this.handleDelete = function (id) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+            var response;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.state.isHandleEvent) {
+                            return [2 /*return*/];
+                        }
+                        this.setState({ isHandleEvent: true });
+                        return [4 /*yield*/, HandleRequest.Destroy(Url_1.default.STAFF, id)];
+                    case 1:
+                        response = _a.sent();
+                        if (response.isError) {
+                            return [2 /*return*/, this.setState({ isError: response.isError, errorInfo: response.message, isHandleEvent: false })];
+                        }
+                        this.setState({ isHandleEvent: false });
+                        this.getListStaff();
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        /**
+         * @param key
+         * @param index
+         *
+         * @return List staff
+         */
+        _this.handleSort = function (id) {
+            var orderBy = id;
+            var order = 'desc';
+            if (_this.state.orderBy === id && _this.state.order === 'desc') {
+                order = 'asc';
+            }
+            return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { orderBy: orderBy, order: order })); }, function () {
+                _this.getListStaff();
+            });
+        };
+        /**
+         * Set state for array filters and isCLickPaginate to make it paginate
+         *
+         * @param filtes
+         *
+         * @return Get list staff
+         */
+        _this.handleFilter = function (filtes) {
+            var filters = Utils_1.objectToQueryString(filtes);
+            _this.setState({
+                filters: filters ? filters : undefined,
+                isCLickPaginate: false
+            }, function () {
+                _this.getListStaff();
+            });
+        };
+        /**
+         * @event handle Page change
+         * @param pageNumber: number
+         *
+         * @return List staff
+         */
+        _this.handlePageChange = function (event, pageNumber) {
+            var activePage = _this.state.activePage;
+            if (activePage === pageNumber) {
+                return;
+            }
+            return _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { activePage: pageNumber, isCLickPaginate: true })); }, function () {
+                _this.getListStaff();
+            });
+        };
+        /**
+         * @event Change perpage
+         *
+         * @return List staf
+         */
+        _this.handleDisplayNoPage = function (event) {
+            _this.setState({ limit: event.target.value }, function () { return _this.getListStaff(); });
+        };
+        /**
+         * Show popup modal
+         * @param isCreate: boolean
+         */
+        _this.onToggleModal = function (isCreate) {
+            if (isCreate === void 0) { isCreate = false; }
+            var isShowModal = _this.state.isShowModal;
+            if (!isShowModal) {
+                document.body.classList.add('modal-open');
+            }
+            else {
+                document.body.attributes.removeNamedItem('class');
+            }
+            var model = isCreate ? new StaffModel_1.StaffModel : _this.state.model;
+            _this.setState({ isShowModal: !_this.state.isShowModal, model: model, isCreate: isCreate, validateMessage: { errors: '' } });
+        };
+        return _this;
+    }
+    /**
+     * Event usualy mount data to State variale
+     */
+    StaffScreen.prototype.componentDidMount = function () {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            return tslib_1.__generator(this, function (_a) {
+                document.title = Constant_1.default.PAGE_TITLE;
+                this.setTableHeader();
+                this.getListStaff();
+                return [2 /*return*/];
+            });
+        });
+    };
+    /**
+     * Render event will be run first time,
+     * on initial this Component
+     * Render view
+     */
+    StaffScreen.prototype.render = function () {
+        var _a = this.state, staffGrid = _a.staffGrid, totalItem = _a.totalItem, limit = _a.limit, activePage = _a.activePage, order = _a.order, orderBy = _a.orderBy, isLoading = _a.isLoading, isCLickPaginate = _a.isCLickPaginate, errorInfo = _a.errorInfo, isErrorList = _a.isErrorList, tableHeader = _a.tableHeader;
+        var classes = this.props.classes;
+        var listdata = new Array();
+        //Convert Datajson to Array with last index id PK key.
+        for (var i = 0; i < staffGrid.length; i++) {
+            var item = staffGrid[i];
+            //last index is PK KEY, assign to Action on row
+            var data = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.staff_id.toString()];
+            listdata.push(data);
+        }
+        return (React.createElement(React.Fragment, null,
+            React.createElement(GridContainer_1.default, null,
+                React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 12 },
+                    React.createElement(Card_1.default, null,
+                        React.createElement(CardHeader_1.default, { color: "primary" },
+                            React.createElement("h4", { className: classes.cardTitleWhite }, "Danh s\u00E1ch nh\u00E2n vi\u00EAn"),
+                            React.createElement("p", { className: classes.cardCategoryWhite }, "Danh s\u00E1ch t\u00E0i kho\u1EA3n \u0111\u0103ng nh\u1EADp c\u1EE7a nh\u00E2n vi\u00EAn")),
+                        React.createElement(CardBody_1.default, null,
+                            React.createElement(Table_1.default, { hover: true, tableHeaderColor: "primary", tableHead: tableHeader, tableData: listdata, onEdit: this.handleEdit, onDelete: this.handleDelete, onSort: this.handleSort, order: order, orderBy: orderBy, onFilter: this.handleFilter }),
+                            React.createElement(core_1.TablePagination, { rowsPerPageOptions: [10, 20, 50, 100], component: "div", count: totalItem, rowsPerPage: limit, page: activePage, backIconButtonProps: {
+                                    'aria-label': 'Previous Page',
+                                }, nextIconButtonProps: {
+                                    'aria-label': 'Next Page',
+                                }, onChangePage: this.handlePageChange, onChangeRowsPerPage: this.handleDisplayNoPage }))))),
+            React.createElement("div", null,
+                React.createElement(core_1.Modal, { "aria-labelledby": "simple-modal-title", "aria-describedby": "simple-modal-description", open: this.state.isShowModal, onClose: this.handleClose },
+                    React.createElement("div", { className: classes.modal },
+                        React.createElement(Edit_1.default, { modalTitle: this.state.isCreate ? 'Create staff' : 'Update staff', model: this.state.model, onToggleModal: this.onToggleModal, onCreate: this.onCreate, onUpdate: this.onUpdate, isCreate: this.state.isCreate, isValidate: this.state.isValidate, errorInfo: this.state.validateMessage }))))));
+    };
+    return StaffScreen;
+}(React.Component));
+exports.default = core_1.withStyles(styles)(StaffScreen);
+
+
+/***/ }),
+/* 580 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(15);
+var React = tslib_1.__importStar(__webpack_require__(1));
+var Utils_1 = __webpack_require__(56);
+var StaffValidate_1 = __webpack_require__(581);
+var StaffModel_1 = __webpack_require__(191);
+var GridContainer_1 = tslib_1.__importDefault(__webpack_require__(615));
+var GridItem_1 = tslib_1.__importDefault(__webpack_require__(616));
+var Card_1 = tslib_1.__importDefault(__webpack_require__(591));
+var CardHeader_1 = tslib_1.__importDefault(__webpack_require__(592));
+var CardBody_1 = tslib_1.__importDefault(__webpack_require__(593));
+var CustomInput_1 = tslib_1.__importDefault(__webpack_require__(643));
+var CardFooter_1 = tslib_1.__importDefault(__webpack_require__(621));
+var Button_1 = tslib_1.__importDefault(__webpack_require__(647));
+var CardAvatar_1 = tslib_1.__importDefault(__webpack_require__(656));
+var core_1 = __webpack_require__(228);
+var marc_jpg_1 = tslib_1.__importDefault(__webpack_require__(658));
+var styles = core_1.createStyles({
+    cardCategoryWhite: {
+        color: "rgba(255,255,255,.62)",
+        margin: "0",
+        fontSize: "14px",
+        marginTop: "0",
+        marginBottom: "0"
+    },
+    cardTitleWhite: {
+        color: "#FFFFFF",
+        marginTop: "0px",
+        minHeight: "auto",
+        fontWeight: 300,
+        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+        marginBottom: "3px",
+        textDecoration: "none"
+    }
+});
+var StaffModal = /** @class */ (function (_super) {
+    tslib_1.__extends(StaffModal, _super);
+    function StaffModal() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.state = {
+            // source: this.props.source,
+            model: _this.props.model,
+            isSubmitDisabled: false,
+            clientError: new StaffModel_1.ValidateModel
+        };
+        _this.handleSubmit = function (evt) {
+            evt.preventDefault();
+            if (Utils_1.isEmptyKeyInObject(_this.state.clientError)) {
+                return;
+            }
+            var model = _this.state.model;
+            _this.props.isCreate ? _this.props.onCreate(model) : _this.props.onUpdate(model);
+        };
+        _this.handleSelect = function (selectedValue) {
+            _this.setState({
+                model: tslib_1.__assign({}, _this.state.model, { album_id: selectedValue })
+            });
+        };
+        _this.handleChange = function (isRequired, event) {
+            var _a, _b;
+            var value = event.currentTarget.value;
+            var name = event.currentTarget.id;
+            var errMessage = StaffValidate_1.ValidateStaff(isRequired, name, value);
+            _this.setState({
+                model: tslib_1.__assign({}, _this.state.model, (_a = {}, _a[name] = value ? value : undefined, _a)),
+                clientError: tslib_1.__assign({}, _this.state.clientError, (_b = {}, _b[name] = errMessage, _b)),
+            }, function () {
+                _this.canSubmit();
+            });
+        };
+        _this.canSubmit = function () {
+            var clientError = _this.state.clientError;
+            if (Utils_1.isEmptyKeyInObject(clientError)) {
+                return _this.setState({ isSubmitDisabled: false });
+            }
+            return _this.setState({ isSubmitDisabled: true });
+        };
+        return _this;
+    }
+    StaffModal.prototype.componentDidMount = function () {
+        this.setState({
+            isSubmitDisabled: this.props.isCreate ? false : true
+        });
+    };
+    StaffModal.prototype.render = function () {
+        var _a = this.props, classes = _a.classes, modalTitle = _a.modalTitle, onToggleModal = _a.onToggleModal, isCreate = _a.isCreate, errorInfo = _a.errorInfo;
+        var _b = this.state, model = _b.model, clientError = _b.clientError;
+        return (React.createElement(React.Fragment, null,
+            React.createElement("div", null,
+                React.createElement(GridContainer_1.default, null,
+                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 8 },
+                        React.createElement(Card_1.default, null,
+                            React.createElement(CardHeader_1.default, { color: "primary" },
+                                React.createElement("h4", { className: classes.cardTitleWhite }, modalTitle),
+                                React.createElement("p", { className: classes.cardCategoryWhite }, "Ch\u1EC9nh s\u1EEDa th\u00F4ng tin t\u00E0i kho\u1EA3n")),
+                            React.createElement(CardBody_1.default, null,
+                                React.createElement(GridContainer_1.default, null,
+                                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 6 },
+                                        React.createElement(CustomInput_1.default, { labelText: "H\u1ECD v\u00E0 T\u00EAn", id: "staff_name", formControlProps: {
+                                                fullWidth: true
+                                            }, errorContent: Utils_1.showError(clientError, errorInfo, 'staff_name'), error: Utils_1.showError(clientError, errorInfo, 'staff_name') == '' ? false : true, inputProps: {
+                                                value: model.staff_name,
+                                                onChange: this.handleChange.bind(this, true),
+                                            } })),
+                                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 6 },
+                                        React.createElement(CustomInput_1.default, { labelText: "Email", id: "email", errorContent: Utils_1.showError(clientError, errorInfo, 'email'), error: Utils_1.showError(clientError, errorInfo, 'email') == '' ? false : true, formControlProps: {
+                                                fullWidth: true
+                                            }, inputProps: {
+                                                value: model.email,
+                                                onChange: this.handleChange.bind(this, true),
+                                            } }))),
+                                React.createElement(GridContainer_1.default, null,
+                                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 6 },
+                                        React.createElement(CustomInput_1.default, { labelText: "\u0110i\u1EC7n tho\u1EA1i", id: "phone", errorContent: Utils_1.showError(clientError, errorInfo, 'phone'), error: Utils_1.showError(clientError, errorInfo, 'phone') == '' ? false : true, formControlProps: {
+                                                fullWidth: true
+                                            }, inputProps: {
+                                                value: model.phone,
+                                                onChange: this.handleChange.bind(this, false),
+                                            } })),
+                                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 6 },
+                                        React.createElement(CustomInput_1.default, { labelText: "M\u1EADt kh\u1EA9u", id: "password", errorContent: Utils_1.showError(clientError, errorInfo, 'password'), error: Utils_1.showError(clientError, errorInfo, 'password') == '' ? false : true, formControlProps: {
+                                                fullWidth: true
+                                            }, inputProps: {
+                                                value: model.password,
+                                                type: 'password',
+                                                onChange: this.handleChange.bind(this, true),
+                                            } }))),
+                                React.createElement(GridContainer_1.default, null,
+                                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 12 },
+                                        React.createElement(CustomInput_1.default, { labelText: "\u0110\u1ECBa ch\u1EC9", id: "address", errorContent: Utils_1.showError(clientError, errorInfo, 'address'), error: Utils_1.showError(clientError, errorInfo, 'address') == '' ? false : true, formControlProps: {
+                                                fullWidth: true
+                                            }, inputProps: {
+                                                value: model.address,
+                                                type: 'text',
+                                                onChange: this.handleChange.bind(this, false),
+                                            } })))),
+                            React.createElement(CardFooter_1.default, null,
+                                React.createElement(Button_1.default, { color: "primary" }, "Update Profile")))),
+                    React.createElement(GridItem_1.default, { xs: 12, sm: 12, md: 4 },
+                        React.createElement(Card_1.default, { profile: true },
+                            React.createElement(CardAvatar_1.default, { profile: true },
+                                React.createElement("a", { href: "#pablo", onClick: function (e) { return e.preventDefault(); } },
+                                    React.createElement("img", { src: marc_jpg_1.default, alt: "..." }))),
+                            React.createElement(CardBody_1.default, { profile: true },
+                                React.createElement("h6", { className: classes.cardCategory }, "TODO:ROLE"),
+                                React.createElement("h4", { className: classes.cardTitle }, model.staff_name),
+                                React.createElement("p", { className: classes.description }, "Ngay tao: 2019/10/10 Ngay truy cap cuoi cung: 2019/10/10"),
+                                React.createElement(Button_1.default, { color: "danger", round: true }, "Delete"))))))));
+    };
+    return StaffModal;
+}(React.Component));
+exports.default = core_1.withStyles(styles)(StaffModal);
+
+
+/***/ }),
+/* 581 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Rules_1 = __webpack_require__(190);
+exports.ValidateStaff = function (isRequired, name, value) {
+    if (isRequired && name === "staff_name") {
+        if (Rules_1.required(value)) {
+            return "Vui lòng nhập tên nhân viên";
+        }
+        if (Rules_1.max(value, 100)) {
+            return "Tên nhân viên không được vượt quá 100 ký tự";
+        }
+    }
+    if (isRequired && name === "email") {
+        if (Rules_1.required(value)) {
+            return "Email không được để trống";
+        }
+        if (!Rules_1.email(value)) {
+            return "Định dạng email không đúng";
+        }
+    }
+    if (isRequired && name === "phone") {
+        if (Rules_1.required(value)) {
+            return "Vui lòng nhập số điện thoại";
+        }
+    }
+    if (isRequired && name === "password") {
+        if (Rules_1.required(value)) {
+            return "Vui lòng nhập mật khẩu";
+        }
+        if (Rules_1.min(value, 6)) {
+            return "Mật khẩu phải nhiều hơn 6 ký tự";
+        }
+        if (Rules_1.max(value, 255)) {
+            return "Mật khẩu quá dài";
+        }
+    }
+    if (!isRequired && name === "password") {
+        if (value && Rules_1.min(value, 6)) {
+            return "Mật khẩu phải nhiều hơn 6 ký tự";
+        }
+        if (Rules_1.max(value, 255)) {
+            return "Mật khẩu quá dài";
+        }
+    }
+    return undefined;
+};
+exports.ValidateAllStaff = function (model, isCreate) {
+    var rules = {
+        staff_name: 'Vui lòng nhập tên',
+        email: 'vui lòng nhập email',
+        phone: 'Vui lòng nhập số điện thoại',
+        password: 'Vui lòng nhập password'
+    };
+    var keys = isCreate ? rules : delete rules.password;
+    var errors = {};
+    Object.keys(keys).map(function (k) {
+        console.log(k);
+        if (Rules_1.required(model[k])) {
+            errors[k] = rules[k];
+        }
+    });
+    return errors;
+};
+
+
+/***/ }),
 /* 582 */,
 /* 583 */
 /***/ (function(module, exports) {
@@ -75851,7 +76915,7 @@ var withStyles_1 = tslib_1.__importDefault(__webpack_require__(5));
 // core components
 var dashboard_1 = tslib_1.__importDefault(__webpack_require__(598));
 var dashboardStyle_1 = tslib_1.__importDefault(__webpack_require__(630));
-var sidebar_2_jpg_1 = tslib_1.__importDefault(__webpack_require__(641));
+var sidebar_1_jpg_1 = tslib_1.__importDefault(__webpack_require__(652));
 var reactlogo_png_1 = tslib_1.__importDefault(__webpack_require__(642));
 var Sidebar_1 = tslib_1.__importDefault(__webpack_require__(631));
 var Header_1 = tslib_1.__importDefault(__webpack_require__(637));
@@ -75903,7 +76967,7 @@ var App = /** @class */ (function (_super) {
         var _a = this.props, classes = _a.classes, rest = tslib_1.__rest(_a, ["classes"]);
         return (react_1.default.createElement("div", { className: classes.wrapper },
             react_1.default.createElement(core_1.CssBaseline, null),
-            react_1.default.createElement(Sidebar_1.default, tslib_1.__assign({ routes: dashboard_1.default, logoText: "Creative Tim", logo: reactlogo_png_1.default, image: sidebar_2_jpg_1.default, handleDrawerToggle: this.handleDrawerToggle, open: this.state.mobileOpen, color: "blue" }, rest)),
+            react_1.default.createElement(Sidebar_1.default, tslib_1.__assign({ routes: dashboard_1.default, logoText: "VENDOR", logo: reactlogo_png_1.default, image: sidebar_1_jpg_1.default, handleDrawerToggle: this.handleDrawerToggle, open: this.state.mobileOpen, color: "blue" }, rest)),
             react_1.default.createElement("div", { className: classes.mainPanel, ref: "mainPanel" },
                 react_1.default.createElement(Header_1.default, tslib_1.__assign({ routes: dashboard_1.default, handleDrawerToggle: this.handleDrawerToggle }, rest)),
                 this.getRoute() ? (react_1.default.createElement("div", { className: classes.content },
@@ -75971,7 +77035,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(15);
 // @material-ui/icons
 var Dashboard_1 = tslib_1.__importDefault(__webpack_require__(588));
-// import Person from "@material-ui/icons/Person";
+var Person_1 = tslib_1.__importDefault(__webpack_require__(634));
 // import ContentPaste from "@material-ui/icons/ContentPaste";
 // import LibraryBooks from "@material-ui/icons/LibraryBooks";
 // import BubbleChart from "@material-ui/icons/BubbleChart";
@@ -75980,6 +77044,7 @@ var Dashboard_1 = tslib_1.__importDefault(__webpack_require__(588));
 // import Unarchive from "@material-ui/icons/Unarchive";
 // core components/views
 var Dashboard_2 = tslib_1.__importDefault(__webpack_require__(604));
+var Index_1 = tslib_1.__importDefault(__webpack_require__(579));
 // import UserProfile from "views/UserProfile/UserProfile.jsx";
 // import TableList from "views/TableList/TableList.jsx";
 var dashboardRoutes = [
@@ -75990,13 +77055,13 @@ var dashboardRoutes = [
         icon: Dashboard_1.default,
         component: Dashboard_2.default
     },
-    // {
-    //   path: "/user",
-    //   sidebarName: "User Profile",
-    //   navbarName: "Profile",
-    //   icon: Person,
-    //   component: UserProfile
-    // },
+    {
+        path: "/staff",
+        sidebarName: "Nhân Viên",
+        navbarName: "Quản lý nhân viên",
+        icon: Person_1.default,
+        component: Index_1.default
+    },
     // {
     //   path: "/table",
     //   sidebarName: "Table List",
@@ -76250,7 +77315,8 @@ var Dashboard = /** @class */ (function (_super) {
     function Dashboard() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.state = {
-            value: 0
+            value: 0,
+            exampleListHeader: [{}]
         };
         _this.handleChange = function (event, value) {
             _this.setState({ value: value });
@@ -76258,8 +77324,24 @@ var Dashboard = /** @class */ (function (_super) {
         _this.handleChangeIndex = function (index) {
             _this.setState({ value: index });
         };
+        /**
+          * Set header for table
+          */
+        _this.setTableHeader = function (sortIcon) {
+            if (sortIcon === void 0) { sortIcon = 'sort'; }
+            var exampleListHeader = [
+                { id: '#', numeric: false, disablePadding: true, label: '#' },
+                { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
+                { id: 'money', numeric: false, disablePadding: true, label: 'Money' },
+                { id: 'country', numeric: false, disablePadding: true, label: 'Country' },
+            ];
+            _this.setState({ exampleListHeader: exampleListHeader });
+        };
         return _this;
     }
+    Dashboard.prototype.componentDidMount = function () {
+        this.setTableHeader();
+    };
     Dashboard.prototype.render = function () {
         var classes = this.props.classes;
         return (react_1.default.createElement("div", null,
@@ -76336,7 +77418,7 @@ var Dashboard = /** @class */ (function (_super) {
                             react_1.default.createElement("h4", { className: classes.cardTitleWhite }, "Employees Stats"),
                             react_1.default.createElement("p", { className: classes.cardCategoryWhite }, "New employees on 15th September, 2016")),
                         react_1.default.createElement(CardBody_1.default, null,
-                            react_1.default.createElement(Table_1.default, { tableHeaderColor: "warning", tableHead: ["ID", "Name", "Salary", "Country"], tableData: [
+                            react_1.default.createElement(Table_1.default, { hover: true, tableHeaderColor: "warning", tableHead: this.state.exampleListHeader, tableData: [
                                     ["1", "Dakota Rice", "$36,738", "Niger"],
                                     ["2", "Minerva Hooper", "$23,789", "Curaçao"],
                                     ["3", "Sage Rodriguez", "$56,142", "Netherlands"],
@@ -76598,6 +77680,7 @@ exports.default = _default;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(15);
 var material_dashboard_react_1 = __webpack_require__(587);
 var core_1 = __webpack_require__(228);
 var dashboardStyle = core_1.createStyles({
@@ -76644,20 +77727,11 @@ var dashboardStyle = core_1.createStyles({
         marginTop: "0",
         marginBottom: "0"
     },
-    cardTitle: {
-        color: "#3C4858",
-        marginTop: "0px",
-        minHeight: "auto",
-        fontWeight: 300,
-        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-        marginBottom: "3px",
-        textDecoration: "none",
-        "& small": {
+    cardTitle: tslib_1.__assign({ color: "#3C4858", marginTop: "0px", minHeight: "auto" }, material_dashboard_react_1.defaultFont, { fontWeight: 300, marginBottom: "3px", textDecoration: "none", "& small": {
             color: "#777",
             fontWeight: 400,
             lineHeight: "1"
-        }
-    },
+        } }),
     cardTitleWhite: {
         color: "#FFFFFF",
         marginTop: "0px",
@@ -77322,7 +78396,6 @@ exports.default = cardBodyStyle;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(15);
 var react_1 = tslib_1.__importDefault(__webpack_require__(1));
-var prop_types_1 = tslib_1.__importDefault(__webpack_require__(2));
 // @material-ui/core components
 var withStyles_1 = tslib_1.__importDefault(__webpack_require__(5));
 var Table_1 = tslib_1.__importDefault(__webpack_require__(496));
@@ -77332,38 +78405,123 @@ var TableBody_1 = tslib_1.__importDefault(__webpack_require__(498));
 var TableCell_1 = tslib_1.__importDefault(__webpack_require__(170));
 // core components
 var tableStyle_1 = tslib_1.__importDefault(__webpack_require__(629));
-function CustomTable(_a) {
-    var props = tslib_1.__rest(_a, []);
-    var classes = props.classes, tableHead = props.tableHead, tableData = props.tableData, tableHeaderColor = props.tableHeaderColor;
-    return (react_1.default.createElement("div", { className: classes.tableResponsive },
-        react_1.default.createElement(Table_1.default, { className: classes.table },
-            tableHead !== undefined ? (react_1.default.createElement(TableHead_1.default, { className: classes[tableHeaderColor + "TableHeader"] },
-                react_1.default.createElement(TableRow_1.default, null, tableHead.map(function (prop, key) {
-                    return (react_1.default.createElement(TableCell_1.default, { className: classes.tableCell + " " + classes.tableHeadCell, key: key }, prop));
-                })))) : null,
-            react_1.default.createElement(TableBody_1.default, null, tableData.map(function (prop, key) {
-                return (react_1.default.createElement(TableRow_1.default, { key: key }, prop.map(function (prop, key) {
-                    return (react_1.default.createElement(TableCell_1.default, { className: classes.tableCell, key: key }, prop));
-                })));
-            })))));
-}
-CustomTable.defaultProps = {
-    tableHeaderColor: "gray"
-};
-CustomTable.propTypes = {
-    classes: prop_types_1.default.object.isRequired,
-    tableHeaderColor: prop_types_1.default.oneOf([
-        "warning",
-        "primary",
-        "danger",
-        "success",
-        "info",
-        "rose",
-        "gray"
-    ]),
-    tableHead: prop_types_1.default.arrayOf(prop_types_1.default.string),
-    tableData: prop_types_1.default.arrayOf(prop_types_1.default.arrayOf(prop_types_1.default.string))
-};
+var Edit_1 = tslib_1.__importDefault(__webpack_require__(653));
+var Description_1 = tslib_1.__importDefault(__webpack_require__(655));
+var Delete_1 = tslib_1.__importDefault(__webpack_require__(654));
+var Button_1 = tslib_1.__importDefault(__webpack_require__(647));
+var CustomInput_1 = tslib_1.__importDefault(__webpack_require__(643));
+var core_1 = __webpack_require__(228);
+var CustomTable = /** @class */ (function (_super) {
+    tslib_1.__extends(CustomTable, _super);
+    function CustomTable() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.state = {
+            date: undefined,
+            filters: {},
+            time: 0
+        };
+        _this.createSortHandler = function (col) {
+            _this.props.onSort(col);
+        };
+        _this.createEditHandler = function (col) {
+            _this.props.onEdit(col);
+        };
+        _this.createViewHandler = function (col) {
+            _this.props.onView(col);
+        };
+        _this.createDeleteHandler = function (col) {
+            _this.props.onDelete(col);
+        };
+        /**
+         * @param evt: any
+         * @event onFilter through props
+         */
+        _this.createFilterHandle = function (evt) {
+            var _a;
+            var onFilter = _this.props.onFilter;
+            if (typeof onFilter === "undefined") {
+                return;
+            }
+            _this.setState({
+                filters: tslib_1.__assign({}, _this.state.filters, (_a = {}, _a[evt.target.id] = evt.target.value ? evt.target.value : undefined, _a))
+            }, function () {
+                return;
+            });
+            clearTimeout(_this.state.time);
+            var that = _this;
+            var timeout = setTimeout(function () {
+                that.props.onFilter(that.state.filters);
+            }, 800);
+            _this.setState({ time: timeout });
+        };
+        return _this;
+    }
+    CustomTable.prototype.render = function () {
+        var _this = this;
+        var _a = this.props, classes = _a.classes, onFilter = _a.onFilter, tableHead = _a.tableHead, tableData = _a.tableData, tableHeaderColor = _a.tableHeaderColor, hover = _a.hover, onEdit = _a.onEdit, onView = _a.onView, onDelete = _a.onDelete, orderBy = _a.orderBy, order = _a.order;
+        return (react_1.default.createElement("div", { className: classes.tableResponsive },
+            react_1.default.createElement(Table_1.default, { className: classes.table },
+                tableHead !== undefined ? (react_1.default.createElement(TableHead_1.default, { className: classes[tableHeaderColor + "TableHeader"] + " " + classes.headerRow },
+                    react_1.default.createElement(TableRow_1.default, { className: classes.header }, tableHead.map(function (th, key) {
+                        return (react_1.default.createElement(TableCell_1.default, { className: classes.headerCell + " " + classes.tableHeadCell + " ", key: key, numeric: th.numeric, padding: th.disablePadding ? 'none' : 'default', sortDirection: orderBy === th.id ? order : false }, _this.props.onSort !== undefined ?
+                            react_1.default.createElement(core_1.TableSortLabel, { active: orderBy === th.id, direction: order, onClick: _this.createSortHandler.bind(_this, th.id) }, th.label) :
+                            th.label));
+                    })),
+                    onFilter !== undefined ?
+                        react_1.default.createElement(TableRow_1.default, { className: classes.header }, tableHead.map(function (prop, key) {
+                            return (react_1.default.createElement(TableCell_1.default, { className: classes.headerCell + " " + classes.tableHeadCell, key: key }, key !== tableHead.length - 1 && key !== 0 ?
+                                react_1.default.createElement(CustomInput_1.default, { id: prop.id, formControlProps: {
+                                        className: classes.header
+                                    }, inputProps: {
+                                        placeholder: "Tìm kiếm",
+                                        className: classes.headerFilter,
+                                        inputProps: {
+                                            "aria-label": "Search",
+                                            onChange: _this.createFilterHandle
+                                        }
+                                    } })
+                                : ""));
+                        })) : null)) : null,
+                react_1.default.createElement(TableBody_1.default, null, tableData.map(function (prop, key) {
+                    return (react_1.default.createElement(TableRow_1.default, { key: key, hover: hover }, prop.map(function (prop, key) {
+                        return (react_1.default.createElement(TableCell_1.default, { className: classes.tableCell, key: key }, key === tableHead.length - 1 ?
+                            react_1.default.createElement(react_1.default.Fragment, null,
+                                onEdit !== undefined ?
+                                    react_1.default.createElement(Button_1.default, { color: window.innerWidth > 959 ? "transparent" : "white", justIcon: window.innerWidth > 959, simple: !(window.innerWidth > 959), "aria-owns": open ? "menu-list-grow" : null, "aria-haspopup": "true", onClick: _this.createEditHandler.bind(_this, prop), className: classes.button },
+                                        react_1.default.createElement(Edit_1.default, null)) : "",
+                                onView !== undefined ?
+                                    react_1.default.createElement(Button_1.default, { color: window.innerWidth > 959 ? "transparent" : "white", justIcon: window.innerWidth > 959, simple: !(window.innerWidth > 959), "aria-owns": open ? "menu-list-grow" : null, "aria-haspopup": "true", onClick: _this.createViewHandler.bind(_this, prop), className: classes.button },
+                                        react_1.default.createElement(Description_1.default, null)) : "",
+                                onDelete !== undefined ?
+                                    react_1.default.createElement(Button_1.default, { color: window.innerWidth > 959 ? "transparent" : "white", justIcon: window.innerWidth > 959, simple: !(window.innerWidth > 959), "aria-owns": open ? "menu-list-grow" : null, "aria-haspopup": "true", onClick: _this.createDeleteHandler.bind(_this, prop), className: classes.button },
+                                        react_1.default.createElement(Delete_1.default, null)) : "")
+                            : prop));
+                    })));
+                })))));
+    };
+    return CustomTable;
+}(react_1.default.Component));
+// CustomTable.defaultProps = {
+//   tableHeaderColor: "gray"
+// };
+// CustomTable.propTypes = {
+//   classes: PropTypes.object.isRequired,
+//   onEdit: PropTypes.func,
+//   onView: PropTypes.func,
+//   onDelete: PropTypes.func,
+//   hover: PropTypes.bool,
+//   tableHeaderColor: PropTypes.oneOf([
+//     "warning",
+//     "primary",
+//     "danger",
+//     "success",
+//     "info",
+//     "rose",
+//     "gray"
+//   ]),
+// tableHead: PropTypes.arrayOf(PropTypes.string),
+//   tableData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
+// };
 exports.default = withStyles_1.default(tableStyle_1.default)(CustomTable);
 
 
@@ -77377,44 +78535,97 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(15);
 var material_dashboard_react_1 = __webpack_require__(587);
 var core_1 = __webpack_require__(228);
-var tableStyle = function (theme) { return core_1.createStyles({
-    warningTableHeader: {
-        color: material_dashboard_react_1.warningColor
-    },
-    primaryTableHeader: {
-        color: material_dashboard_react_1.primaryColor
-    },
-    dangerTableHeader: {
-        color: material_dashboard_react_1.dangerColor
-    },
-    successTableHeader: {
-        color: material_dashboard_react_1.successColor
-    },
-    infoTableHeader: {
-        color: material_dashboard_react_1.infoColor
-    },
-    roseTableHeader: {
-        color: material_dashboard_react_1.roseColor
-    },
-    grayTableHeader: {
-        color: material_dashboard_react_1.grayColor
-    },
-    table: {
-        marginBottom: "0",
-        width: "100%",
-        maxWidth: "100%",
-        backgroundColor: "transparent",
-        borderSpacing: "0",
-        borderCollapse: "collapse"
-    },
-    tableHeadCell: tslib_1.__assign({ color: "inherit" }, material_dashboard_react_1.defaultFont, { fontSize: "1em", fontWeight: "normal" }),
-    tableCell: tslib_1.__assign({}, material_dashboard_react_1.defaultFont, { lineHeight: "1.42857143", padding: "12px 8px", verticalAlign: "middle", fontWeight: "normal" }),
-    tableResponsive: {
-        width: "100%",
-        marginTop: theme.spacing.unit * 3,
-        overflowX: "auto"
-    }
-}); };
+var tableStyle = function (theme) {
+    var _a;
+    return core_1.createStyles({
+        header: {
+            margin: 0,
+            paddingBottom: "5px",
+            marginRight: "5px",
+            borderTopStyle: "hidden",
+            height: "35px",
+            width: "90%",
+        },
+        headerFilter: {
+            width: "100%",
+            margin: 0,
+            paddingBottom: 0,
+        },
+        headerRow: {
+            height: "35px"
+        },
+        headerCell: {
+            padding: "0px",
+            margin: "0px",
+        },
+        button: (_a = {
+                padding: "5px",
+                "&:hover": {
+                    color: material_dashboard_react_1.primaryColor
+                }
+            },
+            _a[theme.breakpoints.down("sm")] = {
+                display: "flex",
+                margin: "10px 15px 0",
+                width: "-webkit-fill-available",
+                "& svg": {
+                    width: "24px",
+                    height: "30px",
+                    marginRight: "15px",
+                    marginLeft: "-15px"
+                },
+                "& .fab,& .fas,& .far,& .fal,& .material-icons": {
+                    fontSize: "24px",
+                    lineHeight: "30px",
+                    width: "24px",
+                    height: "30px",
+                    marginRight: "15px",
+                    marginLeft: "-15px"
+                },
+                "& > span": {
+                    justifyContent: "flex-start",
+                    width: "100%"
+                }
+            },
+            _a),
+        warningTableHeader: {
+            color: material_dashboard_react_1.warningColor
+        },
+        primaryTableHeader: {
+            color: material_dashboard_react_1.primaryColor
+        },
+        dangerTableHeader: {
+            color: material_dashboard_react_1.dangerColor
+        },
+        successTableHeader: {
+            color: material_dashboard_react_1.successColor
+        },
+        infoTableHeader: {
+            color: material_dashboard_react_1.infoColor
+        },
+        roseTableHeader: {
+            color: material_dashboard_react_1.roseColor
+        },
+        grayTableHeader: {
+            color: material_dashboard_react_1.grayColor
+        },
+        table: {
+            marginBottom: "0",
+            width: "100%",
+            maxWidth: "100%",
+            backgroundColor: "transparent",
+            borderSpacing: "0",
+            borderCollapse: "collapse"
+        },
+        tableHeadCell: tslib_1.__assign({ color: "inherit" }, material_dashboard_react_1.defaultFont, { fontSize: "1em", fontWeight: "normal" }),
+        tableCell: tslib_1.__assign({}, material_dashboard_react_1.defaultFont, { lineHeight: "1.42857143", padding: "12px 8px", verticalAlign: "middle", fontWeight: "normal" }),
+        tableResponsive: {
+            width: "100%",
+            marginTop: theme.spacing.unit * 3,
+            overflowX: "auto"
+        }
+    });
+};
 exports.default = tableStyle;
 
 
@@ -77438,7 +78649,7 @@ var sidebarStyle = function (theme) {
         },
         mainPanel: tslib_1.__assign((_a = {}, _a[theme.breakpoints.up("md")] = {
             width: "calc(100% - " + material_dashboard_react_1.drawerWidth + "px)"
-        }, _a.overflow = "auto", _a.position = "relative", _a.float = "right", _a), material_dashboard_react_1.transition, { maxHeight: "100%", width: "100%", overflowScrolling: "touch", background: "#eee" }),
+        }, _a.overflow = "auto", _a.position = "relative", _a.float = "right", _a), material_dashboard_react_1.transition, { maxHeight: "100%", width: "100%", overflowScrolling: "touch", background: "#eee" }, material_dashboard_react_1.defaultFont),
         content: {
             marginTop: "70px",
             padding: "30px 15px",
@@ -77489,32 +78700,24 @@ var Sidebar = /** @class */ (function (_super) {
         var _this = this;
         var _a = this.props, classes = _a.classes, color = _a.color, logo = _a.logo, image = _a.image, logoText = _a.logoText, routes = _a.routes;
         var links = (react_1.default.createElement(List_1.default, { className: classes.list }, routes.map(function (prop, key) {
-            var _a, _b, _c;
+            var _a, _b;
             if (prop.redirect)
                 return null;
             var activePro = " ";
             var listItemClasses;
-            if (prop.path === "/upgrade-to-pro") {
-                activePro = classes.activePro + " ";
-                listItemClasses = classnames_1.default((_a = {},
-                    _a[" " + classes[color]] = true,
-                    _a));
-            }
-            else {
-                listItemClasses = classnames_1.default((_b = {},
-                    _b[" " + classes[color]] = _this.activeRoute(prop.path),
-                    _b));
-            }
-            var whiteFontClasses = classnames_1.default((_c = {},
-                _c[" " + classes.whiteFont] = _this.activeRoute(prop.path),
-                _c));
+            listItemClasses = classnames_1.default((_a = {},
+                _a[" " + classes[color]] = _this.activeRoute(prop.path),
+                _a));
+            var whiteFontClasses = classnames_1.default((_b = {},
+                _b[" " + classes.whiteFont] = _this.activeRoute(prop.path),
+                _b));
             return (react_1.default.createElement(react_router_dom_1.NavLink, { to: prop.path, className: activePro + classes.item, activeClassName: "active", key: key },
                 react_1.default.createElement(ListItem_1.default, { button: true, className: classes.itemLink + listItemClasses },
                     react_1.default.createElement(ListItemIcon_1.default, { className: classes.itemIcon + whiteFontClasses }, typeof prop.icon === "string" ? (react_1.default.createElement(Icon_1.default, null, prop.icon)) : (react_1.default.createElement(prop.icon, null))),
                     react_1.default.createElement(ListItemText_1.default, { primary: prop.sidebarName, className: classes.itemText + whiteFontClasses, disableTypography: true }))));
         })));
         var brand = (react_1.default.createElement("div", { className: classes.logo },
-            react_1.default.createElement("a", { href: "https://www.creative-tim.com", className: classes.logoLink },
+            react_1.default.createElement("a", { href: "/", className: classes.logoLink },
                 react_1.default.createElement("div", { className: classes.logoImage },
                     react_1.default.createElement("img", { src: logo, alt: "logo", className: classes.img })),
                 logoText)));
@@ -77734,11 +78937,13 @@ var HeaderLinks = /** @class */ (function (_super) {
         _this.state = {
             open: false, anchorEl: null
         };
-        _this.handleToggle = function () {
-            _this.setState(function (state) { return ({ open: !_this.state.open }); });
+        _this.handleToggle = function (event) {
+            _this.setState(function (state) { return ({
+                open: !_this.state.open,
+            }); });
         };
         _this.handleClose = function (event) {
-            _this.setState({ open: false });
+            _this.setState({ open: false, anchorEl: null });
         };
         return _this;
     }
@@ -77759,7 +78964,9 @@ var HeaderLinks = /** @class */ (function (_super) {
                     } }),
                 react_1.default.createElement(Button_1.default, { color: "white", "aria-label": "edit", justIcon: true, round: true },
                     react_1.default.createElement(Search_1.default, null))),
-            react_1.default.createElement(Button_1.default, { color: window.innerWidth > 959 ? "transparent" : "white", justIcon: window.innerWidth > 959, simple: !(window.innerWidth > 959), "aria-label": "Dashboard", className: classes.buttonLink },
+            react_1.default.createElement(Button_1.default, { buttonRef: function (node) {
+                    _this.state.anchorEl = node;
+                }, color: window.innerWidth > 959 ? "transparent" : "white", justIcon: window.innerWidth > 959, simple: !(window.innerWidth > 959), "aria-label": "Dashboard", className: classes.buttonLink },
                 react_1.default.createElement(Dashboard_1.default, { className: classes.icons }),
                 react_1.default.createElement(Hidden_1.default, { mdUp: true, implementation: "css" },
                     react_1.default.createElement("p", { className: classes.linkText }, "Dashboard"))),
@@ -77991,10 +79198,9 @@ function Footer(_a) {
             react_1.default.createElement("p", { className: classes.right },
                 react_1.default.createElement("span", null,
                     "\u00A9 ",
-                    1900 + new Date().getFullYear(),
+                    new Date().getFullYear(),
                     " ",
-                    react_1.default.createElement("a", { href: "https://www.creative-tim.com", className: classes.a }, "Creative Tim"),
-                    ", made with love for a better web")))));
+                    react_1.default.createElement("a", { href: "http://baapcenter.com", className: classes.a }, "Implemented by B.A.A.P Team"))))));
 }
 Footer.propTypes = {
     classes: prop_types_1.default.object.isRequired
@@ -78046,12 +79252,7 @@ exports.default = footerStyle;
 
 
 /***/ }),
-/* 641 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/sidebar-2.jpg?310509c95512893dc661bd3a6b0d2a5d";
-
-/***/ }),
+/* 641 */,
 /* 642 */
 /***/ (function(module, exports) {
 
@@ -78067,7 +79268,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(15);
 var react_1 = tslib_1.__importDefault(__webpack_require__(1));
 var classnames_1 = tslib_1.__importDefault(__webpack_require__(6));
-var prop_types_1 = tslib_1.__importDefault(__webpack_require__(2));
 // @material-ui/core components
 var withStyles_1 = tslib_1.__importDefault(__webpack_require__(5));
 var FormControl_1 = tslib_1.__importDefault(__webpack_require__(148));
@@ -78078,41 +79278,40 @@ var Clear_1 = tslib_1.__importDefault(__webpack_require__(644));
 var Check_1 = tslib_1.__importDefault(__webpack_require__(645));
 // core components
 var customInputStyle_1 = tslib_1.__importDefault(__webpack_require__(646));
-function CustomInput(_a) {
-    var _b, _c, _d;
-    var props = tslib_1.__rest(_a, []);
-    var classes = props.classes, formControlProps = props.formControlProps, labelText = props.labelText, id = props.id, labelProps = props.labelProps, inputProps = props.inputProps, error = props.error, success = props.success;
-    var labelClasses = classnames_1.default((_b = {},
-        _b[" " + classes.labelRootError] = error,
-        _b[" " + classes.labelRootSuccess] = success && !error,
-        _b));
-    var underlineClasses = classnames_1.default((_c = {},
-        _c[classes.underlineError] = error,
-        _c[classes.underlineSuccess] = success && !error,
-        _c[classes.underline] = true,
-        _c));
-    var marginTop = classnames_1.default((_d = {},
-        _d[classes.marginTop] = labelText === undefined,
-        _d));
-    return (react_1.default.createElement(FormControl_1.default, tslib_1.__assign({}, formControlProps, { className: formControlProps.className + " " + classes.formControl }),
-        labelText !== undefined ? (react_1.default.createElement(InputLabel_1.default, tslib_1.__assign({ className: classes.labelRoot + labelClasses, htmlFor: id }, labelProps), labelText)) : null,
-        react_1.default.createElement(Input_1.default, tslib_1.__assign({ classes: {
-                root: marginTop,
-                disabled: classes.disabled,
-                underline: underlineClasses
-            }, id: id }, inputProps)),
-        error ? (react_1.default.createElement(Clear_1.default, { className: classes.feedback + " " + classes.labelRootError })) : success ? (react_1.default.createElement(Check_1.default, { className: classes.feedback + " " + classes.labelRootSuccess })) : null));
-}
-CustomInput.propTypes = {
-    classes: prop_types_1.default.object.isRequired,
-    labelText: prop_types_1.default.node,
-    labelProps: prop_types_1.default.object,
-    id: prop_types_1.default.string,
-    inputProps: prop_types_1.default.object,
-    formControlProps: prop_types_1.default.object,
-    error: prop_types_1.default.bool,
-    success: prop_types_1.default.bool
-};
+var core_1 = __webpack_require__(228);
+var CustomInput = /** @class */ (function (_super) {
+    tslib_1.__extends(CustomInput, _super);
+    function CustomInput() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CustomInput.prototype.render = function () {
+        var _a, _b, _c;
+        var _d = this.props, inputProps = _d.inputProps, labelProps = _d.labelProps, id = _d.id, formControlProps = _d.formControlProps, classes = _d.classes, success = _d.success, error = _d.error, errorContent = _d.errorContent, labelText = _d.labelText;
+        var labelClasses = classnames_1.default((_a = {},
+            _a[" " + classes.labelRootError] = error,
+            _a[" " + classes.labelRootSuccess] = success && !error,
+            _a));
+        var underlineClasses = classnames_1.default((_b = {},
+            _b[classes.underlineError] = error,
+            _b[classes.underlineSuccess] = success && !error,
+            _b[classes.underline] = true,
+            _b));
+        var marginTop = classnames_1.default((_c = {},
+            _c[classes.marginTop] = labelText === undefined,
+            _c));
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(FormControl_1.default, tslib_1.__assign({}, formControlProps, { className: formControlProps.className + " " + classes.formControl }),
+                labelText !== undefined ? (react_1.default.createElement(InputLabel_1.default, tslib_1.__assign({ className: classes.labelRoot + labelClasses, htmlFor: id }, labelProps), labelText)) : null,
+                react_1.default.createElement(Input_1.default, tslib_1.__assign({ classes: {
+                        root: marginTop,
+                        disabled: classes.disabled,
+                        underline: underlineClasses
+                    }, id: id }, inputProps)),
+                error ? (react_1.default.createElement(Clear_1.default, { ref: "errorIcon", className: classes.feedback + " " + classes.labelRootError })) : success ? (react_1.default.createElement(Check_1.default, { className: classes.feedback + " " + classes.labelRootSuccess })) : null,
+                labelText !== undefined ? (react_1.default.createElement(core_1.FormHelperText, { className: classes.error, id: "component-error-text" }, errorContent)) : null)));
+    };
+    return CustomInput;
+}(react_1.default.Component));
 exports.default = withStyles_1.default(customInputStyle_1.default)(CustomInput);
 
 
@@ -78230,6 +79429,9 @@ var customInputStyle = core_1.createStyles({
         paddingBottom: "10px",
         margin: "27px 0 0 0",
         position: "relative"
+    },
+    error: {
+        color: material_dashboard_react_1.dangerColor
     }
 });
 exports.default = customInputStyle;
@@ -78568,7 +79770,7 @@ var headerStyle = function (theme) { return core_1.createStyles({
     flex: {
         flex: 1
     },
-    title: tslib_1.__assign({}, material_dashboard_react_1.defaultFont, { lineHeight: "30px", fontSize: "18px", borderRadius: "3px", textTransform: "none", color: "inherit", margin: "0", fontWeight: "normal", "&:hover,&:focus": {
+    title: tslib_1.__assign({}, material_dashboard_react_1.defaultFont, { lineHeight: "30px", fontSize: "18px", borderRadius: "3px", textTransform: "none", color: "inherit", margin: "0", fontWeight: 300, "&:hover,&:focus": {
             background: "transparent"
         } }),
     appResponsive: {
@@ -78786,6 +79988,170 @@ var dropdownStyle = function (theme) {
 };
 exports.default = dropdownStyle;
 
+
+/***/ }),
+/* 652 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/sidebar-1.jpg?8e9f0a3c5578a20733d5bad0e51c91fb";
+
+/***/ }),
+/* 653 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(52);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(1));
+
+var _createSvgIcon = _interopRequireDefault(__webpack_require__(586));
+
+var _default = (0, _createSvgIcon.default)(_react.default.createElement(_react.default.Fragment, null, _react.default.createElement("path", {
+  d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+}), _react.default.createElement("path", {
+  fill: "none",
+  d: "M0 0h24v24H0z"
+})), 'Edit');
+
+exports.default = _default;
+
+/***/ }),
+/* 654 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(52);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(1));
+
+var _createSvgIcon = _interopRequireDefault(__webpack_require__(586));
+
+var _default = (0, _createSvgIcon.default)(_react.default.createElement(_react.default.Fragment, null, _react.default.createElement("path", {
+  d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+}), _react.default.createElement("path", {
+  fill: "none",
+  d: "M0 0h24v24H0z"
+})), 'Delete');
+
+exports.default = _default;
+
+/***/ }),
+/* 655 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(52);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(1));
+
+var _createSvgIcon = _interopRequireDefault(__webpack_require__(586));
+
+var _default = (0, _createSvgIcon.default)(_react.default.createElement(_react.default.Fragment, null, _react.default.createElement("path", {
+  fill: "none",
+  d: "M0 0h24v24H0z"
+}), _react.default.createElement("path", {
+  d: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+})), 'Description');
+
+exports.default = _default;
+
+/***/ }),
+/* 656 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(15);
+var react_1 = tslib_1.__importDefault(__webpack_require__(1));
+// nodejs library that concatenates classes
+var classnames_1 = tslib_1.__importDefault(__webpack_require__(6));
+// nodejs library to set properties for components
+var prop_types_1 = tslib_1.__importDefault(__webpack_require__(2));
+// @material-ui/core components
+var withStyles_1 = tslib_1.__importDefault(__webpack_require__(5));
+// @material-ui/icons
+// core components
+var cardAvatarStyle_1 = tslib_1.__importDefault(__webpack_require__(657));
+function CardAvatar(_a) {
+    var _b;
+    var props = tslib_1.__rest(_a, []);
+    var classes = props.classes, children = props.children, className = props.className, plain = props.plain, profile = props.profile, rest = tslib_1.__rest(props, ["classes", "children", "className", "plain", "profile"]);
+    var cardAvatarClasses = classnames_1.default((_b = {},
+        _b[classes.cardAvatar] = true,
+        _b[classes.cardAvatarProfile] = profile,
+        _b[classes.cardAvatarPlain] = plain,
+        _b[className] = className !== undefined,
+        _b));
+    return (react_1.default.createElement("div", tslib_1.__assign({ className: cardAvatarClasses }, rest), children));
+}
+CardAvatar.propTypes = {
+    children: prop_types_1.default.node.isRequired,
+    className: prop_types_1.default.string,
+    profile: prop_types_1.default.bool,
+    plain: prop_types_1.default.bool
+};
+exports.default = withStyles_1.default(cardAvatarStyle_1.default)(CardAvatar);
+
+
+/***/ }),
+/* 657 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__(228);
+var cardAvatarStyle = core_1.createStyles({
+    cardAvatar: {
+        "&$cardAvatarProfile img": {
+            width: "100%",
+            height: "auto"
+        }
+    },
+    cardAvatarProfile: {
+        maxWidth: "130px",
+        maxHeight: "130px",
+        margin: "-50px auto 0",
+        borderRadius: "50%",
+        overflow: "hidden",
+        padding: "0",
+        boxShadow: "0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
+        "&$cardAvatarPlain": {
+            marginTop: "0"
+        }
+    },
+    cardAvatarPlain: {}
+});
+exports.default = cardAvatarStyle;
+
+
+/***/ }),
+/* 658 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/marc.jpg?8880a65c57d7f031579335be153f64a0";
 
 /***/ })
 /******/ ]);

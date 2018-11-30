@@ -1,4 +1,4 @@
-import { ITh } from '../common/Grid/Table';
+// import { ITh } from '../common/Grid/Table';
 
 export interface IStaff {
     staff_id: number;
@@ -52,14 +52,15 @@ export interface IStaffState {
     limit: number;
     isShowModal: boolean;
     totalItem: number;
-    pageRange: number;
     isError: boolean;
     isErrorList: boolean;
     isValidate: boolean;
     validateMessage: IValidateField;
     errorInfo: null | string;
     activePage: number;
-    tableHeader: ITh[];
+    tableHeader: any;
     filters?: string,
     isCreate: boolean
+    order:string,
+    orderBy:string
 };

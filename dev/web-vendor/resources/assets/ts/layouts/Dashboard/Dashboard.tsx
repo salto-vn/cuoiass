@@ -12,7 +12,7 @@ import dashboardRoutes from "../../routes/dashboard";
 
 import dashboardStyle from "../../../styles/layouts/dashboardStyle";
 
-import image from "../../../img/sidebar-2.jpg";
+import image from "../../../img/sidebar-1.jpg";
 import logo from "../../../img/reactlogo.png";
 import Sidebar from '../../common/Sidebar/Sidebar';
 import Header from '../../common/Header/Header';
@@ -73,7 +73,7 @@ class App extends React.Component<IDashBoard, {}> {
       <CssBaseline />
         <Sidebar
           routes={dashboardRoutes}
-          logoText={"Creative Tim"}
+          logoText={"VENDOR"}
           logo={logo}
           image={image}
           handleDrawerToggle={this.handleDrawerToggle}
