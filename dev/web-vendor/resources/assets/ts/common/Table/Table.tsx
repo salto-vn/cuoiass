@@ -13,7 +13,7 @@ import View from "@material-ui/icons/Description";
 import Delete from "@material-ui/icons/Delete";
 import Button from '../FormControls/CustomButtons/Button';
 import CustomInput from '../FormControls/CustomInput/CustomInput';
-import { TableSortLabel } from '@material-ui/core';
+import { TableSortLabel, CircularProgress } from '@material-ui/core';
 
 export interface ICustomTable {
   classes: any,
@@ -34,6 +34,7 @@ export interface ICustomTable {
   order?: any,
   onSort?: any,
   onFilter?: any,
+  isLoading?: boolean
 }
 
 class CustomTable extends React.Component<ICustomTable, {}>{
@@ -64,31 +65,31 @@ class CustomTable extends React.Component<ICustomTable, {}>{
    * @param evt: any
    * @event onFilter through props
    */
-   private  createFilterHandle = (evt: any) => {
-      const { onFilter } = this.props;
-      if (typeof onFilter === "undefined") {
-          return;
+  private createFilterHandle = (evt: any) => {
+    const { onFilter } = this.props;
+    if (typeof onFilter === "undefined") {
+      return;
+    }
+
+    this.setState({
+      filters: {
+        ...this.state.filters,
+        [evt.target.id]: evt.target.value ? evt.target.value : undefined
       }
+    }, () => {
+      return;
+    });
 
-      this.setState({
-          filters: {
-              ...this.state.filters,
-              [evt.target.id]: evt.target.value ? evt.target.value : undefined
-          }
-      }, () => {
-          return;
-      });
-
-      clearTimeout(this.state.time);
-      const that = this;
-      const timeout = setTimeout(() => {
-          that.props.onFilter(that.state.filters);
-      }, 800);
-      this.setState({ time: timeout });
+    clearTimeout(this.state.time);
+    const that = this;
+    const timeout = setTimeout(() => {
+      that.props.onFilter(that.state.filters);
+    }, 800);
+    this.setState({ time: timeout });
   }
 
   public render() {
-    const { classes, onFilter, tableHead, tableData, tableHeaderColor, hover, onEdit, onView, onDelete, orderBy, order } = this.props;
+    const { classes, onFilter, tableHead, tableData, tableHeaderColor, hover, onEdit, onView, onDelete, orderBy, order, isLoading } = this.props;
     return (
       <div className={classes.tableResponsive}>
         <Table className={classes.table}>
@@ -137,7 +138,7 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                                 className: classes.headerFilter,
                                 inputProps: {
                                   "aria-label": "Search",
-                                  onChange:this.createFilterHandle
+                                  onChange: this.createFilterHandle
                                 }
                               }}
                             />
@@ -150,8 +151,14 @@ class CustomTable extends React.Component<ICustomTable, {}>{
             </TableHead>
           ) : null}
           <TableBody>
+            {isLoading &&
+              <TableRow>
+                <TableCell colSpan={tableHead.length - 1} >
+                  <CircularProgress className={classes.progress} />
+                </TableCell>
+              </TableRow>
+            }
             {tableData.map((prop: any, key: any) => {
-
               return (
                 <TableRow key={key} hover={hover}>
                   {prop.map((prop: any, key: any) => {

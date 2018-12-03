@@ -9,7 +9,7 @@ import footerStyle from "../../../styles/components/footerStyle";
 
 function Footer({ ...props }) {
   const { classes } = props;
-  return (
+  return (<>
     <footer className={classes.footer}>
       <div className={classes.container}>
         <div className={classes.left}>
@@ -46,6 +46,7 @@ function Footer({ ...props }) {
         </p>
       </div>
     </footer>
+  </>
   );
 }
 

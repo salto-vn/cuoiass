@@ -1,1 +1,4 @@
 .idea
+.vscode
+dev/web-vendor/public/
+dev/web-vendor/public/js/index.js

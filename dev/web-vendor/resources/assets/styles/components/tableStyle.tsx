@@ -11,26 +11,29 @@ import {
 import { Theme, createStyles } from '@material-ui/core';
 
 const tableStyle = (theme: Theme) => createStyles({
+  progress: {
+    marginLeft: theme.spacing.unit * 50,
+  },
   header: {
     margin: 0,
-    paddingBottom:"5px",
+    paddingBottom: "5px",
     marginRight: "5px",
-    borderTopStyle:"hidden",
-    height : "35px",
-    width:"90%",
+    borderTopStyle: "hidden",
+    height: "35px",
+    width: "90%",
   },
-  headerFilter : {
-    width:"100%",
+  headerFilter: {
+    width: "100%",
     margin: 0,
-    paddingBottom:0,
+    paddingBottom: 0,
   },
   headerRow: {
-    height : "35px"
+    height: "35px"
   },
-  headerCell : {
-      padding:"0px",
-      margin:"0px",
-      
+  headerCell: {
+    padding: "0px",
+    margin: "0px",
+
   },
   button: {
     padding: "5px",

@@ -10,7 +10,7 @@ import Clear from "@material-ui/icons/Clear";
 import Check from "@material-ui/icons/Check";
 // core components
 import customInputStyle from "../../../../styles/components/customInputStyle";
-import { Popover, Typography, FormHelperText } from '@material-ui/core';
+import { FormHelperText } from '@material-ui/core';
 
 export interface ICustomInput {
   classes?: any,

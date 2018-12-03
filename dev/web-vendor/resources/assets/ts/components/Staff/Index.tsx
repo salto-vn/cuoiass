@@ -141,6 +141,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                                 order={order}
                                 orderBy={orderBy}
                                 onFilter={this.handleFilter}
+                                isLoading={isLoading}
                             />
                             <TablePagination
                                 rowsPerPageOptions={[10, 20, 50, 100]}
@@ -169,16 +170,16 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                         onClose={this.handleClose}
                     >
                         <div className={classes.modal}>
-                        <StaffModal
-                            modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
-                            model={this.state.model}
-                            onToggleModal={this.onToggleModal}
-                            onCreate={this.onCreate}
-                            onUpdate={this.onUpdate}
-                            isCreate={this.state.isCreate}
-                            isValidate={this.state.isValidate}
-                            errorInfo={this.state.validateMessage}
-                        />
+                            <StaffModal
+                                modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
+                                model={this.state.model}
+                                onToggleModal={this.onToggleModal}
+                                onCreate={this.onCreate}
+                                onUpdate={this.onUpdate}
+                                isCreate={this.state.isCreate}
+                                isValidate={this.state.isValidate}
+                                errorInfo={this.state.validateMessage}
+                            />
                         </div>
                     </Modal>
                 </div>
