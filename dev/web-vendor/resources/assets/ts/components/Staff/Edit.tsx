@@ -1,6 +1,5 @@
 import * as React from 'react';
 // import { Select } from '../../common/FormControls/Select';
-import Input from '../../common/FormControls/Input';
 // import * as HandleRequest from '../../api/HandleRequest';
 import { IStaff, IValidateModel } from '../../interface/IStaff';
 import { isEmptyKeyInObject, showError } from '../../common/Utils';
@@ -26,9 +25,9 @@ import avatar from "../../../img/faces/marc.jpg";
 interface IStaffModalProp {
     modalTitle?: string;
     model: IStaff;
-    onToggleModal: any;
     onCreate: any;
     onUpdate: any;
+    onDelete: any,
     isCreate: boolean;
     isValidate: boolean;
     errorInfo: any;
@@ -92,6 +91,17 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
         this.props.isCreate ? this.props.onCreate(model) : this.props.onUpdate(model);
     }
 
+
+    public handleDelete = (evt: any) => {
+        evt.preventDefault();
+
+        if (isEmptyKeyInObject(this.state.clientError)) {
+            return;
+        }
+        const { model } = this.state;
+        !this.props.isCreate && this.props.onDelete(model.staff_id);
+    }
+
     public handleSelect = (selectedValue: number) => {
         this.setState({
             model: { ...this.state.model, album_id: selectedValue }
@@ -103,7 +113,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
         var name = event.currentTarget.id;
         const errMessage = ValidateStaff(isRequired, name, value);
         this.setState({
-            model: { ...this.state.model, [name]: value ? value : undefined },
+            model: { ...this.state.model, [name]: value ? value : "" },
             clientError: { ...this.state.clientError, [name]: errMessage },
         }, () => {
             this.canSubmit();
@@ -120,8 +130,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     }
 
     public render() {
-        const { classes, modalTitle, onToggleModal, isCreate, errorInfo } = this.props;
-        const { model, clientError } = this.state;
+        const { classes, modalTitle, isCreate, errorInfo, } = this.props;
+        const { model, clientError, isSubmitDisabled } = this.state;
         return (
             <>
                 <div>
@@ -209,7 +219,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    value: model.address,
+                                                    value: model.address?model.address:'',
                                                     type: 'text',
                                                     onChange: this.handleChange.bind(this, false),
                                                 }}
@@ -218,7 +228,15 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                     </GridContainer>
                                 </CardBody>
                                 <CardFooter>
-                                    <Button color="primary">Update Profile</Button>
+                                    {isSubmitDisabled ?
+                                        <Button color="primary" onClick={this.handleSubmit} >
+                                            {isCreate ? "Tạo" : "Cập nhật"}
+                                        </Button>
+                                        :
+                                        <Button color="primary" onClick={this.handleSubmit} disabled>
+                                            {isCreate ? "Tạo" : "Cập nhật"}
+                                        </Button>
+                                    }
                                 </CardFooter>
                             </Card>
                         </GridItem>
@@ -233,12 +251,14 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                     <h6 className={classes.cardCategory}>TODO:ROLE</h6>
                                     <h4 className={classes.cardTitle}>{model.staff_name}</h4>
                                     <p className={classes.description}>
-                                       Ngay tao: 2019/10/10
-                                       Ngay truy cap cuoi cung: 2019/10/10
+                                        Ngay tao: 2019/10/10
+                                        Ngay truy cap cuoi cung: 2019/10/10
                                     </p>
-                                    <Button color="danger" round>
-                                        Delete
-                                    </Button>
+                                    {!isCreate &&
+                                        <Button color="danger" round onClick={this.handleDelete}>
+                                            Xoá
+                                        </Button>
+                                    }
                                 </CardBody>
                             </Card>
                         </GridItem>

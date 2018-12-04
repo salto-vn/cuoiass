@@ -1,5 +1,5 @@
 ## project name : cuoiass
-## date/time    : 2018/11/07 16:39:06
+## date/time    : 2018/12/04 12:15:47
 ## author       : anh
 ## rdbms type   : mysql
 ## application  : a5:sql mk-2
@@ -243,9 +243,9 @@ drop table if exists `reviews` cascade;
 ##* restorefromtemptable
 create table `reviews` (
     `review_id` int(11) auto_increment not null comment 'review id'
-  , `review_title` longtext comment 'review title'
-  , `review_response_vendor_id` int null comment 'review vendor id'
-  , `review_response_content` longtext null comment 'review response'
+  , `review_title` text comment 'review_title'
+  , `review_response_vendor_id` int(11) comment 'review_response_vendor_id'
+  , `review_response_content` longtext comment 'review_response_content'
   , `review_content` longtext not null comment 'review content'
   , `review_date` date not null comment 'review date'
   , `review_rate` float not null comment 'review rate'
@@ -719,9 +719,8 @@ drop table if exists `staffs` cascade;
 create table `staffs` (
     `staff_id` int(11) auto_increment not null comment 'staff'
   , `vendor_id` int(11) not null comment 'vendor id'
-  , `role_id` int(11) NOT NULL comment 'role id'
   , `staff_name` varchar(255) not null comment 'staff name'
-  , `email` char(255) not null comment 'email'
+  , `email` varchar(255) not null comment 'email'
   , `password` char(255) not null comment 'password'
   , `phone` char(14) comment 'phone'
   , `address` varchar(255) comment 'address'
@@ -729,6 +728,7 @@ create table `staffs` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `role_id` int(11)  not null comment 'role id'
   , constraint `staffs_pkc` primary key (`staff_id`,`vendor_id`)
 ) comment 'vendor staff' ;
 
@@ -802,7 +802,7 @@ create table `customers` (
   , `first_name` varchar(255) comment 'first name'
   , `last_name` varchar(255) comment 'last name'
   , `email` varchar(50) comment 'email'
-  , `password` varchar(255) comment 'password'
+  , `password` char(50) comment 'password'
   , `address` varchar(255) comment 'address'
   , `phone` char(14) comment 'phone'
   , `fb` varchar(255) comment 'facebook'
@@ -835,6 +835,9 @@ admin: admin manager site'
 alter table `roles` add unique `roles_ix1` (`role_code`) ;
 
 alter table `roles` add unique `roles_ix2` (`role_id`) ;
+
+alter table `staffs`
+  add constraint `staffs_fk1` foreign key (`role_id`) references `roles`(`role_id`);
 
 alter table `admins`
   add constraint `admins_fk1` foreign key (`role_id`) references `roles`(`role_id`);
@@ -936,7 +939,4 @@ alter table `vendor_services`
   add constraint `vendor_services_fk2` foreign key (`vendor_id`) references `vendors`(`vendor_id`);
 
 alter table `staffs`
-  add constraint `staffs_fk1` foreign key (`vendor_id`) references `vendors`(`vendor_id`);
-
-alter table `staffs`
-  add constraint `staffs_fk2` foreign key (`role_id`) references `roles`(`role_id`);
+  add constraint `staffs_fk2` foreign key (`vendor_id`) references `vendors`(`vendor_id`);

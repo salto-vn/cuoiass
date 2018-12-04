@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -21,8 +21,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $accounts
  * @property \Illuminate\Database\Eloquent\Collection $admins
+ * @property \Illuminate\Database\Eloquent\Collection $staff
  *
  * @package App\Models
  */
@@ -38,13 +38,13 @@ class Role extends Eloquent
 		'updated_by'
 	];
 
-	public function accounts()
-	{
-		return $this->hasMany(\App\Models\Account::class);
-	}
-
 	public function admins()
 	{
 		return $this->hasMany(\App\Models\Admin::class);
+	}
+
+	public function staff()
+	{
+		return $this->hasMany(\App\Models\Staff::class);
 	}
 }

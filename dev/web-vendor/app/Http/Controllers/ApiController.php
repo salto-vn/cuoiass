@@ -45,6 +45,9 @@ class ApiController extends Controller
             case 'reviews':
                 $columns = $this->reviewColumns();
                 return $this->buildSearchColumn($params, $columns);
+            case 'staffs':
+                $columns = $this->staffColumns();
+                return $this->buildSearchColumn($params, $columns);
             default:
                 return $params;
                 break;
@@ -58,8 +61,8 @@ class ApiController extends Controller
      */
     public function buildSearchColumn($params, $columns)
     {
-        if (isset($params['sortbyc'])) {
-            $params['sortbyc'] = $columns[$params['sortbyc']];
+        if (isset($params['orderBy'])) {
+            $params['orderBy'] = $columns[$params['orderBy']];
         }
 
         if (!isset($params['search'])) {
@@ -91,6 +94,21 @@ class ApiController extends Controller
             'nd' => 'review_content',
             'tl' => 'review_rate',
             'review_id' => 'review_id',
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    private function staffColumns()
+    {
+        return [
+            'staff_id' => 'staff_id',
+            'filter_staff_name' => 'staff_name',
+            'filter_phone' => 'phone',
+            'filter_email' => 'email',
+            'filter_address' => 'address',
         ];
     }
 }

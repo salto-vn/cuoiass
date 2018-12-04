@@ -5,8 +5,6 @@ import * as HandleRequest from '../../api/HandleRequest';
 import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
 // import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSortUp } from '@fortawesome/free-solid-svg-icons';
 import StaffModal from './Edit';
 import { objectToQueryString } from '../../common/Utils';
 import GridContainer from '../../common/Grid/GridContainer';
@@ -15,9 +13,9 @@ import Card from '../../common/Card/Card';
 import CardHeader from '../../common/Card/CardHeader';
 import CardBody from '../../common/Card/CardBody';
 import Table from '../../common/Table/Table';
-import { createStyles, withStyles, TablePagination, Modal, Typography, Theme } from '@material-ui/core';
+import Button from '../../common/FormControls/CustomButtons/Button';
+import { createStyles, withStyles, TablePagination, Modal, Theme } from '@material-ui/core';
 
-library.add(faSortUp)
 
 
 const styles = (theme: Theme) => createStyles({
@@ -27,7 +25,7 @@ const styles = (theme: Theme) => createStyles({
             margin: "0",
             fontSize: "14px",
             marginTop: "0",
-            marginBottom: "0"
+            marginBottom: "0",
         },
         "& a,& a:hover,& a:focus": {
             color: "#FFFFFF"
@@ -47,6 +45,11 @@ const styles = (theme: Theme) => createStyles({
             fontWeight: 400,
             lineHeight: "1"
         }
+    },
+    headerButton: {
+        position: "absolute";
+        right: "10px";
+        bottom: "10px";
     },
     modal: {
         position: 'absolute',
@@ -101,6 +104,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         document.title = CONSTANT.PAGE_TITLE;
         this.setTableHeader();
         this.getListStaff();
+
     }
 
     /**
@@ -109,7 +113,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      * Render view
      */
     render() {
-        const { staffGrid, totalItem, limit, activePage, order, orderBy, isLoading, isCLickPaginate, errorInfo, isErrorList, tableHeader } = this.state;
+        const { staffGrid, totalItem, limit, activePage, order, orderBy, isLoading, tableHeader } = this.state;
         const { classes } = this.props
         const listdata: Array<string[]> = new Array();
 
@@ -121,47 +125,51 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
             listdata.push(data);
         }
         return (
-            <><GridContainer>
-                <GridItem xs={12} sm={12} md={12}>
-                    <Card>
-                        <CardHeader color="primary">
-                            <h4 className={classes.cardTitleWhite}>Danh sách nhân viên</h4>
-                            <p className={classes.cardCategoryWhite}>
-                                Danh sách tài khoản đăng nhập của nhân viên
-                             </p>
-                        </CardHeader>
-                        <CardBody>
-                            <Table hover={true}
-                                tableHeaderColor="primary"
-                                tableHead={tableHeader}
-                                tableData={listdata}
-                                onEdit={this.handleEdit}
-                                onDelete={this.handleDelete}
-                                onSort={this.handleSort}
-                                order={order}
-                                orderBy={orderBy}
-                                onFilter={this.handleFilter}
-                                isLoading={isLoading}
-                            />
-                            <TablePagination
-                                rowsPerPageOptions={[10, 20, 50, 100]}
-                                component="div"
-                                count={totalItem}
-                                rowsPerPage={limit}
-                                page={activePage}
-                                backIconButtonProps={{
-                                    'aria-label': 'Previous Page',
-                                }}
-                                nextIconButtonProps={{
-                                    'aria-label': 'Next Page',
-                                }}
-                                onChangePage={this.handlePageChange}
-                                onChangeRowsPerPage={this.handleDisplayNoPage}
-                            />
-                        </CardBody>
-                    </Card>
-                </GridItem>
-            </GridContainer>
+            <>
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={12}>
+                        <Card>
+                            <CardHeader color="primary">
+                                <div className={classes.cardTitle}>
+                                    <h4 className={classes.cardTitleWhite}>Danh sách nhân viên</h4>
+                                    <span className={classes.cardCategoryWhite}>
+                                        Danh sách tài khoản đăng nhập của nhân viên
+                                    </span>
+                                    <Button color="info" className={classes.headerButton} onClick={this.handleCreate}>Tạo tài khoản</Button>
+                                </div>
+                            </CardHeader>
+                            <CardBody>
+                                <Table hover={true}
+                                    tableHeaderColor="primary"
+                                    tableHead={tableHeader}
+                                    tableData={listdata}
+                                    onEdit={this.handleEdit}
+                                    onDelete={this.handleDelete}
+                                    onSort={this.handleSort}
+                                    order={order}
+                                    orderBy={orderBy}
+                                    onFilter={this.handleFilter}
+                                    isLoading={isLoading}
+                                />
+                                <TablePagination
+                                    rowsPerPageOptions={[10, 20, 50, 100]}
+                                    component="div"
+                                    count={totalItem}
+                                    rowsPerPage={limit}
+                                    page={activePage}
+                                    backIconButtonProps={{
+                                        'aria-label': 'Previous Page',
+                                    }}
+                                    nextIconButtonProps={{
+                                        'aria-label': 'Next Page',
+                                    }}
+                                    onChangePage={this.handlePageChange}
+                                    onChangeRowsPerPage={this.handleDisplayNoPage}
+                                />
+                            </CardBody>
+                        </Card>
+                    </GridItem>
+                </GridContainer>
                 <div>
                     <Modal
                         aria-labelledby="simple-modal-title"
@@ -173,9 +181,9 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                             <StaffModal
                                 modalTitle={this.state.isCreate ? 'Create staff' : 'Update staff'}
                                 model={this.state.model}
-                                onToggleModal={this.onToggleModal}
                                 onCreate={this.onCreate}
                                 onUpdate={this.onUpdate}
+                                onDelete={this.handleDelete}
                                 isCreate={this.state.isCreate}
                                 isValidate={this.state.isValidate}
                                 errorInfo={this.state.validateMessage}
@@ -197,11 +205,11 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      */
     private setTableHeader = (sortIcon: string = 'sort') => {
         const tableHeader = [
-            { id: 'name', numeric: false, disablePadding: true, label: '#' },
-            { id: 'staff_name', numeric: false, disablePadding: true, label: 'Tên nhân viên' },
-            { id: 'phone', numeric: false, disablePadding: true, label: 'Điện thoại' },
-            { id: 'email', numeric: false, disablePadding: true, label: 'Email' },
-            { id: 'address', numeric: false, disablePadding: true, label: 'Địa chỉ' },
+            { id: 'id', numeric: false, disablePadding: true, label: '#' },
+            { id: 'filter_staff_name', numeric: false, disablePadding: true, label: 'Tên nhân viên' },
+            { id: 'filter_phone', numeric: false, disablePadding: true, label: 'Điện thoại' },
+            { id: 'filter_email', numeric: false, disablePadding: true, label: 'Email' },
+            { id: 'filter_address', numeric: false, disablePadding: true, label: 'Địa chỉ' },
             { id: 'action', numeric: false, disablePadding: true, label: '' },
         ];
         this.setState({ tableHeader });
@@ -213,7 +221,6 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      */
     private getListStaff = async () => {
         const { activePage, limit, order, orderBy, filters } = this.state;
-
         this.setState({ isLoading: true });
         const response = await HandleRequest.GetList(APP_URL.STAFF, activePage + 1, limit, orderBy, order, filters);
 
@@ -254,6 +261,22 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
     }
 
     /**
+     * @param id: string | number
+     * @return model
+     */
+    public handleCreate = () => {
+
+        this.setState({
+            isHandleEvent: false,
+            isShowModal: true,
+            isCreate: true,
+            model: new StaffModel,
+        }
+        );
+    }
+
+
+    /**
      * Save model
      * 
      * @return List staff have new record
@@ -262,6 +285,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (this.state.isHandleEvent) {
             return;
         }
+        debugger;
 
         this.setState({ isHandleEvent: true });
 
@@ -281,9 +305,9 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
         this.setState({
             isHandleEvent: false,
-            isCreate: false
+            isCreate: false,
+            isShowModal: false
         }, () => {
-            this.onToggleModal();
             this.getListStaff();
         });
     }
@@ -317,8 +341,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
         this.setState({
             isHandleEvent: false,
+            isShowModal: false
         }, () => {
-            this.onToggleModal();
             this.getListStaff();
         });
     }
@@ -341,7 +365,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
             return this.setState({ isError: response.isError, errorInfo: response.message, isHandleEvent: false });
         }
 
-        this.setState({ isHandleEvent: false });
+        this.setState({ isHandleEvent: false, isShowModal: false });
         this.getListStaff();
     }
 
@@ -410,22 +434,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         this.setState({ limit: event.target.value }, () => this.getListStaff());
     }
 
-    /**
-     * Show popup modal
-     * @param isCreate: boolean
-     */
-    private onToggleModal = (isCreate: boolean = false) => {
-        const { isShowModal } = this.state;
-
-        if (!isShowModal) {
-            document.body.classList.add('modal-open');
-        } else {
-            document.body.attributes.removeNamedItem('class');
-        }
-
-        const model = isCreate ? new StaffModel : this.state.model;
-        this.setState({ isShowModal: !this.state.isShowModal, model, isCreate, validateMessage: { errors: '' } });
-    }
 }
+
+
 
 export default withStyles(styles)(StaffScreen);

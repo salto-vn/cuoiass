@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Booking
- * 
+ *
  * @property int $booked_id
  * @property string $booked_cd
  * @property string $booked_pro_name
@@ -42,7 +42,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Product $product
  * @property \App\Models\Plan $plan
  * @property \Illuminate\Database\Eloquent\Collection $booked_customize_fields

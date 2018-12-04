@@ -17,7 +17,7 @@ import logo from "../../../img/reactlogo.png";
 import Sidebar from '../../common/Sidebar/Sidebar';
 import Header from '../../common/Header/Header';
 import Footer from '../../common/Footer/Footer';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, LinearProgress } from '@material-ui/core';
 
 
 const switchRoutes = (
@@ -37,7 +37,7 @@ export interface IDashBoard {
 
 class App extends React.Component<IDashBoard, {}> {
   public state = {
-    mobileOpen: false
+    mobileOpen: false,
   }
   handleDrawerToggle = () => {
     this.setState({ mobileOpen: !this.state.mobileOpen });
@@ -69,36 +69,37 @@ class App extends React.Component<IDashBoard, {}> {
   }
   render() {
     const { classes, ...rest } = this.props;
-    return (
+    return (<>
+      <CssBaseline />
       <div className={classes.wrapper}>
-          <CssBaseline />
-          <Sidebar
+        <Sidebar
+          routes={dashboardRoutes}
+          logoText={"VENDOR"}
+          logo={logo}
+          image={image}
+          handleDrawerToggle={this.handleDrawerToggle}
+          open={this.state.mobileOpen}
+          color="blue"
+          {...rest}
+        />
+        <div className={classes.mainPanel} ref="mainPanel">
+          <Header
             routes={dashboardRoutes}
-            logoText={"VENDOR"}
-            logo={logo}
-            image={image}
             handleDrawerToggle={this.handleDrawerToggle}
-            open={this.state.mobileOpen}
-            color="blue"
             {...rest}
           />
-          <div className={classes.mainPanel} ref="mainPanel">
-            <Header
-              routes={dashboardRoutes}
-              handleDrawerToggle={this.handleDrawerToggle}
-              {...rest}
-            />
-            {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
-            {this.getRoute() ? (
-              <div className={classes.content}>
-                <div className={classes.container}>{switchRoutes}</div>
-              </div>
-            ) : (
-                <div className={classes.map}>{switchRoutes}</div>
-              )}
-            {this.getRoute() ? <Footer /> : null}
-          </div>
+          {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
+          {this.getRoute() ? (
+            <div className={classes.content}>
+              <div className={classes.container}>{switchRoutes}</div>
+            </div>
+          ) : (
+              <div className={classes.map}>{switchRoutes}</div>
+            )}
+          {this.getRoute() ? <Footer /> : null}
+        </div>
       </div>
+    </>
     );
   }
 }

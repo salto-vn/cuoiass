@@ -2,22 +2,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import { Routes } from './routes';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSort } from '@fortawesome/free-solid-svg-icons';
-import { faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { faComments } from '@fortawesome/free-solid-svg-icons';
-import { faStickyNote } from '@fortawesome/free-solid-svg-icons';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-
-library.add(faTimes, faSortUp, faSortDown, faStickyNote, faComments, faSort, faCalendarAlt, faEdit, faTrashAlt)
-
+window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 ReactDOM.render(
-  <Routes />,
-  document.getElementById('root') as HTMLElement
+    <Routes />
+  , document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();

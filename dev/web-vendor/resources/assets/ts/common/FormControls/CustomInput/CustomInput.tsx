@@ -16,7 +16,7 @@ export interface ICustomInput {
   classes?: any,
   labelText?: string,
   labelProps?: Object,
-  id: string,
+  id?: string,
   inputProps?: any,
   formControlProps?: any,
   error?: boolean,

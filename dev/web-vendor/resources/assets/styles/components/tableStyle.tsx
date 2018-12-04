@@ -12,7 +12,11 @@ import { Theme, createStyles } from '@material-ui/core';
 
 const tableStyle = (theme: Theme) => createStyles({
   progress: {
-    marginLeft: theme.spacing.unit * 50,
+    
+    marginLeft: theme.spacing.unit * 60,
+    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 2,
+
   },
   header: {
     margin: 0,

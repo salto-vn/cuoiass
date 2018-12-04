@@ -63,6 +63,7 @@ class StaffController extends Controller
      */
     public function edit(Staff $staff)
     {
+        $staff['role_name'] = $staff->role();
         return $staff;
     }
 

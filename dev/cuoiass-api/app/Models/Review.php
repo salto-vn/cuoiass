@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -13,6 +13,9 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * Class Review
  *
  * @property int $review_id
+ * @property string $review_title
+ * @property int $review_response_vendor_id
+ * @property string $review_response_content
  * @property string $review_content
  * @property \Carbon\Carbon $review_date
  * @property float $review_rate
@@ -36,6 +39,7 @@ class Review extends Eloquent
 	protected $primaryKey = 'review_id';
 
 	protected $casts = [
+		'review_response_vendor_id' => 'int',
 		'review_rate' => 'float',
 		'prd_id' => 'int',
 		'booked_id' => 'int',
@@ -48,12 +52,13 @@ class Review extends Eloquent
 	];
 
 	protected $fillable = [
+		'review_title',
+		'review_response_vendor_id',
+		'review_response_content',
 		'review_content',
 		'review_date',
 		'review_rate',
 		'review_imgs',
-        'review_response_vendor_id',
-        'review_response_content',
 		'prd_id',
 		'booked_id',
 		'customer_id',
@@ -63,7 +68,7 @@ class Review extends Eloquent
 
 	public function customer()
 	{
-		return $this->belongsTo(\App\Models\Customer::class, 'customer_id');
+		return $this->belongsTo(\App\Models\Customer::class);
 	}
 
     public function vendor()

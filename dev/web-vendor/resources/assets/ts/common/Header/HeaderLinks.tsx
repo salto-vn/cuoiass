@@ -43,7 +43,6 @@ class HeaderLinks extends React.Component<{ classes?: any, handleClick?: any }, 
       <div>
         <div className={classes.searchWrapper}>
           <CustomInput
-            id="free-search"
             formControlProps={{
               className: classes.margin + " " + classes.search
             }}

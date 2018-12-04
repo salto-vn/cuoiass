@@ -45,8 +45,8 @@ export const findOne = async (url: string, id: string, columns?: string[]) => {
  * @return HandleResponse
  */
 
-export const GetList = async (url: string, page: number = 1, limit: number = 10, sortbyc?: string, sortby?: string, search?: string, columns?: string[]) => {
-    const params: any = { page, limit, sortbyc, sortby, search };
+export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, columns?: string[]) => {
+    const params: any = { page, limit, orderBy, order, search };
     const queryString = objectToQueryString(params, '=', '&');
     const result = await fetch(`${url}?${queryString}`, {
         method: "GET",

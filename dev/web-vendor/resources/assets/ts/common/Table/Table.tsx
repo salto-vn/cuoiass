@@ -151,13 +151,6 @@ class CustomTable extends React.Component<ICustomTable, {}>{
             </TableHead>
           ) : null}
           <TableBody>
-            {isLoading &&
-              <TableRow>
-                <TableCell colSpan={tableHead.length - 1} >
-                  <CircularProgress className={classes.progress} />
-                </TableCell>
-              </TableRow>
-            }
             {tableData.map((prop: any, key: any) => {
               return (
                 <TableRow key={key} hover={hover}>
@@ -212,6 +205,13 @@ class CustomTable extends React.Component<ICustomTable, {}>{
             })}
           </TableBody>
         </Table>
+
+        {isLoading &&
+          <div >
+            <CircularProgress className={classes.progress} />
+          </div>
+        }
+
       </div>
     );
   }
