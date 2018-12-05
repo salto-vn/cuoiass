@@ -5,9 +5,6 @@ namespace App\Api\Facades;
 use App\Api\Contracts\Factory;
 use Illuminate\Support\Facades\Facade;
 
-/**
- * @see \App\Api\Veltra
- */
 class Api extends Facade
 {
     /**

@@ -11,15 +11,9 @@ import {
 import { Theme, createStyles } from '@material-ui/core';
 
 const tableStyle = (theme: Theme) => createStyles({
-  progress: {
-    
-    marginLeft: theme.spacing.unit * 60,
-    marginTop: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit * 2,
-
-  },
+  
   header: {
-    margin: 0,
+    marginTop: 0,
     paddingBottom: "5px",
     marginRight: "5px",
     borderTopStyle: "hidden",
@@ -28,7 +22,8 @@ const tableStyle = (theme: Theme) => createStyles({
   },
   headerFilter: {
     width: "100%",
-    margin: 0,
+    marginTop: 0,
+    fontSize: "1em" as '1em',
     paddingBottom: 0,
   },
   headerRow: {

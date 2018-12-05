@@ -14,7 +14,9 @@ import CardHeader from '../../common/Card/CardHeader';
 import CardBody from '../../common/Card/CardBody';
 import Table from '../../common/Table/Table';
 import Button from '../../common/FormControls/CustomButtons/Button';
-import { createStyles, withStyles, TablePagination, Modal, Theme } from '@material-ui/core';
+import { createStyles, withStyles, TablePagination, Modal, Theme, LinearProgress } from '@material-ui/core';
+import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import { infoColor } from '../../../styles/material-dashboard-react';
 
 
 
@@ -47,9 +49,9 @@ const styles = (theme: Theme) => createStyles({
         }
     },
     headerButton: {
-        position: "absolute";
-        right: "10px";
-        bottom: "10px";
+        position: "absolute",
+        right: "10px",
+        bottom: "20px"
     },
     modal: {
         position: 'absolute',
@@ -61,6 +63,15 @@ const styles = (theme: Theme) => createStyles({
         left: "50%",
         transform: `translate(-50%, -50%)`,
     },
+    progress: {
+        color: infoColor
+    },
+    linearColorPrimary: {
+        backgroundColor: '#FFFFFF',
+    },
+    linearBarColorPrimary: {
+        backgroundColor: infoColor,
+    },
 });
 
 /**
@@ -70,6 +81,9 @@ const styles = (theme: Theme) => createStyles({
  * State: Required IStaffState , Optional another variale
  */
 class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
+
+    __isMounted = false;
+    abortControler = new AbortController();
 
     // inital state varialble using in this Component, 
     public state = {
@@ -94,7 +108,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         orderBy: 'staff_id',
         order: 'desc',
         sortedIndex: 0,
-
+        roles: [],
     };
 
     /**
@@ -102,10 +116,17 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
-        this.setTableHeader();
+        this.__isMounted = true;
+        // this.getRoles();
         this.getListStaff();
 
     }
+
+    public componentWillUnmount() {
+        this.__isMounted = false;
+        this.abortControler.abort();
+    }
+
 
     /**
      * Render event will be run first time, 
@@ -121,7 +142,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         for (let i: number = 0; i < staffGrid.length; i++) {
             let item: IStaffList = staffGrid[i];
             //last index is PK KEY, assign to Action on row
-            let data: string[] = [String(i + 1), item.staff_name, item.phone, item.email, item.address, item.staff_id.toString()];
+            let data: string[] = [String(i + 1), item.staff_name, item.role_name, item.phone, item.email, item.address, item.staff_id.toString()];
             listdata.push(data);
         }
         return (
@@ -136,6 +157,13 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                                         Danh sách tài khoản đăng nhập của nhân viên
                                     </span>
                                     <Button color="info" className={classes.headerButton} onClick={this.handleCreate}>Tạo tài khoản</Button>
+                                    <div>
+                                        {isLoading &&
+                                            <LinearProgress classes={{
+                                                colorPrimary: classes.linearColorPrimary,
+                                                barColorPrimary: classes.linearBarColorPrimary,
+                                            }} />}
+                                    </div>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -187,6 +215,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                                 isCreate={this.state.isCreate}
                                 isValidate={this.state.isValidate}
                                 errorInfo={this.state.validateMessage}
+                                roles={this.state.roles}
                             />
                         </div>
                     </Modal>
@@ -203,13 +232,26 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
     /**
      * Set header for table
      */
-    private setTableHeader = (sortIcon: string = 'sort') => {
+    private setTableHeader = () => {
+        const { roles } = this.state;
+        var roleSource: IOption[] = [];
+        //Convert Datajson to Array with last index id PK key.
+        for (let i: number = 0; i < roles.length; i++) {
+            let role: any = roles[i];
+            var option = {
+                key: role.role_id,
+                value: role.role_name
+            };
+            roleSource.push(option);
+        }
+
         const tableHeader = [
-            { id: 'id', numeric: false, disablePadding: true, label: '#' },
-            { id: 'filter_staff_name', numeric: false, disablePadding: true, label: 'Tên nhân viên' },
-            { id: 'filter_phone', numeric: false, disablePadding: true, label: 'Điện thoại' },
-            { id: 'filter_email', numeric: false, disablePadding: true, label: 'Email' },
-            { id: 'filter_address', numeric: false, disablePadding: true, label: 'Địa chỉ' },
+            { id: 'id', numeric: false, disablePadding: true, label: '#', type: 'none' },
+            { id: 'filter_staff_name', numeric: false, disablePadding: true, label: 'Tên nhân viên', type: 'text' },
+            { id: 'filter_role_name', numeric: false, disablePadding: true, label: 'Quyền', type: 'select', sources: roleSource },
+            { id: 'filter_phone', numeric: false, disablePadding: true, label: 'Điện thoại', type: 'text' },
+            { id: 'filter_email', numeric: false, disablePadding: true, label: 'Email', type: 'text' },
+            { id: 'filter_address', numeric: false, disablePadding: true, label: 'Địa chỉ', type: 'text' },
             { id: 'action', numeric: false, disablePadding: true, label: '' },
         ];
         this.setState({ tableHeader });
@@ -218,22 +260,30 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
     /**
      * Get staff data
      * @return not need to return set to state is OK
+     * 
      */
     private getListStaff = async () => {
         const { activePage, limit, order, orderBy, filters } = this.state;
-        this.setState({ isLoading: true });
-        const response = await HandleRequest.GetList(APP_URL.STAFF, activePage + 1, limit, orderBy, order, filters);
 
+        this.setState({ isLoading: true });
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.GetList(APP_URL.STAFF_CRL, activePage + 1, limit, orderBy, order, filters, signal);
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }
+        if (this.__isMounted) {
+            this.setState({
+                staffGrid: response.result.staffs.data,
+                totalItem: response.result.staffs.total,
+                roles: response.result.roles,
+                isLoading: false,
+            }), () => {
+            };
+            this.setTableHeader();
+        }
 
-        this.setState({
-            staffGrid: response.result.data,
-            totalItem: response.result.total,
-            isLoading: false,
-        });
     }
+
 
     /**
      * @param id: string | number
@@ -243,7 +293,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (this.state.isHandleEvent) {
             return;
         }
-
+        debugger;
         this.setState({ isHandleEvent: true });
 
         const response = await HandleRequest.Edit(APP_URL.STAFF, id);
@@ -251,7 +301,6 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (response.isError) {
             return this.setState({ isError: response.isError, errorInfo: response.message });
         }
-
         this.setState({
             model: response.result,
             isHandleEvent: false,
@@ -270,7 +319,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
             isHandleEvent: false,
             isShowModal: true,
             isCreate: true,
-            model: new StaffModel,
+            model: new StaffModel
         }
         );
     }
@@ -285,7 +334,6 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (this.state.isHandleEvent) {
             return;
         }
-        debugger;
 
         this.setState({ isHandleEvent: true });
 
@@ -381,7 +429,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (this.state.orderBy === id && this.state.order === 'desc') {
             order = 'asc';
         }
-
+        
+        
         return this.setState((prevState) => ({
             ...prevState, orderBy: orderBy, order: order
         }), () => {

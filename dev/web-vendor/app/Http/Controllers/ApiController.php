@@ -25,7 +25,7 @@ class ApiController extends Controller
             'verify' => false
         ]);
 
-        $routeName = str_replace(config('wedding.api_prefix').'/', '', $request->path());
+        $routeName = str_replace(config('wedding.api_prefix') . '/', '', $request->path());
         $input = $this->convertColumns($routeName, array_filter($request->input()));
         $response = $client->request($request->method(), $routeName, [
             'json' => $input,
@@ -41,6 +41,9 @@ class ApiController extends Controller
      */
     private function convertColumns($apiName, $params)
     {
+        //TODO HARD CODE Vendor ID
+        $params['vendor_id'] = '1';
+
         switch (trim($apiName, '/')) {
             case 'reviews':
                 $columns = $this->reviewColumns();
@@ -48,6 +51,10 @@ class ApiController extends Controller
             case 'staffs':
                 $columns = $this->staffColumns();
                 return $this->buildSearchColumn($params, $columns);
+            case 'roles':
+                if (!isset($params['system_code'])) {
+                    $params['system_code'] = 'BACKYARD';
+                }
             default:
                 return $params;
                 break;
@@ -73,7 +80,7 @@ class ApiController extends Controller
         foreach (explode(';', $params['search']) as $item) {
             [$key, $value] = explode(':', $item);
             $arrParam[$columns[$key]] = $value;
-            $strParam .= $columns[$key].':'.$value.';';
+            $strParam .= $columns[$key] . ':' . $value . ';';
         }
 
         $params['search'] = trim($strParam, ';');
@@ -101,7 +108,7 @@ class ApiController extends Controller
      *
      * @return array
      */
-    private function staffColumns()
+    public function staffColumns()
     {
         return [
             'staff_id' => 'staff_id',
@@ -109,6 +116,9 @@ class ApiController extends Controller
             'filter_phone' => 'phone',
             'filter_email' => 'email',
             'filter_address' => 'address',
+            'filter_role_name' => 'role_id'
         ];
     }
+
+
 }

@@ -18,4 +18,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('/{any:.*}', 'ApiController@index');
 });
 
+$router->group(['prefix' => 'controller'], function () use ($router) {
+    $router->get('/staffs', 'StaffController@initial');
+});
+
 $router->get('/{any:.*}', 'HomeController@index');

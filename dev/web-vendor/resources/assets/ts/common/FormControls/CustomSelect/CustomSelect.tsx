@@ -4,15 +4,14 @@ import classNames from "classnames";
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
 // @material-ui/icons
 import Clear from "@material-ui/icons/Clear";
 import Check from "@material-ui/icons/Check";
 // core components
-import customInputStyle from "../../../../styles/components/customInputStyle";
-import { FormHelperText } from '@material-ui/core';
+import customSelectStyle from "../../../../styles/components/customSelectStyle";
+import { FormHelperText, Select, MenuItem } from '@material-ui/core';
 
-export interface ICustomInput {
+export interface ICustomSelect {
   classes?: any,
   labelText?: string,
   labelProps?: Object,
@@ -22,12 +21,30 @@ export interface ICustomInput {
   error?: boolean,
   success?: boolean,
   errorContent?: string,
+  items: IOption[],
+  onChange: any,
+  value: string
 }
 
-class CustomInput extends React.Component<ICustomInput, {}> {
+export interface IOption {
+  key: number;
+  value: string;
+}
+
+class CustomSelect extends React.Component<ICustomSelect, {}> {
+
+  public state = {
+    selectedValue: this.props.value
+  }
+
+  public handleChange = (evt: any) => {
+    this.setState({ selectedValue: evt.target.value })
+
+    this.props.onChange(evt);
+  }
 
   render() {
-    const { inputProps, labelProps, id, formControlProps, classes, success, error, errorContent, labelText } = this.props;
+    const { items, inputProps, labelProps, id, formControlProps, classes, success, error, errorContent, labelText } = this.props;
     const labelClasses = classNames({
       [" " + classes.labelRootError]: error,
       [" " + classes.labelRootSuccess]: success && !error
@@ -37,10 +54,8 @@ class CustomInput extends React.Component<ICustomInput, {}> {
       [classes.underlineSuccess]: success && !error,
       [classes.underline]: true
     });
-    const marginTop = classNames({
-      [classes.marginTop]: labelText === undefined
-    });
     return (
+      
       <>
         <FormControl
           {...formControlProps}
@@ -56,22 +71,28 @@ class CustomInput extends React.Component<ICustomInput, {}> {
               {labelText}
             </InputLabel>
           ) : null}
-          <Input
-            classes={{
-              disabled: classes.disabled,
-              underline: underlineClasses,
-            }}
+          <Select
+            onChange={this.handleChange}
+            value={this.state.selectedValue}
             id={id}
             {...inputProps}
-
-          />
+          >
+            <MenuItem value="">
+              <em key={0}>Chọn</em>
+            </MenuItem>
+            {items.map((option: IOption, i: any) => (
+              <MenuItem key={option.key} value={option.key}>
+                {option.value}
+              </MenuItem>
+            ))}
+          </Select>
           {error ? (
-            <Clear ref="errorIcon"  className={classes.feedback + " " + classes.labelRootError} />
+            <Clear ref="errorIcon" className={classes.feedback + " " + classes.labelRootError} />
           ) : success ? (
             <Check className={classes.feedback + " " + classes.labelRootSuccess} />
           ) : null}
           {labelText !== undefined ? (
-          <FormHelperText className={classes.error} id="component-error-text">{errorContent}</FormHelperText>
+            <FormHelperText className={classes.error} id="component-error-text">{errorContent}</FormHelperText>
           ) : null}
         </FormControl>
 
@@ -83,4 +104,4 @@ class CustomInput extends React.Component<ICustomInput, {}> {
 }
 
 
-export default withStyles(customInputStyle)(CustomInput);
+export default withStyles(customSelectStyle)(CustomSelect);

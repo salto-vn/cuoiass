@@ -13,7 +13,8 @@ import View from "@material-ui/icons/Description";
 import Delete from "@material-ui/icons/Delete";
 import Button from '../FormControls/CustomButtons/Button';
 import CustomInput from '../FormControls/CustomInput/CustomInput';
-import { TableSortLabel, CircularProgress } from '@material-ui/core';
+import { TableSortLabel } from '@material-ui/core';
+import CustomSelect, { IOption } from '../FormControls/CustomSelect/CustomSelect';
 
 export interface ICustomTable {
   classes: any,
@@ -34,7 +35,8 @@ export interface ICustomTable {
   order?: any,
   onSort?: any,
   onFilter?: any,
-  isLoading?: boolean
+  isLoading?: boolean,
+  sources?: IOption[] | undefined
 }
 
 class CustomTable extends React.Component<ICustomTable, {}>{
@@ -74,7 +76,7 @@ class CustomTable extends React.Component<ICustomTable, {}>{
     this.setState({
       filters: {
         ...this.state.filters,
-        [evt.target.id]: evt.target.value ? evt.target.value : undefined
+        [evt.target.name]: evt.target.value ? evt.target.value : undefined
       }
     }, () => {
       return;
@@ -89,7 +91,7 @@ class CustomTable extends React.Component<ICustomTable, {}>{
   }
 
   public render() {
-    const { classes, onFilter, tableHead, tableData, tableHeaderColor, hover, onEdit, onView, onDelete, orderBy, order, isLoading } = this.props;
+    const { classes, onFilter, tableHead, tableData, tableHeaderColor, hover, onEdit, onView, onDelete, orderBy, order } = this.props;
     return (
       <div className={classes.tableResponsive}>
         <Table className={classes.table}>
@@ -122,26 +124,52 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                 onFilter !== undefined ?
                   <TableRow className={classes.header}>
                     {tableHead.map((prop: any, key: any) => {
+                      var filterItem;
+                      switch (prop.type) {
+                        case 'text':
+                          filterItem = <CustomInput
+                            id={prop.id}
+                            formControlProps={{
+                              className: classes.header
+                            }}
+                            inputProps={{
+                              placeholder: "Tìm kiếm",
+                              className: classes.headerFilter,
+                              inputProps: {
+                                "aria-label": "Search",
+                                name: prop.id,
+                                onChange: this.createFilterHandle
+                              }
+                            }}
+                          />;
+                          break;
+                        case 'select':
+                          filterItem = <CustomSelect
+                            id={prop.id}
+                            formControlProps={{
+                              className: classes.header
+                            }}
+                            value={""}
+                            onChange={this.createFilterHandle}
+                            inputProps={{
+                              name: prop.id,
+                              className: classes.headerFilter,
+                            }}
+                            items={prop.sources}
+                          />;
+                          break;
+
+                        default:
+                          break;
+                      }
+
                       return (
                         <TableCell
                           className={classes.headerCell + " " + classes.tableHeadCell}
                           key={key}
                         >
                           {key !== tableHead.length - 1 && key !== 0 ?
-                            <CustomInput
-                              id={prop.id}
-                              formControlProps={{
-                                className: classes.header
-                              }}
-                              inputProps={{
-                                placeholder: "Tìm kiếm",
-                                className: classes.headerFilter,
-                                inputProps: {
-                                  "aria-label": "Search",
-                                  onChange: this.createFilterHandle
-                                }
-                              }}
-                            />
+                            filterItem
                             : ""}
                         </TableCell>
                       );
@@ -205,13 +233,6 @@ class CustomTable extends React.Component<ICustomTable, {}>{
             })}
           </TableBody>
         </Table>
-
-        {isLoading &&
-          <div >
-            <CircularProgress className={classes.progress} />
-          </div>
-        }
-
       </div>
     );
   }

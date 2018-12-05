@@ -28,28 +28,33 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
     }
 
 
-    if (isRequired && name === "password") {
-        if (required(value)) {
-            return "Vui lòng nhập mật khẩu";
-        }
+    if (name === "password") {
+        if (isRequired) {
+            if (required(value)) {
+                return "Vui lòng nhập mật khẩu";
+            }
 
-        if (min(value, 6)) {
-            return "Mật khẩu phải nhiều hơn 6 ký tự";
-        }
+            if (min(value, 6)) {
+                return "Mật khẩu phải nhiều hơn 6 ký tự";
+            }
 
-        if (max(value, 255)) {
-            return "Mật khẩu quá dài";
+            if (max(value, 255)) {
+                return "Mật khẩu quá dài";
+            }
+        } else {
+            // if (value && min(value, 6)) {
+            //     return "Mật khẩu phải nhiều hơn 6 ký tự";
+            // }
+
+            // if (max(value, 255)) {
+            //     return "Mật khẩu quá dài";
+            // }
         }
     }
 
-    if (!isRequired && name === "password") {
-
-        if (value && min(value, 6)) {
-            return "Mật khẩu phải nhiều hơn 6 ký tự";
-        }
-
-        if (max(value, 255)) {
-            return "Mật khẩu quá dài";
+    if (isRequired && name === "role_id") {
+        if (required(value)) {
+            return "Vui lòng chọn quyền";
         }
     }
 
@@ -61,7 +66,8 @@ export const ValidateAllStaff = (model: any, isCreate: boolean) => {
         staff_name: 'Vui lòng nhập tên',
         email: 'vui lòng nhập email',
         phone: 'Vui lòng nhập số điện thoại',
-        password: 'Vui lòng nhập password'
+        password: 'Vui lòng nhập password',
+        role_id: 'Vui lòng chọn quyền'
     }
 
     const keys = isCreate ? rules : delete rules.password;

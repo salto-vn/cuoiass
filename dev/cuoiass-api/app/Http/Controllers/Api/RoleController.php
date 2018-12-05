@@ -3,43 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Staff\StoreStaff;
-use App\Http\Requests\Staff\UpdateStaff;
-use App\Models\Staff;
-use App\Repositories\StaffRepo;
+use App\Models\Role;
+use App\Repositories\RoleRepo;
 use Illuminate\Http\Request;
 
-class StaffController extends Controller
+class RoleController extends Controller
 {
     /**
-     * @var StaffRepo
+     * @var RoleRepo
      */
-    private $staffRepo;
+    private $roleRepo;
 
     /**
      * StaffController constructor.
-     * @param StaffRepo $staffRepo
+     * @param RoleRepo $roleRepo
      */
-    public function __construct(StaffRepo $staffRepo)
+    public function __construct(RoleRepo $roleRepo)
     {
-        $this->staffRepo = $staffRepo;
+        $this->roleRepo = $roleRepo;
     }
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function index(Request $request)
     {
-        $page = (int)$request->get('page');
-        $limit = (int)$request->get('limit');
-        $orderBy = $request->get('sortbyc', null);
-        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
-        $search = $request->get('search');
 
-        $data = $this->staffRepo->getListStaffByVendor($search, $page, $limit, $orderBy, $sortBy);
+        $system_code = $request->get('system_code');
+        //TODO:vendor
+        $query = $this->roleRepo->model->newQuery();
+        $query->select(['role_id', 'role_name'])
+            ->where('system_code', $system_code);
+        return $query->get();
+    }
 
-        return $this->toJsonPaginate($data);
+    /**
+     * Display the specified resource.
+     *
+     * @param  Review $review
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Role $role){
+
+        return $role;
     }
 
     /**
@@ -48,26 +55,17 @@ class StaffController extends Controller
      * @param StoreStaff $request
      * @return Staff
      */
-    public function store(StoreStaff $request)
+    public function store(Request $request)
     {
-        $input = $request->validated();
-
-        $input['password'] = bcrypt($input['password']);
-        $input['created_by'] = 'test@gmail.com';
-        return $this->staffRepo->create($input);
     }
 
     /**
-     * @param Staff $staff
-     * @return Staff
+     * @param Role $role
+     * @return void
      */
-    public function edit(Staff $staff)
+    public function edit(Role $role)
     {
-        $role = $staff->role()->get(["role_name","role_code"]);
-        if (isset($role[0])) {
-            $staff['role_name'] = $role[0]['role_name'];
-        }
-        return $staff;
+        return $role;
     }
 
     /**
@@ -79,15 +77,6 @@ class StaffController extends Controller
      */
     public function update(UpdateStaff $request, Staff $staff)
     {
-        $input = array_filter($request->validated());
-
-        $input['updated_by'] = 'test@gmail.com';
-
-        if (isset($input['password'])) {
-            $input['password'] = bcrypt($input['password']);
-        }
-
-        return tap($staff)->update($input);
     }
 
     /**
@@ -98,8 +87,5 @@ class StaffController extends Controller
      */
     public function destroy(Staff $staff)
     {
-        $staff->delete();
-
-        return response()->json(['status' => 'OK']);
     }
 }

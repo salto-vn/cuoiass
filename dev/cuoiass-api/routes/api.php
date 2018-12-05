@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 //Route::group(['middleware' => ['api']], function(){
     //Review Route
     Route::resource('reviews', 'Api\ReviewController');
+    Route::resource('roles', 'Api\RoleController')->except(['create', 'destroy']);
     Route::resource('staffs','Api\StaffController')->except(['create', 'show']);
 //});
 

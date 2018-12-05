@@ -15,7 +15,7 @@ class StaffsTableSeeder extends Seeder
     public function run()
     {
         $vendors = Vendor::query()->get();
-        $roles = Role::query()->get();
+        $roles = Role::query()->where('system_code','BACKYARD')->get();
 
 
         foreach ($vendors as $item) {

@@ -39,11 +39,13 @@ class Staff extends Eloquent
 
 	protected $casts = [
 		'vendor_id' => 'int',
-		'role_id' => 'int'
+		'role_id' => 'int',
+        'created_at' => 'date:d-m-Y H:m:i',
+        'updated_at' => 'date:d-m-Y H:m:i'
 	];
 
 	protected $hidden = [
-		'password'
+		'password',
 	];
 
 	protected $fillable = [
@@ -65,12 +67,12 @@ class Staff extends Eloquent
      */
     public function fieldsSearchable()
     {
-        return ['staff_name', 'phone', 'address', 'email', 'role_name', 'role_code', 'system_code'];
+        return ['staff_name', 'phone', 'address', 'email', 'role_id', 'system_code'];
     }
 
 	public function role()
 	{
-		return $this->belongsTo(\App\Models\Role::class);
+		return $this->belongsTo(\App\Models\Role::class,'role_id');
 	}
 
 	public function vendor()

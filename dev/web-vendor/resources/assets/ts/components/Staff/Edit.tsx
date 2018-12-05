@@ -14,13 +14,10 @@ import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import CardFooter from '../../common/Card/CardFooter';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import CardAvatar from '../../common/Card/CardAvatar';
-import { createStyles, withStyles } from '@material-ui/core';
+import { createStyles, withStyles, Theme } from '@material-ui/core';
 import avatar from "../../../img/faces/marc.jpg";
+import CustomSelect,{ IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 
-// interface ISourceDropdown {
-//     id: number;
-//     title: string;
-// }
 
 interface IStaffModalProp {
     modalTitle?: string;
@@ -31,9 +28,8 @@ interface IStaffModalProp {
     isCreate: boolean;
     isValidate: boolean;
     errorInfo: any;
-    classes: any,
-    // onSaveSource: any;
-    // source: ISourceDropdown[]
+    classes: any;
+    roles: any
 }
 
 interface IinitState {
@@ -45,7 +41,7 @@ interface IinitState {
 
 
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     cardCategoryWhite: {
         color: "rgba(255,255,255,.62)",
         margin: "0",
@@ -61,7 +57,13 @@ const styles = createStyles({
         fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
         marginBottom: "3px",
         textDecoration: "none"
-    }
+    },
+    description: {
+        textAlign: "left"
+    },
+    modal: {
+        width: "800px"
+    },
 });
 
 
@@ -75,8 +77,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     }
 
     componentDidMount() {
+
         this.setState({
-            isSubmitDisabled: this.props.isCreate ? false : true
+            isSubmitDisabled: this.props.isCreate ? true : false
         })
     }
 
@@ -109,8 +112,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     }
 
     public handleChange = (isRequired: boolean, event: any) => {
-        var value = event.currentTarget.value;
-        var name = event.currentTarget.id;
+        var value = event.target.value;
+        var name = event.target.name;
         const errMessage = ValidateStaff(isRequired, name, value);
         this.setState({
             model: { ...this.state.model, [name]: value ? value : "" },
@@ -121,20 +124,30 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     }
 
     public canSubmit = () => {
-        const { clientError } = this.state;
-        if (isEmptyKeyInObject(clientError)) {
+        const { clientError,model } = this.state;
+        if (!isEmptyKeyInObject(clientError) && model ) {
             return this.setState({ isSubmitDisabled: false });
         }
-
         return this.setState({ isSubmitDisabled: true });
     }
 
+
     public render() {
-        const { classes, modalTitle, isCreate, errorInfo, } = this.props;
+        const { classes, modalTitle, isCreate, errorInfo,roles } = this.props;
         const { model, clientError, isSubmitDisabled } = this.state;
+        var roleSource: IOption[] = [];
+         //Convert Datajson to Array with last index id PK key.
+         for (let i: number = 0; i < roles.length; i++) {
+            let role = roles[i];
+            var option = {
+                key:role.role_id,
+                value:role.role_name
+            };
+            roleSource.push(option);
+        }
         return (
             <>
-                <div>
+                <div className={classes.modal}>
                     <GridContainer>
                         <GridItem xs={12} sm={12} md={8}>
                             <Card>
@@ -143,6 +156,25 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                     <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
                                 </CardHeader>
                                 <CardBody>
+                                    <GridContainer>
+                                        <GridItem xs={12} sm={12} md={12}>
+                                            <CustomSelect
+                                                labelText="Quyền"
+                                                id="role_id"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                value={model.role_id}
+                                                onChange={this.handleChange.bind(this, true)}
+                                                errorContent={showError(clientError, errorInfo, 'role_id')}
+                                                error={showError(clientError, errorInfo, 'role_id') == '' ? false : true}
+                                                inputProps={{
+                                                    name: "role_id"
+                                                }}
+                                                items={roleSource}
+                                            />
+                                        </GridItem>
+                                    </GridContainer>
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={6}>
                                             <CustomInput
@@ -155,6 +187,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 error={showError(clientError, errorInfo, 'staff_name') == '' ? false : true}
                                                 inputProps={{
                                                     value: model.staff_name,
+                                                    name: "staff_name",
                                                     onChange: this.handleChange.bind(this, true),
                                                 }}
                                             />
@@ -170,6 +203,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 }}
                                                 inputProps={{
                                                     value: model.email,
+                                                    name: "email",
                                                     onChange: this.handleChange.bind(this, true),
                                                 }}
                                             />
@@ -186,7 +220,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    value: model.phone,
+                                                    value: model.phone ? model.phone : '',
+                                                    name: "phone",
                                                     onChange: this.handleChange.bind(this, false),
                                                 }}
                                             />
@@ -202,6 +237,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 }}
                                                 inputProps={{
                                                     value: model.password,
+                                                    name: "password",
                                                     type: 'password',
                                                     onChange: this.handleChange.bind(this, true),
                                                 }}
@@ -219,8 +255,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    value: model.address?model.address:'',
+                                                    value: model.address ? model.address : '',
                                                     type: 'text',
+                                                    name: 'address',
                                                     onChange: this.handleChange.bind(this, false),
                                                 }}
                                             />
@@ -229,12 +266,12 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                 </CardBody>
                                 <CardFooter>
                                     {isSubmitDisabled ?
-                                        <Button color="primary" onClick={this.handleSubmit} >
-                                            {isCreate ? "Tạo" : "Cập nhật"}
+                                        <Button color="primary" onClick={this.handleSubmit} disabled>
+                                            {isCreate ? "Tạo" : "Lưu"}
                                         </Button>
                                         :
-                                        <Button color="primary" onClick={this.handleSubmit} disabled>
-                                            {isCreate ? "Tạo" : "Cập nhật"}
+                                        <Button color="primary" onClick={this.handleSubmit} >
+                                            {isCreate ? "Tạo" : "Lưu"}
                                         </Button>
                                     }
                                 </CardFooter>
@@ -248,12 +285,13 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                     </a>
                                 </CardAvatar>
                                 <CardBody profile>
-                                    <h6 className={classes.cardCategory}>TODO:ROLE</h6>
+
+                                    <h6 className={classes.cardCategory}>{model.role_name}</h6>
                                     <h4 className={classes.cardTitle}>{model.staff_name}</h4>
-                                    <p className={classes.description}>
-                                        Ngay tao: 2019/10/10
-                                        Ngay truy cap cuoi cung: 2019/10/10
-                                    </p>
+                                    <div className={classes.description}>
+                                        Ngày tạo: {model.created_at ? model.created_at.toLocaleString() : ""} <br />
+                                        Ngày cập nhật: {model.updated_at ? model.updated_at.toLocaleString() : ""}
+                                    </div>
                                     {!isCreate &&
                                         <Button color="danger" round onClick={this.handleDelete}>
                                             Xoá
@@ -267,5 +305,6 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
             </>
         );
     }
+    
 }
 export default withStyles(styles)(StaffModal);

@@ -6,7 +6,7 @@ import {
 } from "../material-dashboard-react";
 import { createStyles } from '@material-ui/core';
 
-const customInputStyle = createStyles({
+const customSelectStyle = createStyles({
   disabled: {
     "&:before": {
       backgroundColor: "transparent !important"
@@ -14,15 +14,13 @@ const customInputStyle = createStyles({
   },
   underline: {
     "&:hover": {
-      borderColor: primaryColor,
+      borderColor: "#D2D2D2 !important",
       borderWidth: "1px !important"
     },
     "&:after": {
       borderColor: primaryColor
     }
   },
-  
-  
   underlineError: {
     "&:after": {
       borderColor: dangerColor
@@ -63,8 +61,7 @@ const customInputStyle = createStyles({
   formControl: {
     paddingBottom: "10px",
     margin: "27px 0 0 0",
-    position: "relative",
-    
+    position: "relative"
   },
 
   error: {
@@ -72,4 +69,4 @@ const customInputStyle = createStyles({
   }
 });
 
-export default customInputStyle;
+export default customSelectStyle;
