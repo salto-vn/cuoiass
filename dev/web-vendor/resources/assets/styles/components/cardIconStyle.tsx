@@ -5,7 +5,7 @@ import {
   infoCardHeader,
   primaryCardHeader,
   roseCardHeader
-} from "../material-dashboard-react";
+} from "../material-dashboard-pro-react";
 import { createStyles } from '@material-ui/core';
 const cardIconStyle = createStyles({
   cardIcon: {

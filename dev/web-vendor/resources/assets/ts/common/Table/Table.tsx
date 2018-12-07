@@ -13,8 +13,9 @@ import View from "@material-ui/icons/Description";
 import Delete from "@material-ui/icons/Delete";
 import Button from '../FormControls/CustomButtons/Button';
 import CustomInput from '../FormControls/CustomInput/CustomInput';
-import { TableSortLabel } from '@material-ui/core';
+import { TableSortLabel, FormControl, InputLabel } from '@material-ui/core';
 import CustomSelect, { IOption } from '../FormControls/CustomSelect/CustomSelect';
+import Datetime from "react-datetime";
 
 export interface ICustomTable {
   classes: any,
@@ -68,15 +69,43 @@ class CustomTable extends React.Component<ICustomTable, {}>{
    * @event onFilter through props
    */
   private createFilterHandle = (evt: any) => {
+
+    evt.preventDefault();
     const { onFilter } = this.props;
     if (typeof onFilter === "undefined") {
       return;
     }
-
     this.setState({
       filters: {
         ...this.state.filters,
         [evt.target.name]: evt.target.value ? evt.target.value : undefined
+      }
+    }, () => {
+      return;
+    });
+
+    clearTimeout(this.state.time);
+    const that = this;
+    const timeout = setTimeout(() => {
+      that.props.onFilter(that.state.filters);
+    }, 800);
+    this.setState({ time: timeout });
+  }
+
+
+  private createFilterDateHandle = (name: any, evt: any) => {
+    var value = undefined;
+    if (evt !== ""){
+      value = evt.format("YYYY-MM-DD");
+    }
+    const { onFilter } = this.props;
+    if (typeof onFilter === "undefined") {
+      return;
+    }
+    this.setState({
+      filters: {
+        ...this.state.filters,
+        [name]: value
       }
     }, () => {
       return;
@@ -135,11 +164,9 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                             inputProps={{
                               placeholder: "Tìm kiếm",
                               className: classes.headerFilter,
-                              inputProps: {
-                                "aria-label": "Search",
-                                name: prop.id,
-                                onChange: this.createFilterHandle
-                              }
+                              "aria-label": "Search",
+                              name: prop.id,
+                              onChange: this.createFilterHandle
                             }}
                           />;
                           break;
@@ -158,7 +185,20 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                             items={prop.sources}
                           />;
                           break;
+                        case 'date':
+                          filterItem = <Datetime closeOnSelect
+                            timeFormat={false}
+                            className={classes.header + " " + classes.dateTimeFilter}
+                            onChange={this.createFilterDateHandle.bind(this, prop.id)}
+                            inputProps={
+                              {
+                                name: prop.id,
+                                placeholder: "Tìm kiếm",
+                              }
+                            }
 
+                          />
+                          break;
                         default:
                           break;
                       }
@@ -184,48 +224,46 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                 <TableRow key={key} hover={hover}>
                   {prop.map((prop: any, key: any) => {
                     return (
-                      <TableCell className={classes.tableCell} key={key}>
-                        {key === tableHead.length - 1 ?
-                          <>
-                            {onEdit !== undefined ?
-                              <Button
-                                color={window.innerWidth > 959 ? "transparent" : "white"}
-                                justIcon={window.innerWidth > 959}
-                                simple={!(window.innerWidth > 959)}
-                                aria-owns={open ? "menu-list-grow" : null}
-                                aria-haspopup="true"
-                                onClick={this.createEditHandler.bind(this, prop)}
-                                className={classes.button}
-                              >
-                                <Edit />
-                              </Button> : ""}
-                            {onView !== undefined ?
-                              <Button
-                                color={window.innerWidth > 959 ? "transparent" : "white"}
-                                justIcon={window.innerWidth > 959}
-                                simple={!(window.innerWidth > 959)}
-                                aria-owns={open ? "menu-list-grow" : null}
-                                aria-haspopup="true"
-                                onClick={this.createViewHandler.bind(this, prop)}
-                                className={classes.button}
-                              >
-                                <View />
-                              </Button> : ""}
-                            {onDelete !== undefined ?
-                              <Button
-                                color={window.innerWidth > 959 ? "transparent" : "white"}
-                                justIcon={window.innerWidth > 959}
-                                simple={!(window.innerWidth > 959)}
-                                aria-owns={open ? "menu-list-grow" : null}
-                                aria-haspopup="true"
-                                onClick={this.createDeleteHandler.bind(this, prop)}
-                                className={classes.button}
-                              >
-                                <Delete />
-                              </Button> : ""}
-                          </>
-                          : prop}
-                      </TableCell>
+                      key === tableHead.length - 1 ?
+                        <TableCell className={classes.tableCell + " " + classes.tableCellAction} key={key}>
+                          {onEdit !== undefined ?
+                            <Button
+                              color={window.innerWidth > 959 ? "transparent" : "white"}
+                              justIcon={window.innerWidth > 959}
+                              simple={!(window.innerWidth > 959)}
+                              aria-owns={open ? "menu-list-grow" : null}
+                              aria-haspopup="true"
+                              onClick={this.createEditHandler.bind(this, prop)}
+                              className={classes.actionButton}
+                            >
+                              <Edit className={classes.icon} />
+                            </Button> : ""}
+                          {onView !== undefined ?
+                            <Button
+                              color={window.innerWidth > 959 ? "transparent" : "white"}
+                              justIcon={window.innerWidth > 959}
+                              simple={!(window.innerWidth > 959)}
+                              aria-owns={open ? "menu-list-grow" : null}
+                              aria-haspopup="true"
+                              onClick={this.createViewHandler.bind(this, prop)}
+                              className={classes.button}
+                            >
+                              <View className={classes.icon} />
+                            </Button> : ""}
+                          {onDelete !== undefined ?
+                            <Button
+                              color={window.innerWidth > 959 ? "transparent" : "white"}
+                              justIcon={window.innerWidth > 959}
+                              simple={!(window.innerWidth > 959)}
+                              aria-owns={open ? "menu-list-grow" : null}
+                              aria-haspopup="true"
+                              onClick={this.createDeleteHandler.bind(this, prop)}
+                              className={classes.button}
+                            >
+                              <Delete className={classes.icon} />
+                            </Button> : ""}
+                        </TableCell>
+                        : <TableCell className={classes.tableCell} key={key}>{prop}</TableCell>
                     );
                   })}
                 </TableRow>

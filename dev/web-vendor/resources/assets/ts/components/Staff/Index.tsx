@@ -6,7 +6,7 @@ import CONSTANT from '../../bootstrap/Constant';
 import APP_URL from '../../bootstrap/Url';
 // import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import StaffModal from './Edit';
-import { objectToQueryString } from '../../common/Utils';
+import { objectToQueryString, createSnackBarMess } from '../../common/Utils';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
@@ -16,7 +16,7 @@ import Table from '../../common/Table/Table';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import { createStyles, withStyles, TablePagination, Modal, Theme, LinearProgress } from '@material-ui/core';
 import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
-import { infoColor } from '../../../styles/material-dashboard-react';
+import { infoColor } from '../../../styles/material-dashboard-pro-react';
 
 
 
@@ -96,9 +96,10 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         limit: CONSTANT.LIMIT,
         isShowModal: false,
         totalItem: CONSTANT.TOTAL_COUNT,
-        isError: false,
         isErrorList: false,
         isValidate: false,
+        isError: false,
+        showMessage: false,
         errorInfo: '',
         validateMessage: { errors: '' },
         activePage: CONSTANT.CURRENT_PAGE,
@@ -107,7 +108,6 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         isCreate: false,
         orderBy: 'staff_id',
         order: 'desc',
-        sortedIndex: 0,
         roles: [],
     };
 
@@ -216,14 +216,20 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                                 isValidate={this.state.isValidate}
                                 errorInfo={this.state.validateMessage}
                                 roles={this.state.roles}
+                                isLoading={this.state.isLoading}
                             />
                         </div>
                     </Modal>
+                    {createSnackBarMess(this.state.isValidate, this.state.isError, this.state.showMessage, this.handleCloseMessage)}
                 </div>
             </>
         );
     }
 
+
+    private handleCloseMessage = (event: any) => {
+        this.setState({ showMessage: false });
+    }
 
     handleClose = () => {
         this.setState({ isShowModal: false });
@@ -290,20 +296,26 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      * @return model
      */
     public handleEdit = async (id: string | number) => {
+        this.setState({ isLoading: true });
         if (this.state.isHandleEvent) {
             return;
         }
-        debugger;
-        this.setState({ isHandleEvent: true });
+        this.setState({ isHandleEvent: true,isLoading:true });
 
         const response = await HandleRequest.Edit(APP_URL.STAFF, id);
 
         if (response.isError) {
-            return this.setState({ isError: response.isError, errorInfo: response.message });
+            return this.setState(
+                {
+                    errorInfo: response.message 
+                });
         }
+        var model:StaffModel = response.result;
+        model.password = '';
         this.setState({
-            model: response.result,
+            model: model,
             isHandleEvent: false,
+            isLoading: false,
             isShowModal: true,
         }
         );
@@ -331,6 +343,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      * @return List staff have new record
      */
     public onCreate = async (model: any) => {
+        this.setState({ isLoading: true });
         if (this.state.isHandleEvent) {
             return;
         }
@@ -340,21 +353,33 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         const response = await HandleRequest.Store(APP_URL.STAFF, model);
 
         if (response.isError) {
-            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+            return this.setState({ 
+                isValidate: response.isValidate, 
+                isError: response.isError,
+                showMessage: response.isValidate,
+                errorInfo: response.message, 
+                validateMessage: response.validateMessage,
+                isLoading: false ,
+                isHandleEvent: false 
+            });
         }
 
         if (response.isValidate) {
             return this.setState({
                 isValidate: response.isValidate,
                 validateMessage: response.validateMessage,
-                isHandleEvent: false
+                isError: response.isError,
+                showMessage: response.isValidate,
+                isLoading: false ,
+                isHandleEvent: false,
+                
             });
         }
 
         this.setState({
             isHandleEvent: false,
             isCreate: false,
-            isShowModal: false
+            isShowModal: false,
         }, () => {
             this.getListStaff();
         });
@@ -376,14 +401,24 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
 
         if (response.isError) {
-            return this.setState({ isValidate: response.isError, errorInfo: response.message, isHandleEvent: false });
+            return this.setState({ 
+                isValidate: response.isValidate, 
+                isError: response.isError,
+                showMessage: response.isValidate,
+                errorInfo: response.message, 
+                validateMessage: response.validateMessage,
+                isHandleEvent: false 
+            });
         }
 
         if (response.isValidate) {
             return this.setState({
                 isValidate: response.isValidate,
                 validateMessage: response.validateMessage,
-                isHandleEvent: false
+                isError: response.isError,
+                showMessage: response.isValidate,
+                isHandleEvent: false,
+                
             });
         }
 
@@ -410,7 +445,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         const response = await HandleRequest.Destroy(APP_URL.STAFF, id);
 
         if (response.isError) {
-            return this.setState({ isError: response.isError, errorInfo: response.message, isHandleEvent: false });
+            return this.setState({errorInfo: response.message, isHandleEvent: false });
         }
 
         this.setState({ isHandleEvent: false, isShowModal: false });
@@ -450,7 +485,6 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         const filters = objectToQueryString(filtes);
         this.setState({
             filters: filters ? filters : undefined,
-            isCLickPaginate: false
         }, () => {
             this.getListStaff();
         })

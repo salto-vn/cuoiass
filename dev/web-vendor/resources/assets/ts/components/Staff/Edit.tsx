@@ -4,7 +4,7 @@ import * as React from 'react';
 import { IStaff, IValidateModel } from '../../interface/IStaff';
 import { isEmptyKeyInObject, showError } from '../../common/Utils';
 import { ValidateStaff } from '../../common/Validate/StaffValidate';
-import { ValidateModel } from '../../model/StaffModel';
+import { ValidateModel, StaffModel } from '../../model/StaffModel';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
@@ -14,14 +14,15 @@ import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import CardFooter from '../../common/Card/CardFooter';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import CardAvatar from '../../common/Card/CardAvatar';
-import { createStyles, withStyles, Theme } from '@material-ui/core';
+import { createStyles, withStyles, Theme, LinearProgress } from '@material-ui/core';
 import avatar from "../../../img/faces/marc.jpg";
-import CustomSelect,{ IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import CustomSelect, { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import { infoColor } from '../../../styles/material-dashboard-pro-react';
 
 
 interface IStaffModalProp {
     modalTitle?: string;
-    model: IStaff;
+    model: StaffModel;
     onCreate: any;
     onUpdate: any;
     onDelete: any,
@@ -29,14 +30,15 @@ interface IStaffModalProp {
     isValidate: boolean;
     errorInfo: any;
     classes: any;
-    roles: any
+    roles: any,
+    isLoading:boolean
 }
 
 interface IinitState {
     // source: ISourceDropdown[];
-    model: IStaff;
-    isSubmitDisabled: boolean;
-    clientError: IValidateModel
+    model: StaffModel,
+    isSubmitDisabled: boolean,
+    clientError: IValidateModel,
 }
 
 
@@ -64,6 +66,15 @@ const styles = (theme: Theme) => createStyles({
     modal: {
         width: "800px"
     },
+    progress: {
+        color: infoColor
+    },
+    linearColorPrimary: {
+        backgroundColor: '#FFFFFF',
+    },
+    linearBarColorPrimary: {
+        backgroundColor: infoColor,
+    },
 });
 
 
@@ -73,31 +84,32 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
         // source: this.props.source,
         model: this.props.model,
         isSubmitDisabled: false,
-        clientError: new ValidateModel
+        clientError: new ValidateModel,
     }
 
     componentDidMount() {
-
         this.setState({
-            isSubmitDisabled: this.props.isCreate ? true : false
+             isSubmitDisabled: this.props.isCreate ? true : false,
         })
     }
 
     public handleSubmit = (evt: any) => {
         evt.preventDefault();
-
+        this.setState({
+        });
         if (isEmptyKeyInObject(this.state.clientError)) {
             return;
         }
 
         const { model } = this.state;
         this.props.isCreate ? this.props.onCreate(model) : this.props.onUpdate(model);
+        this.setState({
+       });
     }
 
 
     public handleDelete = (evt: any) => {
         evt.preventDefault();
-
         if (isEmptyKeyInObject(this.state.clientError)) {
             return;
         }
@@ -105,11 +117,6 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
         !this.props.isCreate && this.props.onDelete(model.staff_id);
     }
 
-    public handleSelect = (selectedValue: number) => {
-        this.setState({
-            model: { ...this.state.model, album_id: selectedValue }
-        });
-    }
 
     public handleChange = (isRequired: boolean, event: any) => {
         var value = event.target.value;
@@ -124,8 +131,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     }
 
     public canSubmit = () => {
-        const { clientError,model } = this.state;
-        if (!isEmptyKeyInObject(clientError) && model ) {
+        const { clientError, model } = this.state;
+        if (!isEmptyKeyInObject(clientError) && model) {
             return this.setState({ isSubmitDisabled: false });
         }
         return this.setState({ isSubmitDisabled: true });
@@ -133,15 +140,15 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
 
 
     public render() {
-        const { classes, modalTitle, isCreate, errorInfo,roles } = this.props;
+        const { classes, modalTitle, isCreate, errorInfo, roles,isLoading } = this.props;
         const { model, clientError, isSubmitDisabled } = this.state;
         var roleSource: IOption[] = [];
-         //Convert Datajson to Array with last index id PK key.
-         for (let i: number = 0; i < roles.length; i++) {
+        //Convert Datajson to Array with last index id PK key.
+        for (let i: number = 0; i < roles.length; i++) {
             let role = roles[i];
             var option = {
-                key:role.role_id,
-                value:role.role_name
+                key: role.role_id,
+                value: role.role_name
             };
             roleSource.push(option);
         }
@@ -154,6 +161,12 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                 <CardHeader color="primary">
                                     <h4 className={classes.cardTitleWhite}>{modalTitle}</h4>
                                     <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
+                                    {isLoading &&
+                                    <LinearProgress classes={{
+                                        colorPrimary: classes.linearColorPrimary,
+                                        barColorPrimary: classes.linearBarColorPrimary,
+                                    }} />
+                                }
                                 </CardHeader>
                                 <CardBody>
                                     <GridContainer>
@@ -166,10 +179,11 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 }}
                                                 value={model.role_id}
                                                 onChange={this.handleChange.bind(this, true)}
-                                                errorContent={showError(clientError, errorInfo, 'role_id')}
+                                                helpText={showError(clientError, errorInfo, 'role_id')}
                                                 error={showError(clientError, errorInfo, 'role_id') == '' ? false : true}
                                                 inputProps={{
-                                                    name: "role_id"
+                                                    name: "role_id",
+
                                                 }}
                                                 items={roleSource}
                                             />
@@ -183,7 +197,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
-                                                errorContent={showError(clientError, errorInfo, 'staff_name')}
+                                                
+                                                helpText={showError(clientError, errorInfo, 'staff_name')}
                                                 error={showError(clientError, errorInfo, 'staff_name') == '' ? false : true}
                                                 inputProps={{
                                                     value: model.staff_name,
@@ -196,7 +211,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Email"
                                                 id="email"
-                                                errorContent={showError(clientError, errorInfo, 'email')}
+                                                helpText={showError(clientError, errorInfo, 'email')}
                                                 error={showError(clientError, errorInfo, 'email') == '' ? false : true}
                                                 formControlProps={{
                                                     fullWidth: true
@@ -214,7 +229,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Điện thoại"
                                                 id="phone"
-                                                errorContent={showError(clientError, errorInfo, 'phone')}
+                                                helpText={showError(clientError, errorInfo, 'phone')}
                                                 error={showError(clientError, errorInfo, 'phone') == '' ? false : true}
                                                 formControlProps={{
                                                     fullWidth: true
@@ -230,7 +245,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Mật khẩu"
                                                 id="password"
-                                                errorContent={showError(clientError, errorInfo, 'password')}
+                                                helpText={showError(clientError, errorInfo, 'password')}
                                                 error={showError(clientError, errorInfo, 'password') == '' ? false : true}
                                                 formControlProps={{
                                                     fullWidth: true
@@ -249,7 +264,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Địa chỉ"
                                                 id="address"
-                                                errorContent={showError(clientError, errorInfo, 'address')}
+                                                helpText={showError(clientError, errorInfo, 'address')}
                                                 error={showError(clientError, errorInfo, 'address') == '' ? false : true}
                                                 formControlProps={{
                                                     fullWidth: true
@@ -301,10 +316,11 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                             </Card>
                         </GridItem>
                     </GridContainer>
+
                 </div>
             </>
         );
     }
-    
+
 }
 export default withStyles(styles)(StaffModal);

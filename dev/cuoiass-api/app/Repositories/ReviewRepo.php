@@ -45,10 +45,10 @@ class ReviewRepo extends Repository
      * @param $page
      * @param $limit
      * @param $orderBy
-     * @param $sortBy
+     * @param $order
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getListAllData($search, $page, $limit, $orderBy, $sortBy)
+    public function getListAllData($search, $page, $limit, $orderBy, $order)
     {
         $fieldsSearchable = [
             'review_id', 'review_content', 'review_date',
@@ -60,7 +60,7 @@ class ReviewRepo extends Repository
         $tblCustomer = TableName::TBL_CUSTOMERS;
         $tblProduct = TableName::TBL_PRODUCTS;
         $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
-        $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
+        $order = ($order === \Constant::ORDER_BY_DESC) ? $order : \Constant::ORDER_BY_ASC;
         $model = $this->model->newQuery()->select([
             "$tblReview.review_id", "$tblReview.review_content", "$tblReview.review_date",
             "$tblReview.review_rate", "$tblReview.review_imgs",
@@ -79,7 +79,7 @@ class ReviewRepo extends Repository
                     }
                     if ($field == "review_date") {
                         if (!empty($value)) {
-                            $model->whereDate($field, '=', Carbon::createFromFormat('d-m-Y', $value));
+                            $model->whereDate($field, '=', $value);
                         }
                     } else if ($field == "$tblCustomer.first_name") {
                         $value = addslashes($value);
@@ -106,7 +106,7 @@ class ReviewRepo extends Repository
         }
 
         if (!empty($orderBy)) {
-            $model->orderBy($orderBy, $sortBy);
+            $model->orderBy($orderBy, $order);
         }
         return $model->paginate($limit, null, null, $page);
     }

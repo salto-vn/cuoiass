@@ -20,14 +20,14 @@ export interface ICustomSelect {
   formControlProps?: any,
   error?: boolean,
   success?: boolean,
-  errorContent?: string,
+  helpText?: string,
   items: IOption[],
   onChange: any,
   value: string
 }
 
 export interface IOption {
-  key: number;
+  key: string;
   value: string;
 }
 
@@ -44,22 +44,21 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
   }
 
   render() {
-    const { items, inputProps, labelProps, id, formControlProps, classes, success, error, errorContent, labelText } = this.props;
+    const { items, inputProps, labelProps, id, formControlProps, classes, success, error, helpText, labelText } = this.props;
     const labelClasses = classNames({
       [" " + classes.labelRootError]: error,
       [" " + classes.labelRootSuccess]: success && !error
     });
-    const underlineClasses = classNames({
-      [classes.underlineError]: error,
-      [classes.underlineSuccess]: success && !error,
-      [classes.underline]: true
+    var helpTextClasses = classNames({
+      [classes.labelRootError]: error,
+      [classes.labelRootSuccess]: success && !error
     });
     return (
-      
+
       <>
         <FormControl
           {...formControlProps}
-          className={formControlProps.className + " " + classes.formControl}
+          className={formControlProps.className + " " + classes.selectFormControl}
         >
           {labelText !== undefined ? (
             <InputLabel
@@ -74,25 +73,36 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
           <Select
             onChange={this.handleChange}
             value={this.state.selectedValue}
+            MenuProps={{
+              className: classes.selectMenu
+            }}
             id={id}
             {...inputProps}
+            classes={{
+              select: classes.select
+            }}
           >
-            <MenuItem value="">
+            <MenuItem value=""
+              classes={{
+                root: classes.selectMenuItem,
+                selected: classes.selectMenuItemSelected
+              }}>
               <em key={0}>Chọn</em>
             </MenuItem>
             {items.map((option: IOption, i: any) => (
-              <MenuItem key={option.key} value={option.key}>
+              <MenuItem key={option.key} value={option.key}
+                classes={{
+                  root: classes.selectMenuItem,
+                  selected: classes.selectMenuItemSelected
+                }}>
                 {option.value}
               </MenuItem>
             ))}
           </Select>
-          {error ? (
-            <Clear ref="errorIcon" className={classes.feedback + " " + classes.labelRootError} />
-          ) : success ? (
-            <Check className={classes.feedback + " " + classes.labelRootSuccess} />
-          ) : null}
-          {labelText !== undefined ? (
-            <FormHelperText className={classes.error} id="component-error-text">{errorContent}</FormHelperText>
+          {helpText !== undefined ? (
+            <FormHelperText id={id + "-select"} className={helpTextClasses + " " + classes.error}>
+              {helpText}
+            </FormHelperText>
           ) : null}
         </FormControl>
 

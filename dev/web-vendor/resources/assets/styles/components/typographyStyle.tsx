@@ -5,7 +5,7 @@ import {
   successColor,
   warningColor,
   dangerColor
-} from "../material-dashboard-react";
+} from "../material-dashboard-pro-react";
 import { createStyles } from '@material-ui/core';
 
 const typographyStyle = createStyles({

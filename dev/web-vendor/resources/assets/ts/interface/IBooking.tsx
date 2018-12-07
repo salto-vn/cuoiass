@@ -1,4 +1,3 @@
-import { ITh } from '../common/Grid/Table';
 
 export interface IBooking {
     booked_id: number,
@@ -20,7 +19,7 @@ export interface IBookingManagerState {
     limit: number,
     activePage: number,
     pageRange: number,
-    headers: ITh[],
+    headers: any,
     dataSet: IBooking[],
     errorInfo: string,
     sortedIndex: number,

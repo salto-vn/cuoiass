@@ -1,41 +1,40 @@
 import {
   defaultFont,
   container,
-  primaryColor
-} from "../material-dashboard-react";
+  primaryColor,
+  containerFluid
+} from "../material-dashboard-pro-react";
 import { createStyles } from '@material-ui/core';
 
 const footerStyle = createStyles({
-  block: {
-    color: "inherit",
-    padding: "15px",
-    textTransform: "uppercase",
-    borderRadius: "3px",
-    textDecoration: "none",
-    position: "relative",
-    display: "block",
-    ...defaultFont,
-    fontWeight: 500,
-    fontSize: "12px"
-  },
+  block: {},
   left: {
     float: "left",
     display: "block"
   },
   right: {
-    padding: "15px 0",
     margin: "0",
     fontSize: "14px",
-    float: "right"
+    float: "right",
+    padding: "15px"
   },
   footer: {
     bottom: "0",
     borderTop: "1px solid #e7e7e7",
     padding: "15px 0",
     ...defaultFont,
-    fontWeight: 500
+    zIndex: 4
   },
-  container,
+  container: {
+    zIndex: 3,
+    ...container,
+    position: "relative" as "relative"
+  },
+  containerFluid: {
+    zIndex: 3,
+    ...containerFluid,
+    position: "relative"
+  },
   a: {
     color: primaryColor,
     textDecoration: "none",
@@ -48,8 +47,13 @@ const footerStyle = createStyles({
   },
   inlineBlock: {
     display: "inline-block",
-    padding: "0px",
+    padding: "0",
     width: "auto"
+  },
+  whiteColor: {
+    "&,&:hover,&:focus": {
+      color: "#FFFFFF"
+    }
   }
 });
 export default footerStyle;

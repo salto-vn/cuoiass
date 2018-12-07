@@ -1,76 +1,87 @@
-import { successColor, defaultFont } from "../material-dashboard-react";
+// ##############################
+// // // Dashboard View styles
+// #############################
+
+import {
+  successColor,
+  tooltip,
+  cardTitle
+} from "../material-dashboard-pro-react";
+
+import hoverCardStyle from "../components/hoverCardStyle";
 import { createStyles } from '@material-ui/core';
 
 const dashboardStyle = createStyles({
+  ...hoverCardStyle,
+  tooltip,
+  cardTitle: {
+    ...cardTitle,
+    marginTop: "0px",
+    marginBottom: "3px"
+  },
+  cardIconTitle: {
+    ...cardTitle,
+    marginTop: "15px",
+    marginBottom: "0px"
+  },
+  cardProductTitle: {
+    ...cardTitle,
+    marginTop: "0px",
+    marginBottom: "3px",
+    textAlign: "center"
+  },
+  cardCategory: {
+    color: "#999999",
+    fontSize: "14px",
+    paddingTop: "10px",
+    marginBottom: "0",
+    marginTop: "0",
+    margin: "0"
+  },
+  cardProductDesciprion: {
+    textAlign: "center",
+    color: "#999999"
+  },
+  stats: {
+    color: "#999999",
+    fontSize: "12px",
+    lineHeight: "22px",
+    display: "inline-flex",
+    "& svg": {
+      position: "relative",
+      top: "4px",
+      width: "16px",
+      height: "16px",
+      marginRight: "3px"
+    },
+    "& .fab,& .fas,& .far,& .fal,& .material-icons": {
+      position: "relative",
+      top: "4px",
+      fontSize: "16px",
+      marginRight: "3px"
+    }
+  },
+  productStats: {
+    paddingTop: "7px",
+    paddingBottom: "7px",
+    margin: "0"
+  },
   successText: {
     color: successColor
   },
   upArrowCardCategory: {
-    width: "16px",
-    height: "16px"
+    width: 14,
+    height: 14
   },
-  stats: {
-    color: "#999999",
-    display: "inline-flex",
-    fontSize: "12px",
-    lineHeight: "22px",
-    "& svg": {
-      top: "4px",
-      width: "16px",
-      height: "16px",
-      position: "relative",
-      marginRight: "3px",
-      marginLeft: "3px"
-    },
-    "& .fab,& .fas,& .far,& .fal,& .material-icons": {
-      top: "4px",
-      fontSize: "16px",
-      position: "relative",
-      marginRight: "3px",
-      marginLeft: "3px"
-    }
+  underChartIcons: {
+    width: "17px",
+    height: "17px"
   },
-  cardCategory: {
-    color: "#999999",
-    margin: "0",
-    fontSize: "14px",
-    marginTop: "0",
-    paddingTop: "10px",
-    marginBottom: "0"
-  },
-  cardCategoryWhite: {
-    color: "rgba(255,255,255,.62)",
-    margin: "0",
-    fontSize: "14px",
-    marginTop: "0",
-    marginBottom: "0"
-  },
-  cardTitle: {
-    color: "#3C4858",
-    marginTop: "0px",
-    minHeight: "auto",
-    ...defaultFont,
-    fontWeight: 300,
-    marginBottom: "3px",
-    textDecoration: "none",
-    "& small": {
-      color: "#777",
-      fontWeight: 400,
-      lineHeight: "1"
-    }
-  },
-  cardTitleWhite: {
-    color: "#FFFFFF",
-    marginTop: "0px",
-    minHeight: "auto",
-    fontWeight: 300,
-    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-    marginBottom: "3px",
-    textDecoration: "none",
-    "& small": {
-      color: "#777",
-      fontWeight: 400,
-      lineHeight: "1"
+  price: {
+    color: "inherit",
+    "& h4": {
+      marginBottom: "0px",
+      marginTop: "0px"
     }
   }
 });

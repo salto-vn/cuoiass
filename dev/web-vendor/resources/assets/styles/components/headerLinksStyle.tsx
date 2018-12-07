@@ -1,10 +1,10 @@
 import {
   defaultFont,
   dangerColor
-} from "../material-dashboard-react";
+} from "../material-dashboard-pro-react";
 import { createStyles, Theme } from '@material-ui/core';
 
-import dropdownStyle from "../../styles/dropdownStyle";
+import dropdownStyle from "../../styles/components/customDropdownStyle";
 
 const headerLinksStyle = (theme:Theme) => createStyles({
   ...dropdownStyle(theme),

@@ -51,14 +51,14 @@ export interface IStaffState {
     roles:any,
     model: IStaff;
     isLoading: boolean;
-    isCLickPaginate: boolean;
     isHandleEvent: boolean;
     itemRepeat: number;
     limit: number;
     isShowModal: boolean;
     totalItem: number;
-    isError: boolean;
     isErrorList: boolean;
+    isError: boolean;
+    showMessage: boolean;
     isValidate: boolean;
     validateMessage: IValidateField;
     errorInfo: null | string;

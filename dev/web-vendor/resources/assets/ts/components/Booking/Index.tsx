@@ -1,12 +1,12 @@
 import * as React from "react";
 import { BackButton } from '../../common/FormControls/BackButton';
 import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
-import { Table, ITh, IOption } from '../../common/Grid/Table';
 import CONSTANT from '../../bootstrap/Constant';
 import TextField from '@material-ui/core/TextField';
 import { IBookingManagerState } from '../../interface/IBooking';
+import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 
-export class Booking extends React.Component<{ history: any }, IBookingManagerState> {
+export class BookingScreen extends React.Component<{ history: any }, IBookingManagerState> {
     
     public state = {
         isError: false,
@@ -40,28 +40,28 @@ export class Booking extends React.Component<{ history: any }, IBookingManagerSt
         const sortIcon: string = 'sort';
         const statusList: IOption[] = [
             {
-                id: "INPROGRESS",
-                title: 'Đang xử lý'
+                key: "INPROGRESS",
+                value: 'Đang xử lý'
             },
             {
-                id: "ACCEPTED",
-                title: 'Đã xác nhận'
+                key: "ACCEPTED",
+                value: 'Đã xác nhận'
             },
             {
-                id: "PAID",
-                title: 'Đã thanh toán'
+                key: "PAID",
+                value: 'Đã thanh toán'
             },
             {
-                id: "CANCELLED",
-                title: 'Đã huỷ lịch'
+                key: "CANCELLED",
+                value: 'Đã huỷ lịch'
             },
             {
-                id: "DENIED",
-                title: 'Từ chối'
+                key: "DENIED",
+                value: 'Từ chối'
             },
             {
-                id: "FINISHED",
-                title: 'Hoàn thành'
+                key: "FINISHED",
+                value: 'Hoàn thành'
             }
 
         ];
@@ -96,75 +96,143 @@ export class Booking extends React.Component<{ history: any }, IBookingManagerSt
         }
         return (
             <>
-                <div className="page-title">
-                    <span className="breadcrumb-header"></span>
-                    <BackButton history={this.props.history} />
-                </div>
-                <div id="main-wrapper">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className="panel panel-white">
-                                <div className="panel-heading flex justify-content-between align-items-center ">
-                                    <span className="panel-title">Tìm kiếm</span>
-                                </div>
-                                <div className="panel-body ">
-                                    <form  noValidate autoComplete="off">
-                                        <TextField
-                                            id="standard-name"
-                                            type="date"
-                                            label="Name"
-                                            value={this.state.searchForm.booked_date}
-                                            onChange={this.onChangeDate}
-                                            margin="normal"
-                                            InputLabelProps={{
-                                                shrink: true,
-                                              }}
-                                        />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className="panel panel-white">
-                                <div className="panel-heading flex justify-content-between align-items-center ">
-                                    <span className="panel-title">Danh sách lịch hẹn: Có {totalItem} </span>
-                                    <div>
-                                        <DisplayNoPage
-                                            onChange={this.handleDisplayNoPage}
-                                            name={'perpage'}
-                                            addClass={'w60 form-control pd6'}
-                                            options={[10, 20, 50, 100]}
-                                            displayDefault={10}
-                                            selectedValue={limit}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="panel-body">
-                                    <Table
-                                        pageClicked={this.handlePageChange}
-                                        headers={headers}
-                                        activePage={activePage}
-                                        totalItem={totalItem}
-                                        dataSet={listdata}
-                                        limit={limit}
-                                        pageRange={pageRange}
-                                        isLoading={isLoading} isCLickPaginate={isClickPaginate}
-                                        isError={isError} errorInfo={errorInfo}
-                                        desc='Feedback data' onSort={this.handleSort}
-                                        canView={false}
-                                        // onView={this.handleView}
-                                        canEdit={false}
-                                        canDelete={false}
-                                        filterFlag={false}
-                                    // onFilter={this.handleFilter}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <GridContainer>
+                        <GridItem xs={12} sm={12} md={8}>
+                            <Card>
+                                <CardHeader color="primary">
+                                    <h4 className={classes.cardTitleWhite}>{modalTitle}</h4>
+                                    <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
+                                    {isLoading &&
+                                    <LinearProgress classes={{
+                                        colorPrimary: classes.linearColorPrimary,
+                                        barColorPrimary: classes.linearBarColorPrimary,
+                                    }} />
+                                }
+                                </CardHeader>
+                                <CardBody>
+                                    <GridContainer>
+                                        <GridItem xs={12} sm={12} md={12}>
+                                            <CustomSelect
+                                                labelText="Quyền"
+                                                id="role_id"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                value={model.role_id}
+                                                onChange={this.handleChange.bind(this, true)}
+                                                errorContent={showError(clientError, errorInfo, 'role_id')}
+                                                error={showError(clientError, errorInfo, 'role_id') == '' ? false : true}
+                                                inputProps={{
+                                                    name: "role_id",
+
+                                                }}
+                                                items={roleSource}
+                                            />
+                                        </GridItem>
+                                    </GridContainer>
+                                    <GridContainer>
+                                        <GridItem xs={12} sm={12} md={6}>
+                                            <CustomInput
+                                                labelText="Họ và Tên"
+                                                id="staff_name"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                errorContent={showError(clientError, errorInfo, 'staff_name')}
+                                                error={showError(clientError, errorInfo, 'staff_name') == '' ? false : true}
+                                                inputProps={{
+                                                    value: model.staff_name,
+                                                    name: "staff_name",
+                                                    onChange: this.handleChange.bind(this, true),
+                                                }}
+                                            />
+                                        </GridItem>
+                                        <GridItem xs={12} sm={12} md={6}>
+                                            <CustomInput
+                                                labelText="Email"
+                                                id="email"
+                                                errorContent={showError(clientError, errorInfo, 'email')}
+                                                error={showError(clientError, errorInfo, 'email') == '' ? false : true}
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    value: model.email,
+                                                    name: "email",
+                                                    onChange: this.handleChange.bind(this, true),
+                                                }}
+                                            />
+                                        </GridItem>
+                                    </GridContainer>
+                                    <GridContainer>
+                                        <GridItem xs={12} sm={12} md={6}>
+                                            <CustomInput
+                                                labelText="Điện thoại"
+                                                id="phone"
+                                                errorContent={showError(clientError, errorInfo, 'phone')}
+                                                error={showError(clientError, errorInfo, 'phone') == '' ? false : true}
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    value: model.phone ? model.phone : '',
+                                                    name: "phone",
+                                                    onChange: this.handleChange.bind(this, false),
+                                                }}
+                                            />
+                                        </GridItem>
+                                        <GridItem xs={12} sm={12} md={6}>
+                                            <CustomInput
+                                                labelText="Mật khẩu"
+                                                id="password"
+                                                errorContent={showError(clientError, errorInfo, 'password')}
+                                                error={showError(clientError, errorInfo, 'password') == '' ? false : true}
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    value: model.password,
+                                                    name: "password",
+                                                    type: 'password',
+                                                    onChange: this.handleChange.bind(this, true),
+                                                }}
+                                            />
+                                        </GridItem>
+                                    </GridContainer>
+                                    <GridContainer>
+                                        <GridItem xs={12} sm={12} md={12}>
+                                            <CustomInput
+                                                labelText="Địa chỉ"
+                                                id="address"
+                                                errorContent={showError(clientError, errorInfo, 'address')}
+                                                error={showError(clientError, errorInfo, 'address') == '' ? false : true}
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    value: model.address ? model.address : '',
+                                                    type: 'text',
+                                                    name: 'address',
+                                                    onChange: this.handleChange.bind(this, false),
+                                                }}
+                                            />
+                                        </GridItem>
+                                    </GridContainer>
+                                </CardBody>
+                                <CardFooter>
+                                    {isSubmitDisabled ?
+                                        <Button color="primary" onClick={this.handleSubmit} disabled>
+                                            {isCreate ? "Tạo" : "Lưu"}
+                                        </Button>
+                                        :
+                                        <Button color="primary" onClick={this.handleSubmit} >
+                                            {isCreate ? "Tạo" : "Lưu"}
+                                        </Button>
+                                    }
+                                </CardFooter>
+                            </Card>
+                        </GridItem>
+                    </GridContainer>
             </>
         );
     }

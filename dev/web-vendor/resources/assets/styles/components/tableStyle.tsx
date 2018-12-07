@@ -7,23 +7,29 @@ import {
   roseColor,
   grayColor,
   defaultFont
-} from "../material-dashboard-react";
+} from "../material-dashboard-pro-react";
 import { Theme, createStyles } from '@material-ui/core';
 
 const tableStyle = (theme: Theme) => createStyles({
   
   header: {
+    paddingTop:0,
     marginTop: 0,
+    marginBottom: 0,
     paddingBottom: "5px",
     marginRight: "5px",
     borderTopStyle: "hidden",
     height: "35px",
-    width: "90%",
+    width: "90%"
+  },
+  dateTimeFilter: {
+    position: "relative",
+    bottom: "5px"
   },
   headerFilter: {
     width: "100%",
     marginTop: 0,
-    fontSize: "1em" as '1em',
+    fontSize: "12px",
     paddingBottom: 0,
   },
   headerRow: {
@@ -32,36 +38,14 @@ const tableStyle = (theme: Theme) => createStyles({
   headerCell: {
     padding: "0px",
     margin: "0px",
-
   },
+
+  
   button: {
-    padding: "5px",
+    padding: 0,
     "&:hover": {
       color: primaryColor
     },
-    [theme.breakpoints.down("sm")]: {
-      display: "flex",
-      margin: "10px 15px 0",
-      width: "-webkit-fill-available",
-      "& svg": {
-        width: "24px",
-        height: "30px",
-        marginRight: "15px",
-        marginLeft: "-15px"
-      },
-      "& .fab,& .fas,& .far,& .fal,& .material-icons": {
-        fontSize: "24px",
-        lineHeight: "30px",
-        width: "24px",
-        height: "30px",
-        marginRight: "15px",
-        marginLeft: "-15px"
-      },
-      "& > span": {
-        justifyContent: "flex-start",
-        width: "100%"
-      }
-    }
   },
   warningTableHeader: {
     color: warningColor
@@ -104,6 +88,10 @@ const tableStyle = (theme: Theme) => createStyles({
     padding: "12px 8px",
     verticalAlign: "middle",
     fontWeight: "normal"
+  },
+  tableCellAction: {
+    width:"100px",
+    padding:"0px !important"
   },
   tableResponsive: {
     width: "100%",

@@ -1,19 +1,30 @@
+// ##############################
+// // // App styles
+// #############################
+
 import {
   drawerWidth,
+  drawerMiniWidth,
   transition,
-  container, defaultFont
-} from "../material-dashboard-react";
+  containerFluid
+} from "../material-dashboard-pro-react";
 import { Theme, createStyles } from '@material-ui/core';
 
-
-const sidebarStyle = (theme: Theme) => createStyles({
+const appStyle = (theme:Theme) => createStyles({
   wrapper: {
     position: "relative",
     top: "0",
     height: "100vh",
-
+    "&:after": {
+      display: "table",
+      clear: "both",
+      content: '" "'
+    }
   },
   mainPanel: {
+    transitionProperty: "top, bottom, width",
+    transitionDuration: ".2s, .2s, .35s",
+    transitionTimingFunction: "linear, linear, ease",
     [theme.breakpoints.up("md")]: {
       width: `calc(100% - ${drawerWidth}px)`
     },
@@ -23,18 +34,25 @@ const sidebarStyle = (theme: Theme) => createStyles({
     ...transition,
     maxHeight: "100%",
     width: "100%",
-    overflowScrolling: "touch",
-    background: "#eee",
-    ...defaultFont
+    overflowScrolling: "touch"
   },
   content: {
     marginTop: "70px",
     padding: "30px 15px",
     minHeight: "calc(100vh - 123px)"
   },
-  container,
+  container: { ...containerFluid },
   map: {
     marginTop: "70px"
+  },
+  mainPanelSidebarMini: {
+    [theme.breakpoints.up("md")]: {
+      width: `calc(100% - ${drawerMiniWidth}px)`
+    }
+  },
+  mainPanelWithPerfectScrollbar: {
+    overflow: "hidden !important"
   }
 });
-export default sidebarStyle;
+
+export default appStyle;

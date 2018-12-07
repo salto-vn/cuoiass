@@ -3,26 +3,24 @@ import {
   dangerColor,
   successColor,
   defaultFont
-} from "../material-dashboard-react";
+} from "../material-dashboard-pro-react";
 import { createStyles } from '@material-ui/core';
 
 const customInputStyle = createStyles({
   disabled: {
     "&:before": {
-      backgroundColor: "transparent !important"
+      borderColor: "transparent !important"
     }
   },
   underline: {
-    "&:hover": {
-      borderColor: primaryColor,
+    "&:hover:not($disabled):before,&:before": {
+      borderColor: "#D2D2D2 !important",
       borderWidth: "1px !important"
     },
     "&:after": {
       borderColor: primaryColor
     }
   },
-  
-  
   underlineError: {
     "&:after": {
       borderColor: dangerColor
@@ -38,37 +36,57 @@ const customInputStyle = createStyles({
     color: "#AAAAAA !important",
     fontWeight: 400,
     fontSize: "14px",
-    lineHeight: "1.42857"
+    lineHeight: "1.42857",
+    top: "10px",
+    "& + $underline": {
+      marginTop: "0px"
+    }
   },
   labelRootError: {
-    color: dangerColor
+    color: dangerColor + " !important"
   },
   labelRootSuccess: {
-    color: successColor
-  },
-  feedback: {
-    position: "absolute",
-    top: "18px",
-    right: "0",
-    zIndex: 2,
-    display: "block",
-    width: "24px",
-    height: "24px",
-    textAlign: "center",
-    pointerEvents: "none"
-  },
-  marginTop: {
-    marginTop: "16px"
+    color: successColor + " !important"
   },
   formControl: {
-    paddingBottom: "10px",
-    margin: "27px 0 0 0",
+    margin: "0 0 17px 0",
+    paddingTop: "27px",
     position: "relative",
-    
+    verticalAlign: "unset",
+    "& svg,& .fab,& .far,& .fal,& .fas,& .material-icons": {
+      color: "#495057"
+    }
+  },
+  whiteUnderline: {
+    "&:hover:not($disabled):before,&:before": {
+      backgroundColor: "#FFFFFF"
+    },
+    "&:after": {
+      backgroundColor: "#FFFFFF"
+    }
+  },
+  input: {
+    color: "#495057",
+    "&,&::placeholder": {
+      fontSize: "14px",
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontWeight: 400,
+      lineHeight: "1.42857",
+      opacity: 1
+    },
+    "&::placeholder": {
+      color: "#AAAAAA"
+    }
+  },
+  whiteInput: {
+    "&,&::placeholder": {
+      color: "#FFFFFF",
+      opacity: 1
+    }
   },
 
   error: {
-    color:dangerColor
+    color: dangerColor
   }
 });
 

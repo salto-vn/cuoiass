@@ -6,7 +6,7 @@ import {
   warningColor,
   dangerColor,
   roseColor
-} from "../material-dashboard-react";
+} from "../material-dashboard-pro-react";
 import { createStyles } from '@material-ui/core';
 
 const buttonStyle = createStyles({

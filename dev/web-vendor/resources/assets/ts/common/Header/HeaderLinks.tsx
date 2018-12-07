@@ -59,7 +59,7 @@ class HeaderLinks extends React.Component<{ classes?: any, handleClick?: any }, 
         </div>
         <Button
           buttonRef={(node: any) => {
-            this.state.anchorEl = node;
+            // this.setState({anchorEl: node})
           }}
           color={window.innerWidth > 959 ? "transparent" : "white"}
           justIcon={window.innerWidth > 959}

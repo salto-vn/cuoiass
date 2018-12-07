@@ -67,8 +67,8 @@ class Booking extends Eloquent
 		'prd_id' => 'int',
 		'vendor_service_id' => 'int',
         'try_date' => 'date:d-m-Y H:m:i',
-        'activate_date' => 'date:d-m-Y',
-        'booked_date' => 'date:d-m-Y'
+        'activate_date' => 'date:d-m-Y  H:m:i',
+        'booked_date' => 'date:d-m-Y  H:m:i'
 	];
 
 	protected $dates = [

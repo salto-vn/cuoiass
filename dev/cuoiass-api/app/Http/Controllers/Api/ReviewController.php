@@ -37,10 +37,10 @@ class ReviewController extends Controller
     {
         $page = (int)$request->get('page', \Constant::MIN_PAGE);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
-        $orderBy = $request->get('sortbyc', null);
-        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('orderBy', null);
+        $order = $request->get('order', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $model = $this->reviewRepo->getListAllData($search, $page, $limit, $orderBy, $sortBy);
+        $model = $this->reviewRepo->getListAllData($search, $page, $limit, $orderBy, $order);
 
         return $this->toJsonPaginate($model);
     }
