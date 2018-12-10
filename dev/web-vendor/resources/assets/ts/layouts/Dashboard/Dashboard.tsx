@@ -24,10 +24,10 @@ import logo from "../../../img/reactlogo.png";
 
 const switchRoutes = (
   <Switch>
-    {routes.map((prop:any, key:any) => {
+    {routes.map((prop: any, key: any) => {
       return <Route path={prop.path} component={prop.component} key={key} />;
     })}
-    {dashboardRoutes.map((prop:any, key:any) => {
+    {dashboardRoutes.map((prop: any, key: any) => {
       if (prop.redirect)
         return <Redirect from={prop.path} to={prop.pathTo} key={key} />;
       if (prop.collapse)
@@ -85,7 +85,7 @@ class Dashboard extends React.Component<{ location: any, classes: any, rest: any
   sidebarMinimize() {
     this.setState({ miniActive: !this.state.miniActive });
   }
-  resizeFunction = () =>{
+  resizeFunction = () => {
     if (window.innerWidth >= 960) {
       this.setState({ mobileOpen: false });
     }

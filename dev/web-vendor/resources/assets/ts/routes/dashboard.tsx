@@ -16,8 +16,7 @@ import ShoppingBasket from "@material-ui/icons/ShoppingBasket";
 import DashboardPage from "../components/Dashboard/Dashboard";
 import StaffScreen from '../components/Staff/Index';
 import FeedbackScreen from '../components/Feedback/Index';
-import ViewDetailFeedbackScreen from '../components/Feedback/ViewDetail';
-import { BookingScreen } from '../components/Booking/Index';
+import BookingSearchScreen from '../components/Booking/Index';
 import pagesRoutes from './pages';
 // import UserProfile from "views/UserProfile/UserProfile.jsx";
 // import TableList from "views/TableList/TableList.jsx";
@@ -62,6 +61,12 @@ var dashRoutes = [
     name: "Đánh giá",
     icon: RateReview,
     component: FeedbackScreen
+  },
+  {
+    path: "/booking",
+    name: "Đơn hàng",
+    icon: ShoppingBasket,
+    component: BookingSearchScreen
   },
   {
     collapse: true,

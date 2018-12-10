@@ -15,12 +15,12 @@ export class StaffModel implements IStaff {
 }
 
 export class ValidateModel {
-    public staff_id = undefined;
-    public vendor_id = undefined;
-    public role_id = undefined;
-    public staff_name = undefined;
-    public email = undefined;
-    public password = undefined;
-    public phone = undefined;
-    public address = undefined;
+    public staff_id = "";
+    public vendor_id = "";
+    public role_id = "";
+    public staff_name = "";
+    public email = "";
+    public password = "";
+    public phone = "";
+    public address = "";
 }

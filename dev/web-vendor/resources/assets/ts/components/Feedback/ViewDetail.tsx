@@ -80,11 +80,12 @@ const styles = (theme: Theme) => createStyles({
 });
 
 class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: any, classes: any }, IVFeedbackState> {
+    clientError: ValidateModel = { review_id: "init", review_response_content: "init", review_response_vendor_id: "init" };
     public state = {
         model: new FeedbackModel(),
         isShowImageModal: false,
         image: '',
-        clientError: new ValidateModel,
+        clientError: this.clientError,
         isSubmitDisabled: false,
         isHandleEvent: false,
         isError: false,
@@ -197,7 +198,7 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
 
         const { model, isSubmitDisabled, image, isShowImageModal, validateMessage, clientError, isValidate, isError, showMessage, isLoading } = this.state;
         const { classes } = this.props;
-
+        const inputStRvwCtnt = showError(clientError, validateMessage, 'review_response_content');
 
         return (<>
             <GridContainer>
@@ -260,8 +261,9 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
                                             formControlProps={{
                                                 fullWidth: true
                                             }}
-                                            helpText={showError(clientError, validateMessage, 'review_response_content')}
-                                            error={showError(clientError, validateMessage, 'review_response_content') == '' ? false : true}
+                                            helpText={inputStRvwCtnt !== "init" ? inputStRvwCtnt : ''}
+                                            error={inputStRvwCtnt !== 'init' && inputStRvwCtnt !== ''}
+                                            success={inputStRvwCtnt === ''}
                                             inputProps={{
                                                 value: model.review_response_content === null ? '' : model.review_response_content,
                                                 name: "review_response_content",

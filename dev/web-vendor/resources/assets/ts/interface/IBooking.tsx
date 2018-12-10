@@ -8,20 +8,17 @@ export interface IBooking {
     booked_pro_name: string,
     status: string,
     customer_name: string,
-    
+
 }
 
 export interface IBookingManagerState {
     isError: boolean,
     isLoading: boolean,
-    isClickPaginate: boolean,
     totalItem: number,
     limit: number,
     activePage: number,
-    pageRange: number,
     headers: any,
     dataSet: IBooking[],
     errorInfo: string,
-    sortedIndex: number,
     searchForm: IBooking
 }

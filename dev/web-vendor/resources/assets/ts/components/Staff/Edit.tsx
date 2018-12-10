@@ -31,7 +31,7 @@ interface IStaffModalProp {
     errorInfo: any;
     classes: any;
     roles: any,
-    isLoading:boolean
+    isLoading: boolean
 }
 
 interface IinitState {
@@ -79,17 +79,17 @@ const styles = (theme: Theme) => createStyles({
 
 
 class StaffModal extends React.Component<IStaffModalProp, IinitState> {
-
+    clientError: ValidateModel = { staff_id: "init", email: "init", address: "init", password: "init", phone: "init", role_id: "init", staff_name: "init", vendor_id: "init" };
     public state = {
         // source: this.props.source,
         model: this.props.model,
         isSubmitDisabled: false,
-        clientError: new ValidateModel,
+        clientError: this.clientError,
     }
 
     componentDidMount() {
         this.setState({
-             isSubmitDisabled: this.props.isCreate ? true : false,
+            isSubmitDisabled: this.props.isCreate ? true : false,
         })
     }
 
@@ -104,7 +104,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
         const { model } = this.state;
         this.props.isCreate ? this.props.onCreate(model) : this.props.onUpdate(model);
         this.setState({
-       });
+        });
     }
 
 
@@ -140,9 +140,15 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
 
 
     public render() {
-        const { classes, modalTitle, isCreate, errorInfo, roles,isLoading } = this.props;
+        const { classes, modalTitle, isCreate, errorInfo, roles, isLoading } = this.props;
         const { model, clientError, isSubmitDisabled } = this.state;
         var roleSource: IOption[] = [];
+        const inputStSffN = showError(clientError, errorInfo, "staff_name");
+        const inputStSffE = showError(clientError, errorInfo, "email");
+        const inputStSffPss = showError(clientError, errorInfo, "password");
+        const inputStSffPhone = showError(clientError, errorInfo, "phone");
+        const inputStSffAddr = showError(clientError, errorInfo, "address");
+        const inputStSffRole = showError(clientError, errorInfo, "role_id");
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 0; i < roles.length; i++) {
             let role = roles[i];
@@ -162,11 +168,11 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                     <h4 className={classes.cardTitleWhite}>{modalTitle}</h4>
                                     <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
                                     {isLoading &&
-                                    <LinearProgress classes={{
-                                        colorPrimary: classes.linearColorPrimary,
-                                        barColorPrimary: classes.linearBarColorPrimary,
-                                    }} />
-                                }
+                                        <LinearProgress classes={{
+                                            colorPrimary: classes.linearColorPrimary,
+                                            barColorPrimary: classes.linearBarColorPrimary,
+                                        }} />
+                                    }
                                 </CardHeader>
                                 <CardBody>
                                     <GridContainer>
@@ -179,8 +185,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 }}
                                                 value={model.role_id}
                                                 onChange={this.handleChange.bind(this, true)}
-                                                helpText={showError(clientError, errorInfo, 'role_id')}
-                                                error={showError(clientError, errorInfo, 'role_id') == '' ? false : true}
+                                                helpText={inputStSffRole !== "init" ? inputStSffRole : ''}
+                                                error={inputStSffRole !== 'init' && inputStSffRole !== ''}
+                                                success={inputStSffRole === ''}
                                                 inputProps={{
                                                     name: "role_id",
 
@@ -197,9 +204,10 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
-                                                
-                                                helpText={showError(clientError, errorInfo, 'staff_name')}
-                                                error={showError(clientError, errorInfo, 'staff_name') == '' ? false : true}
+
+                                                helpText={inputStSffN !== "init" ? inputStSffN : ''}
+                                                error={inputStSffN !== 'init' && inputStSffN !== ''}
+                                                success={inputStSffN === ''}
                                                 inputProps={{
                                                     value: model.staff_name,
                                                     name: "staff_name",
@@ -211,8 +219,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Email"
                                                 id="email"
-                                                helpText={showError(clientError, errorInfo, 'email')}
-                                                error={showError(clientError, errorInfo, 'email') == '' ? false : true}
+                                                helpText={inputStSffE !== "init" ? inputStSffE : ''}
+                                                error={inputStSffE !== 'init' && inputStSffE !== ''}
+                                                success={inputStSffE === ''}
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
@@ -229,8 +238,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Điện thoại"
                                                 id="phone"
-                                                helpText={showError(clientError, errorInfo, 'phone')}
-                                                error={showError(clientError, errorInfo, 'phone') == '' ? false : true}
+                                                helpText={inputStSffPhone !== "init" ? inputStSffPhone : ''}
+                                                error={inputStSffPhone !== 'init' && inputStSffPhone !== ''}
+                                                success={inputStSffPhone === ''}
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
@@ -245,8 +255,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Mật khẩu"
                                                 id="password"
-                                                helpText={showError(clientError, errorInfo, 'password')}
-                                                error={showError(clientError, errorInfo, 'password') == '' ? false : true}
+                                                helpText={inputStSffPss !== "init" ? inputStSffPss : ''}
+                                                error={inputStSffPss !== 'init' && inputStSffPss !== ''}
+                                                success={inputStSffPss === ''}
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
@@ -264,8 +275,9 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                             <CustomInput
                                                 labelText="Địa chỉ"
                                                 id="address"
-                                                helpText={showError(clientError, errorInfo, 'address')}
-                                                error={showError(clientError, errorInfo, 'address') == '' ? false : true}
+                                                helpText={inputStSffAddr !== "init" ? inputStSffAddr : ''}
+                                                error={inputStSffAddr !== 'init' && inputStSffAddr !== ''}
+                                                success={inputStSffAddr === ''}
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}

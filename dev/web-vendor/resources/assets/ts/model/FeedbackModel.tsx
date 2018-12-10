@@ -25,7 +25,7 @@ export class FeedbackModel implements IFeedback {
 }
 
 export class ValidateModel {
-    public review_id = undefined;
-    public review_response_vendor_id = undefined;
-    public review_response_content = undefined;
+    public review_id = "";
+    public review_response_vendor_id = "";
+    public review_response_content = "";
 }

@@ -1,13 +1,57 @@
 import * as React from "react";
-import { BackButton } from '../../common/FormControls/BackButton';
-import { DisplayNoPage } from '../../common/Grid/DisplayNoPage';
 import CONSTANT from '../../bootstrap/Constant';
-import TextField from '@material-ui/core/TextField';
 import { IBookingManagerState } from '../../interface/IBooking';
 import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import GridContainer from '../../common/Grid/GridContainer';
+import GridItem from '../../common/Grid/GridItem';
+import Card from '../../common/Card/Card';
+import CardHeader from '../../common/Card/CardHeader';
+import { LinearProgress, createStyles, Theme, withStyles } from '@material-ui/core';
+import CardBody from '../../common/Card/CardBody';
+import { infoColor } from '../../../styles/material-dashboard-pro-react';
+import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
+import CardFooter from '../../common/Card/CardFooter';
+import DateTime = require('react-datetime');
+import Button from '../../common/FormControls/CustomButtons/Button';
+import CustomDatePicker from '../../common/FormControls/CustomDatePicker/CustomDatePicker';
 
-export class BookingScreen extends React.Component<{ history: any }, IBookingManagerState> {
-    
+
+const styles = (theme: Theme) => createStyles({
+    cardCategoryWhite: {
+        color: "rgba(255,255,255,.62)",
+        margin: "0",
+        fontSize: "14px",
+        marginTop: "0",
+        marginBottom: "0"
+    },
+    cardTitleWhite: {
+        color: "#FFFFFF",
+        marginTop: "0px",
+        minHeight: "auto",
+        fontWeight: 300,
+        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+        marginBottom: "3px",
+        textDecoration: "none"
+    },
+    description: {
+        textAlign: "left"
+    },
+    modal: {
+        width: "800px"
+    },
+    progress: {
+        color: infoColor
+    },
+    linearColorPrimary: {
+        backgroundColor: '#FFFFFF',
+    },
+    linearBarColorPrimary: {
+        backgroundColor: infoColor,
+    },
+});
+
+class BookingSearchScreen extends React.Component<{ history: any, classes: any }, IBookingManagerState> {
+
     public state = {
         isError: false,
         isLoading: false,
@@ -19,8 +63,7 @@ export class BookingScreen extends React.Component<{ history: any }, IBookingMan
         headers: [],
         dataSet: [],
         errorInfo: '',
-        sortedIndex: 0,
-        searchForm: { 
+        searchForm: {
             booked_id: 0,
             try_date: "",
             activate_date: "",
@@ -28,7 +71,8 @@ export class BookingScreen extends React.Component<{ history: any }, IBookingMan
             booked_cd: "",
             booked_pro_name: '',
             status: '',
-            customer_name: ''} 
+            customer_name: ''
+        }
     }
 
     /**
@@ -83,7 +127,8 @@ export class BookingScreen extends React.Component<{ history: any }, IBookingMan
 
 
     public render() {
-        const { totalItem, limit, headers, activePage, dataSet, pageRange, isLoading, isClickPaginate, isError, errorInfo } = this.state;
+        const { totalItem, limit, headers, activePage, dataSet, searchForm, isLoading, isError, errorInfo } = this.state;
+        const { classes } = this.props;
         const listdata: Array<string[]> = new Array();
 
         //Convert Datajson to Array with last index id PK key.
@@ -96,145 +141,97 @@ export class BookingScreen extends React.Component<{ history: any }, IBookingMan
         }
         return (
             <>
-            <GridContainer>
-                        <GridItem xs={12} sm={12} md={8}>
-                            <Card>
-                                <CardHeader color="primary">
-                                    <h4 className={classes.cardTitleWhite}>{modalTitle}</h4>
-                                    <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
-                                    {isLoading &&
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={8}>
+                        <Card>
+                            <CardHeader color="rose">
+                                <h4 className={classes.cardTitleWhite}>Tìm kiếm</h4>
+                                {isLoading &&
                                     <LinearProgress classes={{
                                         colorPrimary: classes.linearColorPrimary,
                                         barColorPrimary: classes.linearBarColorPrimary,
                                     }} />
                                 }
-                                </CardHeader>
-                                <CardBody>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={12}>
-                                            <CustomSelect
-                                                labelText="Quyền"
-                                                id="role_id"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                value={model.role_id}
-                                                onChange={this.handleChange.bind(this, true)}
-                                                errorContent={showError(clientError, errorInfo, 'role_id')}
-                                                error={showError(clientError, errorInfo, 'role_id') == '' ? false : true}
-                                                inputProps={{
-                                                    name: "role_id",
+                            </CardHeader>
+                            <CardBody>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={6}>
+                                        <CustomInput
+                                            labelText="Mã đơn, lịch"
+                                            id="booked_cd"
+                                            formControlProps={{
+                                                fullWidth: true
+                                            }}
+                                            inputProps={{
+                                                value: searchForm.booked_cd,
+                                                name: "booked_cd",
+                                            }}
+                                        />
+                                    </GridItem>
+                                </GridContainer>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={10}>
+                                        <CustomInput
+                                            labelText="Tên sản phẩm"
+                                            id="booked_pro_name"
+                                            formControlProps={{
+                                                fullWidth: true
+                                            }}
+                                            inputProps={{
+                                                value: searchForm.booked_pro_name,
+                                                name: "booked_pro_name",
+                                            }}
+                                        />
+                                    </GridItem>
+                                </GridContainer>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={6}>
+                                        <CustomDatePicker
+                                            labelText="Ngày mua"
+                                            prop={
+                                                {
+                                                    closeOnSelect: true,
+                                                    timeFormat: false,
+                                                }
+                                            }
+                                            inputProps={
+                                                {
+                                                    name: "booked_date",
+                                                }
+                                            }
 
-                                                }}
-                                                items={roleSource}
-                                            />
-                                        </GridItem>
-                                    </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={6}>
-                                            <CustomInput
-                                                labelText="Họ và Tên"
-                                                id="staff_name"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                errorContent={showError(clientError, errorInfo, 'staff_name')}
-                                                error={showError(clientError, errorInfo, 'staff_name') == '' ? false : true}
-                                                inputProps={{
-                                                    value: model.staff_name,
-                                                    name: "staff_name",
-                                                    onChange: this.handleChange.bind(this, true),
-                                                }}
-                                            />
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={6}>
-                                            <CustomInput
-                                                labelText="Email"
-                                                id="email"
-                                                errorContent={showError(clientError, errorInfo, 'email')}
-                                                error={showError(clientError, errorInfo, 'email') == '' ? false : true}
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    value: model.email,
-                                                    name: "email",
-                                                    onChange: this.handleChange.bind(this, true),
-                                                }}
-                                            />
-                                        </GridItem>
-                                    </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={6}>
-                                            <CustomInput
-                                                labelText="Điện thoại"
-                                                id="phone"
-                                                errorContent={showError(clientError, errorInfo, 'phone')}
-                                                error={showError(clientError, errorInfo, 'phone') == '' ? false : true}
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    value: model.phone ? model.phone : '',
-                                                    name: "phone",
-                                                    onChange: this.handleChange.bind(this, false),
-                                                }}
-                                            />
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={6}>
-                                            <CustomInput
-                                                labelText="Mật khẩu"
-                                                id="password"
-                                                errorContent={showError(clientError, errorInfo, 'password')}
-                                                error={showError(clientError, errorInfo, 'password') == '' ? false : true}
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    value: model.password,
-                                                    name: "password",
-                                                    type: 'password',
-                                                    onChange: this.handleChange.bind(this, true),
-                                                }}
-                                            />
-                                        </GridItem>
-                                    </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={12}>
-                                            <CustomInput
-                                                labelText="Địa chỉ"
-                                                id="address"
-                                                errorContent={showError(clientError, errorInfo, 'address')}
-                                                error={showError(clientError, errorInfo, 'address') == '' ? false : true}
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    value: model.address ? model.address : '',
-                                                    type: 'text',
-                                                    name: 'address',
-                                                    onChange: this.handleChange.bind(this, false),
-                                                }}
-                                            />
-                                        </GridItem>
-                                    </GridContainer>
-                                </CardBody>
-                                <CardFooter>
-                                    {isSubmitDisabled ?
-                                        <Button color="primary" onClick={this.handleSubmit} disabled>
-                                            {isCreate ? "Tạo" : "Lưu"}
-                                        </Button>
-                                        :
-                                        <Button color="primary" onClick={this.handleSubmit} >
-                                            {isCreate ? "Tạo" : "Lưu"}
-                                        </Button>
-                                    }
-                                </CardFooter>
-                            </Card>
-                        </GridItem>
-                    </GridContainer>
+                                        />
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={6}>
+                                        <DateTime closeOnSelect
+                                            timeFormat={false}
+                                            inputProps={
+                                                {
+                                                    label: "Ngày xem",
+                                                    name: "try_date",
+                                                }
+                                            }
+
+                                        />
+                                    </GridItem>
+                                </GridContainer>
+                            </CardBody>
+                            <CardFooter>
+                                <Button color="primary" onClick={this.handleSubmit} >
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </GridItem>
+                </GridContainer>
             </>
         );
+    }
+
+    /**
+     * Search
+     */
+    private handleSubmit = (evt: any) => {
+
     }
 
     /**
@@ -251,59 +248,6 @@ export class BookingScreen extends React.Component<{ history: any }, IBookingMan
     }
 
     /**
-     * Event handle Page change
-     * Return: not need to return set to state is OK
-     */
-    private handlePageChange = (pageNumber: number) => {
-        const { activePage } = this.state;
-        if (activePage === pageNumber) {
-            return;
-        }
-        return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber
-        }), () => {
-
-            this.getBookings();
-        });
-    }
-
-    private handleSort = (key: any, index: any) => {
-        const bookingHeaders: ITh[] = this.state.headers;
-        let sortClass = bookingHeaders[index].sortClass;
-        const { sortedIndex } = this.state;
-
-        bookingHeaders[sortedIndex].sortClass = "sort";
-        switch (sortClass) {
-            case "sort":
-                bookingHeaders[index].sortClass = "sort-down"
-                break;
-            case "sort-up":
-                bookingHeaders[index].sortClass = "sort-down"
-                break;
-            case "sort-down":
-                bookingHeaders[index].sortClass = "sort-up"
-                break;
-            default:
-                bookingHeaders[index].sortClass = "sort"
-                break;
-        }
-
-        let sortby: string = "";
-        if ((sortClass === "sort") || (sortClass === "sort-up")) {
-            sortby = 'asc';
-        } else {
-            sortby = 'desc';
-        }
-
-        return this.setState((prevState) => ({
-            ...prevState, sortbyc: key, sortby: sortby, headers: bookingHeaders, sortedIndex: index
-        }), () => {
-
-            this.getBookings();
-        });
-    }
-
-    /**
      * Set state for current date and callback filters
      * 
      * @param name: string of datepicker
@@ -312,10 +256,12 @@ export class BookingScreen extends React.Component<{ history: any }, IBookingMan
      * @return filters
      */
     onChangeDate = (event: any) => {
-        const {searchForm} = this.state;
+        const { searchForm } = this.state;
         searchForm.booked_date = event.target.value;
         this.setState({
             searchForm,
         });
     }
 }
+
+export default withStyles(styles)(BookingSearchScreen)

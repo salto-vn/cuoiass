@@ -39,11 +39,15 @@ export const isEmptyKeyInObject = (params: object) => {
  * @return boolean
  */
 export const showError = (clientError: any, errorInfo: any, key: string) => {
-    if (clientError[key] && !isEmpty(clientError[key])) {
+    if (clientError[key] === "init") { // Initial
+        return 'init';
+    }
+
+    if (clientError[key] && !isEmpty(clientError[key])) { //Client error
         return clientError[key];
     }
 
-    if (errorInfo.errors[key] && Array.isArray(errorInfo.errors[key])) {
+    if (errorInfo.errors[key] && Array.isArray(errorInfo.errors[key])) { // Server error message
         return errorInfo.errors[key][0];
     }
 
@@ -61,7 +65,7 @@ export const isEmpty = (value: any) => {
 }
 
 
-export const createSnackBarMess = (isValidate: boolean | undefined, isError: boolean, showMessage: boolean, handleCloseMessage:any) => {
+export const createSnackBarMess = (isValidate: boolean | undefined, isError: boolean, showMessage: boolean, handleCloseMessage: any) => {
     var snack;
     if (isError) {
         snack = <CustomSnackbar
@@ -73,7 +77,7 @@ export const createSnackBarMess = (isValidate: boolean | undefined, isError: boo
 
     if (isValidate) {
         snack = <CustomSnackbar
-        onClose={handleCloseMessage}
+            onClose={handleCloseMessage}
             variant="warning"
             message="Nội dung nhập có lỗi, vui lòng kiểm tra lại!"
         />
@@ -81,7 +85,7 @@ export const createSnackBarMess = (isValidate: boolean | undefined, isError: boo
 
     if (!isValidate && !isError) {
         snack = <CustomSnackbar
-        onClose={handleCloseMessage}
+            onClose={handleCloseMessage}
             variant="info"
             message="Đã lưu thành công"
         />
