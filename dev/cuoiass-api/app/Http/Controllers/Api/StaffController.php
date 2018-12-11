@@ -8,6 +8,7 @@ use App\Http\Requests\Staff\UpdateStaff;
 use App\Models\Staff;
 use App\Repositories\StaffRepo;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class StaffController extends Controller
 {
@@ -74,7 +75,7 @@ class StaffController extends Controller
      *
      * @param UpdateStaff $request
      * @param Staff $staff
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(UpdateStaff $request, Staff $staff)
     {
@@ -93,7 +94,8 @@ class StaffController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Staff $staff
-     * @return \Illuminate\Http\Response
+     * @return Response
+     * @throws \Exception
      */
     public function destroy(Staff $staff)
     {

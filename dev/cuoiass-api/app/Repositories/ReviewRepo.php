@@ -79,7 +79,8 @@ class ReviewRepo extends Repository
                     }
                     if ($field == "review_date") {
                         if (!empty($value)) {
-                            $model->whereDate($field, '=', $value);
+                            $value = Carbon::parse($value)->format('Y-m-d');
+                            $model->whereDate($field, '=', "{$value}");
                         }
                     } else if ($field == "$tblCustomer.first_name") {
                         $value = addslashes($value);

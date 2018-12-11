@@ -26,12 +26,11 @@ class GetRequest extends FormRequest
     {
         return [
             'limit' => 'integer',
-//            'search' => '',
-            'sortbyc' => Rule::in(['review_id', 'review_content', 'review_date'
+            'orderBy' => Rule::in(['review_id', 'review_content', 'review_date'
                     , 'bookings.booked_cd', 'bookings.booked_pro_name',
                     'products.prd_cd', 'customers.first_name', 'customers.last_name']
             ),
-            'sortby' => Rule::in(['asc', 'desc']),
+            'order' => Rule::in(['asc', 'desc']),
         ];
     }
 }

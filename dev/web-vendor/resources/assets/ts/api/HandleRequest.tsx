@@ -15,7 +15,7 @@ const headerOptions = {
  * 
  * @return HandleResponse
  */
-export const findOne = async (url: string, id: string, columns?: string[]) => {
+export const findOne = async (url: string, id: string, signal:any, columns?: string[]) => {
     var fullUrl: string = "";
     if (columns == undefined) {
         fullUrl = `${url}/${id}`;
@@ -25,6 +25,7 @@ export const findOne = async (url: string, id: string, columns?: string[]) => {
 
     const result = await fetch(fullUrl, {
         method: "GET",
+        signal: signal,
         headers: headerOptions,
     });
 

@@ -16,6 +16,7 @@ import CustomInput from '../FormControls/CustomInput/CustomInput';
 import { TableSortLabel, FormControl, InputLabel } from '@material-ui/core';
 import CustomSelect, { IOption } from '../FormControls/CustomSelect/CustomSelect';
 import Datetime from "react-datetime";
+import { isDateCorrectFormat } from '../Utils';
 
 export interface ICustomTable {
   classes: any,
@@ -95,8 +96,16 @@ class CustomTable extends React.Component<ICustomTable, {}>{
 
   private createFilterDateHandle = (name: any, evt: any) => {
     var value = undefined;
-    if (evt !== ""){
-      value = evt.format("YYYY-MM-DD");
+    if (evt !== "") {
+      if (evt._isValid !== undefined) {
+        value = evt.format("YYYY-MM-DD");
+      } else if (isDateCorrectFormat(evt.trim(), 'DD-MM-YYYY')) {
+        value = evt.trim();
+      } else {
+        value = "";
+      }
+    } else {
+      value = "";
     }
     const { onFilter } = this.props;
     if (typeof onFilter === "undefined") {
@@ -120,7 +129,7 @@ class CustomTable extends React.Component<ICustomTable, {}>{
   }
 
   public render() {
-    const { classes, onFilter, tableHead, tableData, tableHeaderColor, hover, onEdit, onView, onDelete, orderBy, order } = this.props;
+    const { classes, onFilter, tableHead, tableData, tableHeaderColor, hover, onEdit, onView, onDelete, orderBy, order, isLoading } = this.props;
     return (
       <div className={classes.tableResponsive}>
         <Table className={classes.table}>
@@ -219,6 +228,13 @@ class CustomTable extends React.Component<ICustomTable, {}>{
             </TableHead>
           ) : null}
           <TableBody>
+            {tableData.length === 0 && !isLoading &&
+              <TableRow >
+                <TableCell className={classes.tableCell + " " + classes.tableCellAction} colSpan={tableHead.length}>
+                  Không có dữ liệu
+                </TableCell>
+              </TableRow>
+            }
             {tableData.map((prop: any, key: any) => {
               return (
                 <TableRow key={key} hover={hover}>

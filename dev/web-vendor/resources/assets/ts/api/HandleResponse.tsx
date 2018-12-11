@@ -24,11 +24,17 @@ const HandleResponse = async (res: Response) => {
     if (res.ok && res.status >= 200 && res.status < 300) {
         result = await res.json();
     }
+    if (!res.ok && res.status === 404) {
+        validateMessage = await res.json();
+        return { isError, message: res.statusText, isValidate, validateMessage, result } as IHandleResponse;
+    }
 
     if (!res.ok && res.status === 422) {
         isValidate = true;
         validateMessage = await res.json();
     }
+
+    
 
     if (!res.ok && res.status === 500) {
         isError = true;

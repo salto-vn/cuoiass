@@ -8,7 +8,9 @@
 // import Unarchive from "@material-ui/icons/Unarchive";
 // core components/views
 import ViewDetailFeedbackScreen from '../components/Feedback/ViewDetail';
-import { BookingScreen } from '../components/Booking/Index';
+import BookingSearchResultScreen from '../components/Booking/Results';
+import BookingSearchScreen from '../components/Booking/Index';
+import DetailBookingScreen from '../components/Booking/Detail';
 export const routes =
   [
     {
@@ -17,9 +19,20 @@ export const routes =
       name: "Đánh giá của khách hàng",
     },
     {
-      path: "/booking/:id",
-      component: BookingScreen,
+      path: "/booking/search/:search",
+      component: BookingSearchResultScreen,
       name: "Order",
-    }
+    },
+    {
+      path: "/booking/detail/:booked_cd",
+      component: DetailBookingScreen,
+      name: "Chi tiết đơn hàng"
+    },
+    {
+      path: "/booking/:search",
+      component: BookingSearchScreen,
+      name: "Tìm kiếm đơn hàng"
+    },
+    
   ];
 

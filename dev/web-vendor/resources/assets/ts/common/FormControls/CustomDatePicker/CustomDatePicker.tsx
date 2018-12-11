@@ -4,12 +4,13 @@ import classNames from "classnames";
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import PropTypes from "prop-types";
 // @material-ui/icons
 // core components
-import customInputStyle from "../../../../styles/components/customInputStyle";
-import { FormHelperText } from '@material-ui/core';
+import customDatePickerStyle from "../../../../styles/components/customDatePickerStyle";
+import { FormHelperText, Icon } from '@material-ui/core';
 import DateTime = require('react-datetime');
+import Button from '../CustomButtons/Button';
+import { isEmpty } from '../../Utils';
 
 export interface ICustomDatePicker {
   classes?: any,
@@ -21,104 +22,131 @@ export interface ICustomDatePicker {
   error?: boolean,
   success?: boolean,
   errorContent?: string,
-  multiline?: boolean
+  white?: boolean,
+  inputRootCustomClasses?: any,
+  helpText?: string,
+  prop?: any,
+  shrink?: boolean
 }
 
 
-function CustomDatePicker({ ...props }) {
-  const {
-    classes,
-    formControlProps,
-    labelText,
-    id,
-    labelProps,
-    inputProps,
-    error,
-    white,
-    inputRootCustomClasses,
-    success,
-    helpText,
-    prop
-  } = props;
+class CustomDatePicker extends React.Component<ICustomDatePicker, { shrink: boolean, open:boolean }>{
 
-  const labelClasses = classNames({
-    [" " + classes.labelRootError]: error,
-    [" " + classes.labelRootSuccess]: success && !error
-  });
-  const underlineClasses = classNames({
-    [classes.underlineError]: error,
-    [classes.underlineSuccess]: success && !error,
-    [classes.underline]: true,
-    [classes.whiteUnderline]: white
-  });
-  const marginTop = classNames({
-    [inputRootCustomClasses]: inputRootCustomClasses !== undefined
-  });
-  const inputClasses = classNames({
-    [classes.input]: true,
-    [classes.whiteInput]: white
-  });
-  var helpTextClasses = classNames({
-    [classes.labelRootError]: error,
-    [classes.labelRootSuccess]: success && !error
-  });
-
-  var formControlClasses;
-  if (formControlProps !== undefined) {
-    formControlClasses = classNames(
-      formControlProps.className,
-      classes.formControl
-    );
-  } else {
-    formControlClasses = classes.formControl;
+  public state = {
+    shrink: this.props.shrink || false,
+    open: false,
   }
-  var helpTextClasses = classNames({
-    [classes.labelRootError]: error,
-    [classes.labelRootSuccess]: success && !error
-  });
-  return (
-    <FormControl {...formControlProps} className={formControlClasses}>
-      {labelText !== undefined ? (
-        <InputLabel
-          className={classes.labelRoot + " " + labelClasses}
-          htmlFor={id}
-          {...labelProps}
-        >
-          {labelText}
-        </InputLabel>
-      ) : null}
-      <DateTime
-        classes={{
-          input: inputClasses,
-          root: marginTop,
-          disabled: classes.disabled,
-          underline: underlineClasses
-        }}
-        id={id}
-        {...prop}
-        inputProps={...inputProps}
-      />
-      {helpText !== undefined ? (
-        <FormHelperText id={id + "-text"} className={helpTextClasses + " " + classes.error}>
-          {helpText}
-        </FormHelperText>
-      ) : null}
-    </FormControl>
-  );
+
+  handleFocusLabel = (e: any) => {
+    this.setState({open: true, shrink: true })
+  }
+
+  handleBlurLabel = (e: any) => {
+    if (e === "") {
+      this.setState({open: false, shrink: false })
+    }
+    this.setState({open: false})
+
+  }
+
+
+  render() {
+    const {
+      classes,
+      formControlProps,
+      labelText,
+      id,
+      labelProps,
+      inputProps,
+      error,
+      white,
+      inputRootCustomClasses,
+      success,
+      helpText,
+      prop
+    } = this.props;
+
+    const labelClasses = classNames({
+      [" " + classes.labelRootError]: error,
+      [" " + classes.labelRootSuccess]: success && !error
+    });
+    const underlineClasses = classNames({
+      [classes.underlineError]: error,
+      [classes.underlineSuccess]: success && !error,
+      [classes.underline]: true,
+      [classes.whiteUnderline]: white
+    });
+    const marginTop = classNames({
+      [inputRootCustomClasses]: inputRootCustomClasses !== undefined
+    });
+    const inputClasses = classNames({
+      [classes.input]: true,
+      [classes.whiteInput]: white
+    });
+    var helpTextClasses = classNames({
+      [classes.labelRootError]: error,
+      [classes.labelRootSuccess]: success && !error
+    });
+
+    var formControlClasses;
+    if (formControlProps !== undefined) {
+      formControlClasses = classNames(
+        formControlProps.className,
+        classes.formControl
+      );
+    } else {
+      formControlClasses = classes.formControl;
+    }
+    var helpTextClasses = classNames({
+      [classes.labelRootError]: error,
+      [classes.labelRootSuccess]: success && !error
+    });
+    return (
+      <FormControl {...formControlProps} className={formControlClasses}>
+        {labelText !== undefined ? (
+          <InputLabel
+            className={classes.labelRoot + " " + labelClasses}
+            htmlFor={id}
+            {...labelProps}
+            shrink={!isEmpty(prop.value) ? true : this.state.shrink}
+          >
+            {labelText}
+          </InputLabel>
+        ) : null}
+        <DateTime
+          className={underlineClasses + " " + marginTop + " " + inputClasses}
+          id={id}
+          {...prop}
+          onFocus={this.handleFocusLabel}
+          onBlur={this.handleBlurLabel}
+          
+          inputProps={{
+            ...inputProps,
+          }}
+        />
+        {helpText !== undefined ? (
+          <FormHelperText id={id + "-picker"} className={helpTextClasses + " " + classes.error}>
+            {helpText}
+          </FormHelperText>
+        ) : null}
+      </FormControl>
+    );
+  }
+
 }
 
-CustomDatePicker.propTypes = {
-  classes: PropTypes.object.isRequired,
-  labelText: PropTypes.node,
-  labelProps: PropTypes.object,
-  id: PropTypes.string,
-  inputProps: PropTypes.object,
-  formControlProps: PropTypes.object,
-  inputRootCustomClasses: PropTypes.string,
-  error: PropTypes.bool,
-  success: PropTypes.bool,
-  white: PropTypes.bool,
-  helpText: PropTypes.node
-};
+// CustomDatePicker.propTypes = {
+//   classes: PropTypes.object.isRequired,
+//   labelText: PropTypes.node,
+//   labelProps: PropTypes.object,
+//   id: PropTypes.string,
+//   inputProps: PropTypes.object,
+//   formControlProps: PropTypes.object,
+//   inputRootCustomClasses: PropTypes.string,
+//   error: PropTypes.bool,
+//   success: PropTypes.bool,
+//   white: PropTypes.bool,
+//   helpText: PropTypes.node
+// };
 
-export default withStyles(customInputStyle)(CustomDatePicker);
+export default withStyles(customDatePickerStyle)(CustomDatePicker);

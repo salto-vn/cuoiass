@@ -53,6 +53,8 @@ function Header({ ...props }) {
       [classes.sidebarMinimizeRTL]: rtlActive
     });
   const brand = makeBrand();
+
+
   return (
     <AppBar className={classes.appBar + appBarClasses}>
       <Toolbar className={classes.container}>
@@ -81,19 +83,10 @@ function Header({ ...props }) {
         </Hidden>
         <div className={classes.flex}>
           {/* Here we create navbar brand, based on route name */}
-          {brand !== '' ?
-            <Button href="#"
-              className={classes.title} color="transparent">
-              {brand}
-            </Button> :
-            <Button href="#"
-              onClick={() => {
-                props.history.goBack();
-              }}
-              className={classes.title} color="transparent">
-              Back
-            </Button>
-          }
+          <Button href="#"
+            className={classes.title} color="transparent">
+            {brand}
+          </Button>
         </div>
         <Hidden smDown implementation="css">
           <HeaderLinks />

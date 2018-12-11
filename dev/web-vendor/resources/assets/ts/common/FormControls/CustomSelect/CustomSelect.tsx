@@ -5,8 +5,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 // @material-ui/icons
-import Clear from "@material-ui/icons/Clear";
-import Check from "@material-ui/icons/Check";
 // core components
 import customSelectStyle from "../../../../styles/components/customSelectStyle";
 import { FormHelperText, Select, MenuItem } from '@material-ui/core';
@@ -22,8 +20,8 @@ export interface ICustomSelect {
   success?: boolean,
   helpText?: string,
   items: IOption[],
-  onChange: any,
-  value: string
+  onChange?: any,
+  value?: string
 }
 
 export interface IOption {
@@ -38,8 +36,9 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
   }
 
   public handleChange = (evt: any) => {
-    this.setState({ selectedValue: evt.target.value })
 
+    this.setState({ selectedValue: evt.target.value })
+    if (this.props.onChange === undefined) return;
     this.props.onChange(evt);
   }
 
@@ -72,7 +71,7 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
           ) : null}
           <Select
             onChange={this.handleChange}
-            value={this.state.selectedValue}
+            value={this.state.selectedValue === undefined ? '' : this.state.selectedValue}
             MenuProps={{
               className: classes.selectMenu
             }}

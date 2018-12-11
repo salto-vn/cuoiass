@@ -67,6 +67,8 @@ const styles = (theme: Theme) => createStyles({
  */
 class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFeedbackState> {
 
+    abortControler = new AbortController();
+
     // inital state varialble using in this Component, 
     public state = {
         isLoading: false,
@@ -113,6 +115,11 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
         this.setState({ feedbacHeader })
         this.getListFeedback();
     }
+
+    public componentWillUnmount() {
+        this.abortControler.abort();
+    }
+
 
     /**
      * Render event will be run first time, 
@@ -210,10 +217,10 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
 
 
     /**
-    * Set state for array filters and isCLickPaginate to make it paginate
+    * Set state for array filters 
     * @param filtes
     * 
-    * @return Get list staff
+    * @return Get list feedback
     */
     private handleFilter = (filtes: any) => {
         const filters = objectToQueryString(filtes);
@@ -240,10 +247,10 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
     private getListFeedback = async () => {
         this.setState({ isLoading: true });
         const { activePage, limit, orderBy, order, filters } = this.state;
-
+        const signal = this.abortControler.signal;
         //TODO set request api page, limit
         // Call api get Feedback
-        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage + 1, limit, orderBy, order, filters);
+        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage + 1, limit, orderBy, order, filters, signal);
 
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });

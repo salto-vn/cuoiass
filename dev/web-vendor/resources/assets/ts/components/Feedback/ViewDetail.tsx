@@ -81,6 +81,8 @@ const styles = (theme: Theme) => createStyles({
 
 class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: any, classes: any }, IVFeedbackState> {
     clientError: ValidateModel = { review_id: "init", review_response_content: "init", review_response_vendor_id: "init" };
+    abortControler = new AbortController();
+
     public state = {
         model: new FeedbackModel(),
         isShowImageModal: false,
@@ -97,7 +99,8 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
 
     async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
-        const response = await HandleRequest.findOne(API_URL.REVIEW, this.props.match.params.id);
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.findOne(API_URL.REVIEW, this.props.match.params.id,signal);
         let model = Object.assign(new FeedbackModel(), response.result);
         this.setState({
             model,
@@ -105,6 +108,10 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
         })
     }
 
+
+    public componentWillUnmount() {
+        this.abortControler.abort();
+    }
 
     /**
      * Submit Answer Feedback of User
@@ -117,7 +124,6 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
         if (this.state.isHandleEvent) {
             return;
         }
-        debugger;
 
         const { model } = this.state;
         // model.review_response_vendor_id = 1; //Logon User TODO
@@ -268,6 +274,7 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
                                                 value: model.review_response_content === null ? '' : model.review_response_content,
                                                 name: "review_response_content",
                                                 onChange: this.onChangeInput.bind(this, true),
+                                                rows: 5
                                             }}
                                         />
                                     </GridItem>

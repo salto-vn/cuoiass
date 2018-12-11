@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * Email: 'hongduyphp@gmail.com'
+ * Email: 'ngotuananh2606@gmail.com'
  * Date: 03-11-2018
  * Time: 12:01 PM
  */
@@ -9,8 +9,9 @@
 namespace App\Repositories;
 
 
-use App\Models\Staff;
+use App\Models\Booking;
 use App\Utils\TableName as TBL;
+use Carbon\Carbon;
 
 /**
  * Class StaffRepo
@@ -18,7 +19,7 @@ use App\Utils\TableName as TBL;
  * @property Staff $model
  * @method Staff create(array $attributes)
  */
-class StaffRepo extends Repository
+class BookingRepo extends Repository
 {
     /**
      * Specify Model class name
@@ -26,7 +27,7 @@ class StaffRepo extends Repository
      */
     public function getModel()
     {
-        return Staff::class;
+        return Booking::class;
     }
 
     /**
@@ -37,21 +38,25 @@ class StaffRepo extends Repository
      * @param $sortBy
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getListStaffByVendor($search, $page, $limit, $orderBy, $order)
+    public function getListBookingbyVendor($search, $page, $limit, $orderBy, $order)
     {
-        //TODO:$vendorId = auth()->user()->vendor_id;
-        $vendorId = 1;
-
-        $fieldsSearchable = $this->model->fieldsSearchable();
+        $fieldsSearchable = [
+            'booked_cd', 'booked_pro_name', 'booked_date'
+            ,'try_date', 'activate_date','status'
+            , 'customer_name'
+        ];
+        $tblBooking = TBL::TBL_BOOKINGS;
+        $tblCustomer = TBL::TBL_CUSTOMERS;
+        $tblPlan = TBL::TBL_PLANS;
         $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
         $order = ($order === \Constant::ORDER_BY_DESC) ? $order : \Constant::ORDER_BY_ASC;
-
-        $tblStaff = $this->getTable();
-        $tblRole = TBL::TBL_ROLES;
-        $model = $this->model->newQuery();
-        $model->where('vendor_id', $vendorId)
-                ->join("$tblRole","$tblRole.role_id","=","$tblStaff.role_id");
-
+        $model = $this->model->newQuery()->select([
+            "$tblBooking.booked_cd", "$tblBooking.booked_pro_name", "$tblBooking.booked_date",
+            "$tblBooking.try_date", "$tblBooking.activate_date", "$tblBooking.status",
+            "$tblCustomer.first_name", "$tblCustomer.last_name"
+            ])
+            ->join("$tblPlan", "$tblBooking.plan_id", '=', "$tblPlan.plan_id")
+            ->join("$tblCustomer", "$tblPlan.customer_id", '=', "$tblCustomer.customer_id");
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
             if ($searchData) {
@@ -59,44 +64,43 @@ class StaffRepo extends Repository
                     if (!in_array($field, $fieldsSearchable)) {
                         continue;
                     }
-                    $value = addslashes($value);
-                    if($field == 'role_id') {
-                        $model->where("$tblRole.$field", '=', $value);
+                    if (in_array($field,['booked_date', 'try_date','activate_date'])) {
+                        if (!empty($value)) {
+                            $value = Carbon::parse($value)->format('Y-m-d');
+                            $model->whereDate($field, '=', "{$value}");
+                        }
+                    } else if ($field == "customer_name") {
+                        $value = addslashes($value);
+                        if (!empty($value)) {
+                            $model->where(function ($query) use ($value, $tblCustomer) {
+                                $query->where("$tblCustomer.last_name", "like", "%{$value}%")
+                                    ->orWhere("$tblCustomer.first_name", 'like', "%{$value}%");
+                            });
+                        }
+                    } else if ($field == "status" || $field == "booked_cd") {
+                        $value = addslashes($value);
+                        if (isset($value)) {
+                            $model->where($field, '=', "{$value}");
+                        }
                     } else {
-                        $model->where($field, 'like', "%{$value}%");
+                        $value = addslashes($value);
+                        if (!empty($value)) {
+                            $model->where($field, 'like', "%{$value}%");
+                        }
                     }
 
                 }
             }
         }
-
-        $model->select([
-            "$tblStaff.staff_id",
-            "$tblStaff.staff_name",
-            "$tblStaff.phone",
-            "$tblRole.role_name",
-            "$tblStaff.email",
-            "$tblStaff.address",
-        ]);
-
-
         if (!empty($orderBy)) {
-            $model->orderBy($orderBy=='role_id'?"$tblRole.role_name":$orderBy, $order);
-        } else {
-            $model->orderByDesc('staff_id');
-        }
+            if($orderBy == 'customer_name') {
+                $model->orderBy('first_name', $order);
+            } else {
+                $model->orderBy($orderBy, $order);
+            }
 
+        }
         return $model->paginate($limit, null, null, $page);
     }
 
-    /**
-     * @param $input
-     * @return Staff
-     */
-    public function createWithAccount($input)
-    {
-        $staff = $this->create($input);
-        $staff->accounts()->create($input);
-        return $staff;
-    }
 }

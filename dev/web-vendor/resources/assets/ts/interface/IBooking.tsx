@@ -1,6 +1,6 @@
+import { IListResultState } from './IList';
 
 export interface IBooking {
-    booked_id: number,
     try_date: string,
     activate_date: string,
     booked_date: string,
@@ -8,17 +8,15 @@ export interface IBooking {
     booked_pro_name: string,
     status: string,
     customer_name: string,
+    first_name?: string,
+    last_name?: string,
 
 }
 
-export interface IBookingManagerState {
-    isError: boolean,
-    isLoading: boolean,
-    totalItem: number,
-    limit: number,
-    activePage: number,
-    headers: any,
-    dataSet: IBooking[],
-    errorInfo: string,
+export interface IBookingSearchState {
     searchForm: IBooking
+}
+
+
+export interface IBookingResultState extends IBookingSearchState, IListResultState{
 }

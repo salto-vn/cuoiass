@@ -21,7 +21,7 @@ $factory->define(\App\Models\Booking::class, function (Faker $faker) {
         'booked_date' => $faker->date('Y-m-d'),
         'try_date' => $faker->date('Y-m-d'),
         'activate_date' => $faker->date('Y-m-d'),
-        'status' => array_rand($statues,1),
+        'status' => $faker->randomElement($statues),
         'memo' => $faker->text(20),
         'payment_name' => $faker->name,
         'payment_phone' => $faker->phoneNumber,

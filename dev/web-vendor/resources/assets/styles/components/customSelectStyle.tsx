@@ -2,7 +2,8 @@ import {
   primaryColor,
   primaryBoxShadow,
   dangerColor,
-  successColor
+  successColor,
+  defaultFont
 } from "../material-dashboard-pro-react";
 import { createStyles } from '@material-ui/core';
 
@@ -38,12 +39,21 @@ const customSelectStyle = createStyles({
       }
     }
   },
+  labelRoot: {
+    ...defaultFont,
+    color: "#AAAAAA !important",
+    fontWeight: 400,
+    fontSize: "14px",
+    lineHeight: "1.42857",
+    top: "-2px",
+  },
   labelRootError: {
     color: dangerColor + " !important"
   },
   labelRootSuccess: {
     color: successColor + " !important"
   },
+
   selectLabel: {
     fontSize: "12px",
     textTransform: "uppercase",
@@ -122,7 +132,7 @@ const customSelectStyle = createStyles({
     }
   },
   selectPaper: {
-    boxSizing: "borderBox",
+    boxSizing: "border-box",
     borderRadius: "4px",
     padding: "0",
     minWidth: "100%",

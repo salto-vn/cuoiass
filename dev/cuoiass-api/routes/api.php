@@ -22,5 +22,9 @@ use Illuminate\Http\Request;
     Route::resource('reviews', 'Api\ReviewController');
     Route::resource('roles', 'Api\RoleController')->except(['create', 'destroy']);
     Route::resource('staffs','Api\StaffController')->except(['create', 'show']);
+    Route::resource('bookings','Api\BookingController');
 //});
 
+Route::fallback(function(){
+    return response()->json(['message' => 'Not Found.'], 404);
+})->name('api.fallback.404');

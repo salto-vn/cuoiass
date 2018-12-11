@@ -6,7 +6,8 @@ const CONSTANT = {
     CURRENT_PAGE: 0,
     PAGE_RANGE_DISPLAY: 10, // display number button on paginate
     PAGE_TITLE: 'Quản lý booking',
-    UNDEFINED: undefined
+    UNDEFINED: undefined,
+    PAGE_PULLDOWN: [10, 20, 50, 100]
 };
 
 export default CONSTANT;

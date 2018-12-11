@@ -1,6 +1,8 @@
 import CustomSnackbar from './CustomSnackbar/CustomSnackbar';
 import { Snackbar } from '@material-ui/core';
 import React from 'react';
+import { IOption } from './FormControls/CustomSelect/CustomSelect';
+import moment = require('moment');
 
 /**
  * Convert object to query string: page=1&limit=20
@@ -12,8 +14,27 @@ import React from 'react';
  * @return string
  */
 export const objectToQueryString = (params: object | any, glue: string = ':', delimiter: string = ';') => {
-    return Object.keys(JSON.parse(JSON.stringify(params))).map(key => key + `${glue}` + params[key]).join(delimiter);
+    var rs = Object.keys(JSON.parse(JSON.stringify(params))).map((key, index) => {
+        if (!isEmpty(params[key])) {
+            return key + `${glue}` + params[key];
+        }
+    }).filter((obj) => {
+        return obj !== undefined;
+    });
+    return rs.join(delimiter);
 };
+
+/**
+ * format search/item_name:value;item_name1:value1
+ * @param query 
+ */
+export const searchQueryStringToArray = (query: string) => {
+    if(isEmpty(query)){
+        return null;
+    }
+    var rs = query.split(";").map(value => { return value.split(":") });
+    return rs.reduce(function (prev: any, curr: any) { prev[curr[0]] = curr[1]; return prev; }, {})
+}
 
 /**
  * Check key in object not empty value
@@ -65,6 +86,10 @@ export const isEmpty = (value: any) => {
 }
 
 
+export const isDateCorrectFormat = (dateString:string, format:string) => {
+    return moment(dateString, format, true).isValid()
+}
+
 export const createSnackBarMess = (isValidate: boolean | undefined, isError: boolean, showMessage: boolean, handleCloseMessage: any) => {
     var snack;
     if (isError) {
@@ -102,4 +127,46 @@ export const createSnackBarMess = (isValidate: boolean | undefined, isError: boo
             onClose={handleCloseMessage}>
             {snack}
         </Snackbar>)
+}
+
+/**
+ * Status list
+ */
+export const bookingStatusList: IOption[] = [
+    {
+        key: "IN-PROGRESS",
+        value: 'Đang xử lý'
+    },
+    {
+        key: "ACCEPTED",
+        value: 'Đã xác nhận'
+    },
+    {
+        key: "PAID",
+        value: 'Đã thanh toán'
+    },
+    {
+        key: "CANCELLED",
+        value: 'Đã huỷ lịch'
+    },
+    {
+        key: "DENIED",
+        value: 'Từ chối'
+    },
+    {
+        key: "FINISHED",
+        value: 'Hoàn thành'
+    }
+];
+
+/**
+ * get status by key
+ * @param key 
+ */
+export const getStatus = (key:string) =>{
+
+    return bookingStatusList.map(value => {
+        if (value.key === key )
+            return value.value + "";
+    })
 }

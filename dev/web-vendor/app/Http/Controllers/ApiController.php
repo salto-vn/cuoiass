@@ -52,10 +52,15 @@ class ApiController extends Controller
             case 'staffs':
                 $columns = $this->staffColumns();
                 return $this->buildSearchColumn($params, $columns);
+
             case 'roles':
                 if (!isset($params['system_code'])) {
                     $params['system_code'] = 'BACKYARD';
                 }
+                break;
+            case 'bookings':
+                $columns = $this->bookingColumns();
+                return $this->buildSearchColumn($params, $columns);
             default:
                 return $params;
                 break;
@@ -74,6 +79,11 @@ class ApiController extends Controller
         }
 
         if (!isset($params['search'])) {
+            return $params;
+        }
+
+        if ($params['search'] == 'all') {
+            unset($params['search']);
             return $params;
         }
 
@@ -118,6 +128,23 @@ class ApiController extends Controller
             'filter_email' => 'email',
             'filter_address' => 'address',
             'filter_role_name' => 'role_id'
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function bookingColumns()
+    {
+        return [
+            'booked_cd' => 'booked_cd',
+            'booked_pro_name' => 'booked_pro_name',
+            'customer_name' => 'customer_name',
+            'booked_date' => 'booked_date',
+            'activate_date' => 'activate_date',
+            'try_date' => 'try_date',
+            'status' => 'status'
         ];
     }
 
