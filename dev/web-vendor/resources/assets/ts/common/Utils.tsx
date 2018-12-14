@@ -60,7 +60,7 @@ export const isEmptyKeyInObject = (params: object) => {
  * @return boolean
  */
 export const showError = (clientError: any, errorInfo: any, key: string) => {
-    if (clientError[key] === "init") { // Initial
+    if (clientError[key] === undefined && errorInfo.errors[key] === undefined &&!Array.isArray(errorInfo.errors[key])) { // Initial
         return 'init';
     }
 

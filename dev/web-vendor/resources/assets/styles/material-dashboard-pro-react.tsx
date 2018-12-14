@@ -226,7 +226,7 @@ const title = {
   "& small": {
     color: "#777",
     fontSize: "65%",
-    fontWeight: "normal",
+    fontWeight: "normal" as "normal",
     lineHeight: "1",
   }
 };

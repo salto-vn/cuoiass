@@ -14,9 +14,10 @@ import CardHeader from '../../common/Card/CardHeader';
 import CardBody from '../../common/Card/CardBody';
 import Table from '../../common/Table/Table';
 import Button from '../../common/FormControls/CustomButtons/Button';
-import { createStyles, withStyles, TablePagination, Modal, Theme, LinearProgress } from '@material-ui/core';
+import { createStyles, withStyles, TablePagination, Modal, Theme } from '@material-ui/core';
 import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 import { infoColor } from '../../../styles/material-dashboard-pro-react';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
 
 
 
@@ -156,13 +157,13 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                                     <span className={classes.cardCategoryWhite}>
                                         Danh sách tài khoản đăng nhập của nhân viên
                                     </span>
-                                    <Button color="info" className={classes.headerButton} onClick={this.handleCreate}>Tạo tài khoản</Button>
+                                    {isLoading ?
+                                        <Button color="info" className={classes.headerButton} disabled onClick={this.handleCreate}>Tạo tài khoản</Button>
+                                        : <Button color="info" className={classes.headerButton} onClick={this.handleCreate}>Tạo tài khoản</Button>}
                                     <div>
                                         {isLoading &&
-                                            <LinearProgress classes={{
-                                                colorPrimary: classes.linearColorPrimary,
-                                                barColorPrimary: classes.linearBarColorPrimary,
-                                            }} />}
+                                            <CustomLinearProgress
+                                                color="info" />}
                                     </div>
                                 </div>
                             </CardHeader>
@@ -274,6 +275,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         this.setState({ isLoading: true });
         const signal = this.abortControler.signal;
         const response = await HandleRequest.GetList(APP_URL.STAFF_CRL, activePage + 1, limit, orderBy, order, filters, signal);
+
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }
@@ -300,17 +302,17 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (this.state.isHandleEvent) {
             return;
         }
-        this.setState({ isHandleEvent: true,isLoading:true });
+        this.setState({ isHandleEvent: true, isLoading: true });
 
-        const response = await HandleRequest.Edit(APP_URL.STAFF, id);
+        const response = await HandleRequest.Show(APP_URL.STAFF_CRL, id);
 
         if (response.isError) {
             return this.setState(
                 {
-                    errorInfo: response.message 
+                    errorInfo: response.message
                 });
         }
-        var model:StaffModel = response.result;
+        var model: StaffModel = response.result;
         model.password = '';
         this.setState({
             model: model,
@@ -349,18 +351,16 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         }
 
         this.setState({ isHandleEvent: true });
-
-        const response = await HandleRequest.Store(APP_URL.STAFF, model);
-
+        const response = await HandleRequest.Store(APP_URL.STAFF_CRL, model);
         if (response.isError) {
-            return this.setState({ 
-                isValidate: response.isValidate, 
+            return this.setState({
+                isValidate: response.isValidate,
                 isError: response.isError,
                 showMessage: response.isValidate,
-                errorInfo: response.message, 
+                errorInfo: response.message,
                 validateMessage: response.validateMessage,
-                isLoading: false ,
-                isHandleEvent: false 
+                isLoading: false,
+                isHandleEvent: false
             });
         }
 
@@ -370,9 +370,9 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                 validateMessage: response.validateMessage,
                 isError: response.isError,
                 showMessage: response.isValidate,
-                isLoading: false ,
+                isLoading: false,
                 isHandleEvent: false,
-                
+
             });
         }
 
@@ -380,6 +380,9 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
             isHandleEvent: false,
             isCreate: false,
             isShowModal: false,
+            showMessage: true,
+            isValidate: response.isValidate,
+            isError: response.isError
         }, () => {
             this.getListStaff();
         });
@@ -398,16 +401,16 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
         this.setState({ isHandleEvent: true });
 
-        const response = await HandleRequest.Update(APP_URL.STAFF, model, model.staff_id);
+        const response = await HandleRequest.Update(APP_URL.STAFF_CRL, model, model.staff_id);
 
         if (response.isError) {
-            return this.setState({ 
-                isValidate: response.isValidate, 
+            return this.setState({
+                isValidate: response.isValidate,
                 isError: response.isError,
                 showMessage: response.isValidate,
-                errorInfo: response.message, 
+                errorInfo: response.message,
                 validateMessage: response.validateMessage,
-                isHandleEvent: false 
+                isHandleEvent: false
             });
         }
 
@@ -418,13 +421,16 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
                 isError: response.isError,
                 showMessage: response.isValidate,
                 isHandleEvent: false,
-                
+
             });
         }
 
         this.setState({
             isHandleEvent: false,
-            isShowModal: false
+            isShowModal: false,
+            showMessage: true,
+            isValidate: response.isValidate,
+            isError: response.isError
         }, () => {
             this.getListStaff();
         });
@@ -442,13 +448,28 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
         this.setState({ isHandleEvent: true });
 
-        const response = await HandleRequest.Destroy(APP_URL.STAFF, id);
-
+        const response = await HandleRequest.Destroy(APP_URL.STAFF_CRL, id);
+        debugger;
         if (response.isError) {
-            return this.setState({errorInfo: response.message, isHandleEvent: false });
+            return this.setState(
+                {
+                    isValidate: response.isValidate,
+                    isError: response.isError,
+                    showMessage: response.isValidate,
+                    errorInfo: response.message,
+                    validateMessage: response.validateMessage,
+                    isHandleEvent: false
+                });
         }
 
-        this.setState({ isHandleEvent: false, isShowModal: false });
+        this.setState({
+            isHandleEvent: false,
+            isShowModal: false ,
+            isValidate: response.isValidate,
+            validateMessage: response.validateMessage,
+            isError: response.isError,
+            showMessage: true,
+        });
         this.getListStaff();
     }
 
@@ -464,8 +485,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (this.state.orderBy === id && this.state.order === 'desc') {
             order = 'asc';
         }
-        
-        
+
+
         return this.setState((prevState) => ({
             ...prevState, orderBy: orderBy, order: order
         }), () => {

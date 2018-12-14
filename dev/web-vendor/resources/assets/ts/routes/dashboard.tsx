@@ -2,7 +2,6 @@
 // @material-ui/icons
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import Image from "@material-ui/icons/Image";
-import Apps from "@material-ui/icons/Apps";
 import Person from "@material-ui/icons/Person";
 import RateReview from "@material-ui/icons/RateReview";
 import ShoppingBasket from "@material-ui/icons/ShoppingBasket";

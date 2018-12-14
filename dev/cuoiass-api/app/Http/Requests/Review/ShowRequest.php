@@ -5,7 +5,7 @@ namespace App\Http\Requests\Review;
 use App\Http\Requests\RequestAbstract;
 use Illuminate\Validation\Rule;
 
-class GetRequest extends RequestAbstract
+class ShowRequest extends RequestAbstract
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +26,8 @@ class GetRequest extends RequestAbstract
     {
         return [
             'review_response_vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
-            'limit' => 'integer',
-            'orderBy' => Rule::in(['review_id', 'review_content', 'review_date'
-                    , 'bookings.booked_cd', 'bookings.booked_pro_name',
-                    'products.prd_cd', 'customers.first_name', 'customers.last_name']
-            ),
-            'order' => Rule::in(['asc', 'desc']),
+            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
+            'review_id' => ['required','integer', 'exists:reviews,review_id'],
         ];
     }
 }

@@ -224,15 +224,15 @@ abstract class Repository implements IRepository
     {
         $model = $this->model->newQuery()->find($id);
         if (!$model) {
-            return false;
+            return null;
         }
 
         $model->fill($attributes);
         if ($model->save()) {
-            return true;
+            return $model;
         }
 
-        return false;
+        return $model;
     }
 
     /**

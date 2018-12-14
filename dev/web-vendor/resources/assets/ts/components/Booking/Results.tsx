@@ -6,7 +6,7 @@ import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
 import CardHeader from '../../common/Card/CardHeader';
-import { LinearProgress, createStyles, Theme, withStyles, FormLabel, TablePagination } from '@material-ui/core';
+import { createStyles, Theme, withStyles, FormLabel, TablePagination } from '@material-ui/core';
 import CardBody from '../../common/Card/CardBody';
 import { infoColor } from '../../../styles/material-dashboard-pro-react';
 import { getStatus, searchQueryStringToArray, isEmpty, } from '../../common/Utils';
@@ -14,6 +14,7 @@ import { getStatus, searchQueryStringToArray, isEmpty, } from '../../common/Util
 import Accordion from '../../common/Accordion/Accordion';
 import Table from '../../common/Table/Table';
 import API_URL from '../../bootstrap/Url';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
 
 
 const styles = (theme: Theme) => createStyles({
@@ -56,21 +57,12 @@ const styles = (theme: Theme) => createStyles({
         }
     },
 
-    backLink :{
+    backLink: {
         color: infoColor
     },
 
     status: {
         textTransform: "uppercase"
-    },
-    progress: {
-        color: infoColor
-    },
-    linearColorPrimary: {
-        backgroundColor: '#FFFFFF',
-    },
-    linearBarColorPrimary: {
-        backgroundColor: infoColor,
     },
     icons: {
         marginLeft: theme.spacing.unit,
@@ -92,7 +84,7 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
         headers: [],
         activePage: CONSTANT.CURRENT_PAGE,
         filters: CONSTANT.UNDEFINED,
-        orderBy: 'booked_cd',
+        orderBy: 'booked_date',
         order: 'desc',
         searchForm: {
             booked_id: "",
@@ -111,6 +103,18 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
+
+        //get Request param
+        var searchs = this.props.match.params.search;
+        this.setState({
+            filters: searchs ? searchs : undefined,
+        }, () => {
+            this.getBookings();
+        })
+
+    }
+
+    private setTableHeader = () => {
         const headers = [
             { id: 'id', numeric: false, disablePadding: true, label: '#' },
             { id: 'booked_cd', numeric: false, disablePadding: true, label: 'Mã đơn hàng' },
@@ -122,15 +126,6 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
             { id: 'action', numeric: false, disablePadding: true, label: '' },
         ];
         this.setState({ headers });
-
-        //get Request param
-        var searchs = this.props.match.params.search;
-        this.setState({
-            filters: searchs ? searchs : undefined,
-        }, () => {
-            this.getBookings();
-        })
-
     }
 
     public componentWillUnmount() {
@@ -253,7 +248,7 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
                     </FormLabel>
                 </GridItem>
                 <GridItem xs={12} sm={2} md={2}>
-                    <FormLabel className={classes.valueHorizontal }>
+                    <FormLabel className={classes.valueHorizontal}>
                         <a href="#back" className={classes.backLink} onClick={() => {
                             var params = this.props.history.location.pathname.split("/");
                             var param = params[params.length - 1];
@@ -272,10 +267,8 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
                             <CardHeader color="primary">
                                 <h4 className={classes.cardTitleWhite}>Tìm kiếm đơn hàng</h4>
                                 {isLoading &&
-                                    <LinearProgress classes={{
-                                        colorPrimary: classes.linearColorPrimary,
-                                        barColorPrimary: classes.linearBarColorPrimary,
-                                    }} />
+                                    <CustomLinearProgress
+                                        color="info" />
                                 }
                             </CardHeader>
                             <CardBody>
@@ -391,7 +384,7 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
         const signal = this.abortControler.signal;
         //TODO set request api page, limit
         // Call api get bookings
-        const response = await HandleRequest.GetList(API_URL.BOOKING, activePage + 1, limit, orderBy, order, filters, signal);
+        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL, activePage + 1, limit, orderBy, order, filters, signal);
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }
@@ -401,6 +394,7 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
             totalItem: response.result.total,
             isLoading: false,
         });
+        this.setTableHeader();
 
     }
 

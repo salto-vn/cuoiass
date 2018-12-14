@@ -22,7 +22,7 @@ const customDropdownStyle = (theme:Theme) => createStyles({
   },
   pooperNav: {
     [theme.breakpoints.down("sm")]: {
-      position: "static !important",
+      position: "static" as "static",
       left: "unset !important",
       top: "unset !important",
       transform: "none !important",

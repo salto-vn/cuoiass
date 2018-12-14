@@ -54,7 +54,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  *
  * @package App\Models
  */
-class Booking extends Eloquent
+class Booking extends Model
 {
     protected $primaryKey = 'booked_id';
 
@@ -175,4 +175,5 @@ class Booking extends Eloquent
     {
         return $this->hasMany(\App\Models\Review::class, 'booked_id');
     }
+
 }

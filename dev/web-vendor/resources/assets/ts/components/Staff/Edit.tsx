@@ -1,7 +1,7 @@
 import * as React from 'react';
 // import { Select } from '../../common/FormControls/Select';
 // import * as HandleRequest from '../../api/HandleRequest';
-import { IStaff, IValidateModel } from '../../interface/IStaff';
+import { IValidateModel } from '../../interface/IStaff';
 import { isEmptyKeyInObject, showError } from '../../common/Utils';
 import { ValidateStaff } from '../../common/Validate/StaffValidate';
 import { ValidateModel, StaffModel } from '../../model/StaffModel';
@@ -14,10 +14,12 @@ import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import CardFooter from '../../common/Card/CardFooter';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import CardAvatar from '../../common/Card/CardAvatar';
-import { createStyles, withStyles, Theme, LinearProgress } from '@material-ui/core';
+import { createStyles, withStyles, Theme } from '@material-ui/core';
 import avatar from "../../../img/faces/marc.jpg";
 import CustomSelect, { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 import { infoColor } from '../../../styles/material-dashboard-pro-react';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
+import { IFormState } from '../../interface/IForm';
 
 
 interface IStaffModalProp {
@@ -34,7 +36,7 @@ interface IStaffModalProp {
     isLoading: boolean
 }
 
-interface IinitState {
+interface IinitState extends IFormState{
     // source: ISourceDropdown[];
     model: StaffModel,
     isSubmitDisabled: boolean,
@@ -79,18 +81,22 @@ const styles = (theme: Theme) => createStyles({
 
 
 class StaffModal extends React.Component<IStaffModalProp, IinitState> {
-    clientError: ValidateModel = { staff_id: "init", email: "init", address: "init", password: "init", phone: "init", role_id: "init", staff_name: "init", vendor_id: "init" };
     public state = {
         // source: this.props.source,
         model: this.props.model,
         isSubmitDisabled: false,
-        clientError: this.clientError,
+        clientError: new ValidateModel(),
+        isError: false,
+        isValidate: this.props.isValidate,
+        validateMessage: this.props.errorInfo
+        
     }
 
     componentDidMount() {
         this.setState({
             isSubmitDisabled: this.props.isCreate ? true : false,
-        })
+            validateMessage: this.props.errorInfo
+        });
     }
 
     public handleSubmit = (evt: any) => {
@@ -103,8 +109,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
 
         const { model } = this.state;
         this.props.isCreate ? this.props.onCreate(model) : this.props.onUpdate(model);
-        this.setState({
-        });
+        
     }
 
 
@@ -124,7 +129,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
         const errMessage = ValidateStaff(isRequired, name, value);
         this.setState({
             model: { ...this.state.model, [name]: value ? value : "" },
-            clientError: { ...this.state.clientError, [name]: errMessage },
+            clientError: { ...this.state.clientError, [name]: errMessage }
         }, () => {
             this.canSubmit();
         });
@@ -140,7 +145,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
 
 
     public render() {
-        const { classes, modalTitle, isCreate, errorInfo, roles, isLoading } = this.props;
+        const { classes, modalTitle, isCreate, roles, isLoading,errorInfo } = this.props;
+        
         const { model, clientError, isSubmitDisabled } = this.state;
         var roleSource: IOption[] = [];
         const inputStSffN = showError(clientError, errorInfo, "staff_name");
@@ -168,10 +174,8 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                     <h4 className={classes.cardTitleWhite}>{modalTitle}</h4>
                                     <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
                                     {isLoading &&
-                                        <LinearProgress classes={{
-                                            colorPrimary: classes.linearColorPrimary,
-                                            barColorPrimary: classes.linearBarColorPrimary,
-                                        }} />
+                                      <CustomLinearProgress
+                                      color="info"/>
                                     }
                                 </CardHeader>
                                 <CardBody>

@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Booking;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\RequestAbstract;
 use Illuminate\Validation\Rule;
 
-class GetRequest extends FormRequest
+class GetRequest extends RequestAbstract
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,6 +25,7 @@ class GetRequest extends FormRequest
     public function rules()
     {
         return [
+            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
             'limit' => 'integer',
             'orderBy' => Rule::in([
                     'booked_cd', 'booked_pro_name', 'booked_date'
@@ -34,4 +35,5 @@ class GetRequest extends FormRequest
             'order' => Rule::in(['asc', 'desc']),
         ];
     }
+
 }

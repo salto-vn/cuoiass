@@ -13,7 +13,7 @@ import View from "@material-ui/icons/Description";
 import Delete from "@material-ui/icons/Delete";
 import Button from '../FormControls/CustomButtons/Button';
 import CustomInput from '../FormControls/CustomInput/CustomInput';
-import { TableSortLabel, FormControl, InputLabel } from '@material-ui/core';
+import { TableSortLabel } from '@material-ui/core';
 import CustomSelect, { IOption } from '../FormControls/CustomSelect/CustomSelect';
 import Datetime from "react-datetime";
 import { isDateCorrectFormat } from '../Utils';
@@ -245,22 +245,14 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                           {onEdit !== undefined ?
                             <Button
                               color={window.innerWidth > 959 ? "transparent" : "white"}
-                              justIcon={window.innerWidth > 959}
-                              simple={!(window.innerWidth > 959)}
-                              aria-owns={open ? "menu-list-grow" : null}
-                              aria-haspopup="true"
                               onClick={this.createEditHandler.bind(this, prop)}
-                              className={classes.actionButton}
+                              className={classes.button}
                             >
                               <Edit className={classes.icon} />
                             </Button> : ""}
                           {onView !== undefined ?
                             <Button
                               color={window.innerWidth > 959 ? "transparent" : "white"}
-                              justIcon={window.innerWidth > 959}
-                              simple={!(window.innerWidth > 959)}
-                              aria-owns={open ? "menu-list-grow" : null}
-                              aria-haspopup="true"
                               onClick={this.createViewHandler.bind(this, prop)}
                               className={classes.button}
                             >
@@ -268,12 +260,8 @@ class CustomTable extends React.Component<ICustomTable, {}>{
                             </Button> : ""}
                           {onDelete !== undefined ?
                             <Button
-                              color={window.innerWidth > 959 ? "transparent" : "white"}
-                              justIcon={window.innerWidth > 959}
-                              simple={!(window.innerWidth > 959)}
-                              aria-owns={open ? "menu-list-grow" : null}
-                              aria-haspopup="true"
                               onClick={this.createDeleteHandler.bind(this, prop)}
+                              color={window.innerWidth > 959 ? "transparent" : "white"}
                               className={classes.button}
                             >
                               <Delete className={classes.icon} />

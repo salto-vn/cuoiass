@@ -21,10 +21,14 @@ use Illuminate\Http\Request;
     //Review Route
     Route::resource('reviews', 'Api\ReviewController');
     Route::resource('roles', 'Api\RoleController')->except(['create', 'destroy']);
-    Route::resource('staffs','Api\StaffController')->except(['create', 'show']);
-    Route::resource('bookings','Api\BookingController');
-//});
+    Route::resource('staffs','Api\StaffController')->except(['create', 'edit']);
+    Route::resource('bookings','Api\BookingController')->except(['show']);
 
-Route::fallback(function(){
-    return response()->json(['message' => 'Not Found.'], 404);
-})->name('api.fallback.404');
+
+    $router->post('/bookings/{booked_cd}', 'Api\BookingController@show');
+    $router->get('/reviews', 'Api\ReviewController@index');
+    $router->get('/reviews/{review_id}', 'Api\ReviewController@show');
+    $router->put('/reviews', 'Api\ReviewController@update');
+
+
+//});

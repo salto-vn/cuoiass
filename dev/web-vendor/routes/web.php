@@ -20,6 +20,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 $router->group(['prefix' => 'controller'], function () use ($router) {
     $router->get('/staffs', 'StaffController@initial');
+    $router->get('/staffs/{staff_id}', 'StaffController@show');
+    $router->put('/staffs/{staff_id}', 'StaffController@update');
+    $router->delete('/staffs/{staff_id}', 'StaffController@destroy');
+    $router->post('/staffs', 'StaffController@store');
+
+    $router->get('/reviews', 'ReviewController@initial');
+    $router->get('/reviews/{review_id}', 'ReviewController@show');
+    $router->put('/reviews/{review_id}', 'ReviewController@update');
+
+    $router->get('/bookings', 'BookingController@initial');
 });
 
 $router->get('/{any:.*}', 'HomeController@index');

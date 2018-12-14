@@ -48,7 +48,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  *
  * @package App\Models
  */
-class Product extends Eloquent
+class Product extends Model
 {
 	protected $casts = [
 		'price' => 'float',
@@ -141,4 +141,5 @@ class Product extends Eloquent
 	{
 		return $this->hasMany(\App\Models\SchedulePhoto::class, 'prd_id');
 	}
+
 }

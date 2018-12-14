@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Customer
- * 
+ *
  * @property int $customer_id
  * @property string $first_name
  * @property string $last_name
@@ -25,14 +25,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \Illuminate\Database\Eloquent\Collection $analysis
  * @property \Illuminate\Database\Eloquent\Collection $plans
  * @property \Illuminate\Database\Eloquent\Collection $reviews
  *
  * @package App\Models
  */
-class Customer extends Eloquent
+class Customer extends Model
 {
 	protected $primaryKey = 'customer_id';
 
@@ -71,4 +71,5 @@ class Customer extends Eloquent
 	{
 		return $this->hasMany(\App\Models\Review::class);
 	}
+
 }

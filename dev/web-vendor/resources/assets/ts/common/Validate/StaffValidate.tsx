@@ -1,18 +1,23 @@
 import { required, email, min, max } from '../Validate/Rules';
 
 export const ValidateStaff = (isRequired: boolean, name: string, value: string) => {
-    if (isRequired && name === "staff_name") {
-        if (required(value)) {
+
+    if (name === "staff_name") {
+        if (isRequired && required(value)) {
             return "Vui lòng nhập tên nhân viên";
         }
 
         if (max(value, 100)) {
             return "Tên nhân viên không được vượt quá 100 ký tự";
         }
+
+        if (min(value, 6)) {
+            return "Tên nhân viên ít nhất 6 ký tự";
+        }
     }
 
-    if (isRequired && name === "email") {
-        if (required(value)) {
+    if (name === "email") {
+        if (isRequired && required(value)) {
             return "Email không được để trống";
         }
 
@@ -21,39 +26,28 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
         }
     }
 
-    if (isRequired && name === "phone") {
-        if (required(value)) {
+    if (name === "phone") {
+        if (isRequired && required(value)) {
             return "Vui lòng nhập số điện thoại";
         }
     }
 
 
     if (name === "password") {
-        if (isRequired) {
-            if (required(value)) {
-                return "Vui lòng nhập mật khẩu";
-            }
+        if (isRequired && required(value)) {
+            return "Vui lòng nhập mật khẩu";
+        }
+        if (min(value, 6)) {
+            return "Mật khẩu phải nhiều hơn 6 ký tự";
+        }
 
-            if (min(value, 6)) {
-                return "Mật khẩu phải nhiều hơn 6 ký tự";
-            }
-
-            if (max(value, 255)) {
-                return "Mật khẩu quá dài";
-            }
-        } else {
-            // if (value && min(value, 6)) {
-            //     return "Mật khẩu phải nhiều hơn 6 ký tự";
-            // }
-
-            // if (max(value, 255)) {
-            //     return "Mật khẩu quá dài";
-            // }
+        if (max(value, 255)) {
+            return "Mật khẩu quá dài";
         }
     }
 
-    if (isRequired && name === "role_id") {
-        if (required(value)) {
+    if (name === "role_id") {
+        if (isRequired && required(value)) {
             return "Vui lòng chọn quyền";
         }
     }

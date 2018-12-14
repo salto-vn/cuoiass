@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Booking\GetRequest;
+use App\Http\Requests\Booking\ShowRequest;
 use App\Models\Booking;
 use App\Repositories\BookingRepo;
+use App\Services\BookingService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
@@ -16,27 +19,32 @@ class BookingController extends Controller
      */
     private $bookingRepo;
 
+    private $bookingService;
+
     /**
      * StaffController constructor.
-     * @param StaffRepo $staffRepo
+     * @param BookingRepo $bookingRepo
+     * @param BookingService $bookingService
      */
-    public function __construct(BookingRepo $bookingRepo)
+    public function __construct(BookingRepo $bookingRepo, BookingService $bookingService)
     {
         $this->bookingRepo = $bookingRepo;
+        $this->bookingService = $bookingService;
     }
 
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param GetRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(GetRequest $request)
     {
         //
         $page = (int)$request->get('page');
         $limit = (int)$request->get('limit');
-        $orderBy = $request->get('orderBy', 'booked_cd');
+        $orderBy = $request->get('orderBy', 'booked_date');
         $sortBy = $request->get('order', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
         $data = $this->bookingRepo->getListBookingbyVendor($search, $page, $limit, $orderBy, $sortBy);
@@ -59,12 +67,19 @@ class BookingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Booking $booking
+     * @param ShowRequest $request
      * @return void
      */
-    public function show(Booking $booking)
+    public function show(ShowRequest $request)
     {
-        //
+        $params = $request->validated();
+        $booked_cd = $params['booked_cd'];
+        $columns = $params['columns'];
+        $response = $this->bookingService->getBookingByCd($booked_cd, $columns);
+
+        return response()->success($response);
+
+
     }
 
     /**

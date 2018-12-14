@@ -15,7 +15,6 @@
         "@material-ui/core": "^3.6.0",
         "@material-ui/icons": "^3.0.1",
         "@types/classnames": "^2.2.6",
-        "@types/jest": "^23.3.7",
         "@types/node": "^10.12.0",
         "@types/react": "^16.4.18",
         "@types/react-dom": "^16.0.9",
@@ -26,13 +25,12 @@
         "cross-env": "^5.1",
         "file-loader": "^2.0.0",
         "i": "^0.3.6",
-        "jest": "^22.0.1",
         "laravel-mix": "^3.0.0",
         "moment": "^2.22.2",
         "perfect-scrollbar": "^1.4.0",
         "react": "^16.6.0",
+        "react-bootstrap-sweetalert": "^4.4.1",
         "react-chartist": "^0.13.1",
-        "react-date-picker": "^7.0.0",
         "react-datetime": "^2.16.3",
         "react-dom": "^16.6.0",
         "react-js-pagination": "^3.0.2",
@@ -42,8 +40,9 @@
         "react-scripts-ts": "^4.0.8",
         "sass-loader": "^7.1.0",
         "ts-loader": "^2.3.7",
-        "typescript": "^3.1.2",
-        "webpack": "^3.11.0"
+        "webpack": "^3.0.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "typescript": "^3.1.2"
+    }
 }

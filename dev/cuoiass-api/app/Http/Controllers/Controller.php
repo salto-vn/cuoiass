@@ -17,6 +17,12 @@ class Controller extends BaseController
      */
     protected function toJsonPaginate($data)
     {
-        return response()->json(['data' => $data->items(), 'total' => $data->total()]);
+        return response()->json(
+            [
+                'status' => 'OK',
+                'data' => $data->items(),
+                'total' => $data->total()
+            ]
+        );
     }
 }

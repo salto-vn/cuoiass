@@ -39,6 +39,25 @@ const customSelectStyle = createStyles({
       }
     }
   },
+  underline: {
+    "&:hover:before,&:before": {
+      borderColor: "#D2D2D2 !important",
+      borderWidth: "1px !important"
+    },
+    "&:after": {
+      borderColor: primaryColor
+    }
+  },
+  underlineError: {
+    "&:after": {
+      borderColor: dangerColor
+    }
+  },
+  underlineSuccess: {
+    "&:after": {
+      borderColor: successColor
+    }
+  },
   labelRoot: {
     ...defaultFont,
     color: "#AAAAAA !important",

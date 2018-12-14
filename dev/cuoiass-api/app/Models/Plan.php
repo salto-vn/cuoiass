@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Plan
- * 
+ *
  * @property string $plan_id
  * @property \Carbon\Carbon $plan_date
  * @property \Carbon\Carbon $org_date
@@ -25,13 +25,13 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Customer $customer
  * @property \Illuminate\Database\Eloquent\Collection $bookings
  *
  * @package App\Models
  */
-class Plan extends Eloquent
+class Plan extends Model
 {
 	protected $primaryKey = 'plan_id';
 	public $incrementing = false;

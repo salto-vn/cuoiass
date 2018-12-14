@@ -2,6 +2,7 @@ import { IProduct } from './IProduct';
 import { ICustomer } from './ICustomer';
 import { IBooking } from './IBooking';
 import { ValidateModel } from '../model/FeedbackModel';
+import { IFormState } from './IForm';
 
 
 export interface Feedbacks {
@@ -75,16 +76,8 @@ export interface IFeedbackState {
     filters?: string,
 }
 
-export interface IVFeedbackState {
-    model: any,
+export interface IVFeedbackState extends IFormState {
     isShowImageModal: boolean,
     image: string,
-    isSubmitDisabled: boolean,
     clientError: ValidateModel,
-    isHandleEvent: boolean,
-    isValidate: boolean | undefined,
-    isError: boolean,
-    isLoading:boolean,
-    showMessage: boolean,
-    validateMessage: any,
 }

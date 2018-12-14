@@ -9,10 +9,11 @@ import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
 import CardHeader from '../../common/Card/CardHeader';
 import { infoColor } from '../../../styles/material-dashboard-pro-react';
-import { Theme, createStyles, LinearProgress, withStyles, TablePagination } from '@material-ui/core';
+import { Theme, createStyles, withStyles, TablePagination } from '@material-ui/core';
 import CardBody from '../../common/Card/CardBody';
 import Table from '../../common/Table/Table';
 import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
 
 
 const styles = (theme: Theme) => createStyles({
@@ -90,6 +91,16 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
+
+        this.getListFeedback();
+    }
+
+    public componentWillUnmount() {
+        this.abortControler.abort();
+    }
+
+
+    private setTableHeader = () => {
         var reviewRateSource: IOption[] = [];
         //Convert Datajson to Array with last index id PK key.
         for (let i: number = 1; i <= 5; i++) {
@@ -99,35 +110,27 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
             };
             reviewRateSource.push(option);
         }
-        
-        //TODO
         const feedbacHeader = [
             { id: 'id', numeric: false, disablePadding: true, label: '#', type: 'none' },
             { id: 'filter_prd_cd', numeric: false, disablePadding: true, label: 'MSP', type: 'text' },
-            { id: 'filter_booked_pro_name', numeric: false, disablePadding: true, label: 'Tên sản phẩm', type: 'text'},
+            { id: 'filter_booked_pro_name', numeric: false, disablePadding: true, label: 'Tên sản phẩm', type: 'text' },
             { id: 'filter_customer_name', numeric: false, disablePadding: true, label: 'Tên khách hàng', type: 'text' },
             { id: 'filter_review_date', numeric: false, disablePadding: true, label: 'Ngày', type: 'date' },
             { id: 'filter_review_content', numeric: false, disablePadding: true, label: 'Nội dung', type: 'text' },
-            { id: 'filter_review_rate', numeric: false, disablePadding: true, label: 'Tỷ lệ', type: 'select', sources:reviewRateSource },
+            { id: 'filter_review_rate', numeric: false, disablePadding: true, label: 'Tỷ lệ', type: 'select', sources: reviewRateSource },
             { id: 'action', numeric: false, disablePadding: true, label: '' },
         ];
 
         this.setState({ feedbacHeader })
-        this.getListFeedback();
     }
-
-    public componentWillUnmount() {
-        this.abortControler.abort();
-    }
-
-
     /**
      * Render event will be run first time, 
      * on initial this Component 
      * Render view
      */
     public render() {
-        const { feedbackGrid, totalItem, limit, orderBy, order, activePage, isLoading, feedbacHeader } = this.state;
+        const { feedbackGrid, totalItem, limit, orderBy, order, activePage, isLoading,feedbacHeader } = this.state;
+
         const { classes } = this.props;
         const listdata: Array<string[]> = new Array();
         //Convert Datajson to Array with last index id PK key.
@@ -151,10 +154,8 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
                                     </span>
                                     <div>
                                         {isLoading &&
-                                            <LinearProgress classes={{
-                                                colorPrimary: classes.linearColorPrimary,
-                                                barColorPrimary: classes.linearBarColorPrimary,
-                                            }} />
+                                            <CustomLinearProgress
+                                                color="info" />
                                         }
                                     </div>
                                 </div>
@@ -190,6 +191,7 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
                         </Card>
                     </GridItem>
                 </GridContainer>
+               
             </>
 
         );
@@ -201,8 +203,8 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
         if (this.state.orderBy === id && this.state.order === 'desc') {
             order = 'asc';
         }
-        
-        
+
+
         return this.setState((prevState) => ({
             ...prevState, orderBy: orderBy, order: order
         }), () => {
@@ -250,7 +252,7 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
         const signal = this.abortControler.signal;
         //TODO set request api page, limit
         // Call api get Feedback
-        const response = await HandleRequest.GetList(API_URL.REVIEW, activePage + 1, limit, orderBy, order, filters, signal);
+        const response = await HandleRequest.GetList(API_URL.REVIEW_CRL, activePage + 1, limit, orderBy, order, filters, signal);
 
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
@@ -261,6 +263,7 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
             totalItem: response.result.total,
             isLoading: false,
         });
+        this.setTableHeader();
     }
 
     /**
@@ -273,7 +276,7 @@ class FeedbackScreen extends React.Component<{ history: any, classes: any }, IFe
             return;
         }
         return this.setState((prevState) => ({
-            ...prevState, activePage: pageNumber, isCLickPaginate: true
+            ...prevState, activePage: pageNumber
         }), () => {
 
             this.getListFeedback();

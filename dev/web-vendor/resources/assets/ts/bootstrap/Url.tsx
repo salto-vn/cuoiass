@@ -1,9 +1,7 @@
 const API_URL = {
     'STAFF_CRL': '/controller/staffs',
-    'STAFF': '/api/staffs',
-    'ROLE': '/api/roles',
-    'REVIEW': '/api/reviews',
-    'BOOKING': '/api/bookings',
+    'REVIEW_CRL': '/controller/reviews',
+    'BOOKING_CRL': '/controller/bookings',
 };
 
 export default API_URL;

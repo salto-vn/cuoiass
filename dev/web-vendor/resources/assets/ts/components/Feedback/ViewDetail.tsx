@@ -16,9 +16,11 @@ import CardBody from '../../common/Card/CardBody';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import CardFooter from '../../common/Card/CardFooter';
 import { infoColor } from '../../../styles/material-dashboard-pro-react';
-import { createStyles, Theme, withStyles, Typography, Modal, LinearProgress } from '@material-ui/core';
+import { createStyles, Theme, withStyles, Typography, Modal } from '@material-ui/core';
 import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import CONSTANT from '../../bootstrap/Constant';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
+import SweetAlert from "react-bootstrap-sweetalert";
 
 
 
@@ -80,14 +82,13 @@ const styles = (theme: Theme) => createStyles({
 });
 
 class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: any, classes: any }, IVFeedbackState> {
-    clientError: ValidateModel = { review_id: "init", review_response_content: "init", review_response_vendor_id: "init" };
     abortControler = new AbortController();
 
     public state = {
         model: new FeedbackModel(),
         isShowImageModal: false,
         image: '',
-        clientError: this.clientError,
+        clientError: new ValidateModel(),
         isSubmitDisabled: false,
         isHandleEvent: false,
         isError: false,
@@ -95,22 +96,47 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
         showMessage: false,
         isLoading: true,
         validateMessage: { errors: "" },
+        alert: ""
     }
 
     async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
         const signal = this.abortControler.signal;
-        const response = await HandleRequest.findOne(API_URL.REVIEW, this.props.match.params.id,signal);
-        let model = Object.assign(new FeedbackModel(), response.result);
-        this.setState({
-            model,
-            isLoading: false
-        })
+        const response = await HandleRequest.findOne(API_URL.REVIEW_CRL, this.props.match.params.id, signal);
+        if (response.isError) {
+            const alert = <SweetAlert
+                style={{ display: "block", marginTop: "-100px" }}
+                title={response.message}
+                onConfirm={() => this.hideAlert()}
+                showConfirm={false}
+            >
+                Đang gặp lỗi, chuyển sang trang chính sau 3giây!
+            </SweetAlert>
+            setTimeout(this.hideAlert, 3000);
+
+            this.setState({
+                isLoading: false,
+                alert: alert
+            })
+        } else {
+            let model = Object.assign(new FeedbackModel(), response.result.data);
+            this.setState({
+                model,
+                isLoading: false
+            })
+        }
     }
 
 
     public componentWillUnmount() {
         this.abortControler.abort();
+    }
+
+    private hideAlert = () => {
+        this.setState({
+            alert: null
+        });
+        this.props.history.push("/");
     }
 
     /**
@@ -128,8 +154,9 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
         const { model } = this.state;
         // model.review_response_vendor_id = 1; //Logon User TODO
         this.setState({ isHandleEvent: true });
-        const response = await HandleRequest.Update(API_URL.REVIEW, model, this.props.match.params.id);
+        const response = await HandleRequest.Update(API_URL.REVIEW_CRL, model, this.props.match.params.id);
         if (response.isError) { //Server Error 500 not 422 validtion
+
             return this.setState({
                 isValidate: response.isValidate,
                 isError: response.isError,
@@ -149,7 +176,6 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
                 isLoading: false,
             });
         } else {
-
             return this.setState({
                 showMessage: true,
                 isValidate: response.isValidate,
@@ -207,6 +233,7 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
         const inputStRvwCtnt = showError(clientError, validateMessage, 'review_response_content');
 
         return (<>
+            {this.state.alert}
             <GridContainer>
                 <GridItem xs={12} sm={12} md={8}>
                     <Card>
@@ -215,10 +242,8 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
                             <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
                             <div>
                                 {isLoading &&
-                                    <LinearProgress classes={{
-                                        colorPrimary: classes.linearColorPrimary,
-                                        barColorPrimary: classes.linearBarColorPrimary,
-                                    }} />
+                                    <CustomLinearProgress
+                                        color="info" />
                                 }
                             </div>
                         </CardHeader>

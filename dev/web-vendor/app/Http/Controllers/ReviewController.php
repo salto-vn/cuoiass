@@ -4,57 +4,58 @@ namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
-class StaffController extends ApiController
+class ReviewController extends ApiController
 {
+
+    protected $apiName = "reviews";
+
     /**
+     * Display Reviews list screen
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function initial(Request $request) {
+
+        $params = array_filter($request->input());
+        $params['review_response_vendor_id'] = '1'; //TODO;
+        $params['vendor_id'] = '1'; //TODO;
+        $response = $this->api->requestNoCache($this->apiName, "GET", $params);
+        return response()->json(
+            json_decode($response->getBody()),
+            $response->getStatusCode()
+        );
+    }
+
+    public function show(Request $request) {
+        $params = array_filter($request->input());
+        $params['review_response_vendor_id'] = '1'; //TODO;
+        $params['vendor_id'] = '1'; //TODO;
+        $params['review_id'] = $request->review_id; //TODO;
+        $routeName = str_replace('controller' . '/', '', $request->path());
+        $response = $this->api->requestNoCache($routeName, "GET", $params);
+        return response()->json(
+            json_decode($response->getBody()),
+            $response->getStatusCode()
+        );
+    }
+
+    /** Answer a review
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function initial(Request $request)
+    public function update(Request $request)
     {
-        $client = new Client([
-            'base_uri' => config('wedding.api_url'),
-            'http_errors' => false,
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ],
-            'verify' => false
-        ]);
-
-        //Call Roles API to get Role List
-        $apiName = 'roles';
+        //Call Update Review API
         $params = array_filter($request->input());
-        $params['system_code'] = 'BACKYARD';
-        $roles_rs = $client->request('GET', $apiName, [
-            'json' => $params,
-        ]);
-
-        if ($roles_rs->getStatusCode() != '200') {
-            return response($roles_rs->getBody(), $roles_rs->getStatusCode());
-        }
-
-        //Call Staff API to get Staff list
-        //Prepare params
-        $apiName = 'staffs';
-        $columns = $this->staffColumns();
-        $params = array_filter($request->input());
-        $params['vendor_id'] = '1'; //TODO: hard data
-        $input = $this->buildSearchColumn($params, $columns);
-        $response = $client->request('GET', $apiName, [
-            'json' => $input,
-        ]);
-
-        if ($response->getStatusCode() != '200') {
-            return response($response->getBody(), $response->getStatusCode());
-        }
-        $rs = [
-            'roles' => json_decode($roles_rs->getBody()),
-            'staffs' => json_decode($response->getBody())
-        ];
-        return response()->json($rs);
+        $params['review_response_vendor_id'] = '1'; //TODO;
+        $params['vendor_id'] = '1'; //TODO;
+        $response = $this->api->requestNoCache($this->apiName, "PUT", $params);
+        return response()->json(
+            json_decode($response->getBody()),
+            $response->getStatusCode()
+        );
     }
-
 
 }

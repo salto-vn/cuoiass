@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\staff\GetRequest;
+use App\Http\Requests\Staff\ShowRequest;
 use App\Http\Requests\Staff\StoreStaff;
 use App\Http\Requests\Staff\UpdateStaff;
 use App\Models\Staff;
@@ -30,7 +32,7 @@ class StaffController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(GetRequest $request)
     {
         $page = (int)$request->get('page');
         $limit = (int)$request->get('limit');
@@ -61,7 +63,7 @@ class StaffController extends Controller
      * @param Staff $staff
      * @return Staff
      */
-    public function edit(Staff $staff)
+    public function show(ShowRequest $request, Staff $staff)
     {
         $role = $staff->role()->get(["role_name","role_code"]);
         if (isset($role[0])) {
@@ -101,6 +103,6 @@ class StaffController extends Controller
     {
         $staff->delete();
 
-        return response()->json(['status' => 'OK']);
+        return response()->success(['status' => 'OK']);
     }
 }

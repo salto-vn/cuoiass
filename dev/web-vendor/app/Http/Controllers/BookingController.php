@@ -6,10 +6,10 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class ReviewController extends ApiController
+class BookingController extends ApiController
 {
 
-    protected $apiName = "reviews";
+    protected $apiName = "bookings";
 
     /**
      * Display Reviews list screen
@@ -19,7 +19,6 @@ class ReviewController extends ApiController
     public function initial(Request $request) {
 
         $params = array_filter($request->input());
-        $params['review_response_vendor_id'] = '1'; //TODO;
         $params['vendor_id'] = '1'; //TODO;
         $response = $this->api->requestNoCache($this->apiName, "GET", $params);
         return response()->json(
@@ -30,11 +29,15 @@ class ReviewController extends ApiController
 
     public function show(Request $request) {
         $params = array_filter($request->input());
-        $params['review_response_vendor_id'] = '1'; //TODO;
         $params['vendor_id'] = '1'; //TODO;
-        $params['review_id'] = $request->review_id; //TODO;
+        $params['booked_cd'] = $request->booked_cd; //TODO;
         $routeName = str_replace('controller' . '/', '', $request->path());
-        $response = $this->api->requestNoCache($routeName, "GET", $params);
+
+        //TODO:
+        //bookings
+        $bookingCols = ['status','booked_cd','booked_pro_name','booked_size','booked_color'
+                        , 'booked_material','booked_style', ''];
+        $response = $this->api->requestNoCache($routeName, "POST", $params);
         return response()->json(
             json_decode($response->getBody()),
             $response->getStatusCode()
@@ -49,8 +52,8 @@ class ReviewController extends ApiController
     {
         //Call Update Review API
         $params = array_filter($request->input());
-        $params['review_response_vendor_id'] = '1'; //TODO;
         $params['vendor_id'] = '1'; //TODO;
+        $params['booked_cd'] = $request->booked_cd; //TODO;
         $response = $this->api->requestNoCache($this->apiName, "PUT", $params);
         return response()->json(
             json_decode($response->getBody()),

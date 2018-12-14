@@ -3,12 +3,13 @@
 namespace App\Exceptions;
 
 use Exception;
-use GuzzleHttp\Exception\ServerException;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Providers\ResponseApiServiceProvider;
+
 
 class Handler extends ExceptionHandler
 {
@@ -49,15 +50,41 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
 
-        if ($exception instanceof ModelNotFoundException && $request->isJson()) {
-            return Route::respondWithRoute('api.fallback.404');
+        $e = $this->prepareException($e);
+
+        if ($e instanceof HttpResponseException) {
+            return $e->getResponse();
+        } elseif ($e instanceof AuthenticationException) {
+            $status  = Response::HTTP_UNAUTHORIZED;
+            $message = Response::$statusTexts[$status];
+            $errors  = [];
+        } elseif ($e instanceof ValidationException) {
+
+            $status  = $e->status;
+            $message = Response::$statusTexts[$status];
+            $errors  = $e->errors();
+        } elseif ($this->isHttpException($e)) {
+            $status  = $e->getStatusCode();
+            $message = (isset(Response::$statusTexts[$status])) ? Response::$statusTexts[$status] : '';
+            $errors  = [];
+        } else {
+            $status  = Response::HTTP_INTERNAL_SERVER_ERROR;
+            $message = 'Server Error';
+            $errors  = [];
         }
 
+        // ResponseApiServiceProviderが実行される前にエラーが発生した場合の対応
+        if (! method_exists(response(), 'error')) {
+            $app = app();
+            $provide = new ResponseApiServiceProvider($app);
+            $provide->boot();
+        }
 
-        return parent::render($request, $exception);
+        return response()->error($message, $errors, $status);
+
     }
 
     /**

@@ -12,22 +12,26 @@ namespace App\Repositories;
 use App\Models\Booking;
 use App\Utils\TableName as TBL;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 /**
- * Class StaffRepo
+ * Class BookingRepo
  *
- * @property Staff $model
- * @method Staff create(array $attributes)
+ * @property Booking $model
+ * @method Booking create(array $attributes)
  */
 class BookingRepo extends Repository
 {
+    public $model;
+
     /**
      * Specify Model class name
      * @return string
      */
     public function getModel()
     {
-        return Booking::class;
+        $this->model = Booking::class;
+        return $this->model;
     }
 
     /**
@@ -42,7 +46,7 @@ class BookingRepo extends Repository
     {
         $fieldsSearchable = [
             'booked_cd', 'booked_pro_name', 'booked_date'
-            ,'try_date', 'activate_date','status'
+            , 'try_date', 'activate_date', 'status'
             , 'customer_name'
         ];
         $tblBooking = TBL::TBL_BOOKINGS;
@@ -54,7 +58,7 @@ class BookingRepo extends Repository
             "$tblBooking.booked_cd", "$tblBooking.booked_pro_name", "$tblBooking.booked_date",
             "$tblBooking.try_date", "$tblBooking.activate_date", "$tblBooking.status",
             "$tblCustomer.first_name", "$tblCustomer.last_name"
-            ])
+        ])
             ->join("$tblPlan", "$tblBooking.plan_id", '=', "$tblPlan.plan_id")
             ->join("$tblCustomer", "$tblPlan.customer_id", '=', "$tblCustomer.customer_id");
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
@@ -64,7 +68,7 @@ class BookingRepo extends Repository
                     if (!in_array($field, $fieldsSearchable)) {
                         continue;
                     }
-                    if (in_array($field,['booked_date', 'try_date','activate_date'])) {
+                    if (in_array($field, ['booked_date', 'try_date', 'activate_date'])) {
                         if (!empty($value)) {
                             $value = Carbon::parse($value)->format('Y-m-d');
                             $model->whereDate($field, '=', "{$value}");
@@ -93,7 +97,7 @@ class BookingRepo extends Repository
             }
         }
         if (!empty($orderBy)) {
-            if($orderBy == 'customer_name') {
+            if ($orderBy == 'customer_name') {
                 $model->orderBy('first_name', $order);
             } else {
                 $model->orderBy($orderBy, $order);
@@ -102,5 +106,81 @@ class BookingRepo extends Repository
         }
         return $model->paginate($limit, null, null, $page);
     }
+
+    /**
+     * Get Booking info(Product, Customer, Booking, Plan info)
+     * @param $booked_cd
+     * @param columns:json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getBookingByCd($booked_cd, $tableCols)
+    {
+        $tblBooking = TBL::TBL_BOOKINGS;
+        $tblCustomer = TBL::TBL_CUSTOMERS;
+        $tblPlan = TBL::TBL_PLANS;
+        $tblProduct = TBL::TBL_PRODUCTS;
+
+        //Build columns search
+        $planCols = [];
+        $bookingCols = [];
+        $customerCols = [];
+        $productCols = [];
+        $planFlg = isset($tableCols[$tblPlan]) ? true : false;
+        $bookingFlg = isset($tableCols[$tblBooking]) ? true : false;
+        $customerFlg = isset($tableCols[$tblCustomer]) ? true : false;
+        $productFlg = isset($tableCols[$tblProduct]) ? true : false;
+
+        // Plan columns
+        if ($planFlg) {
+            $planCols = array_map(function ($col) use ($tblPlan) {
+                return "$tblPlan.$col";
+            }, $tableCols[$tblPlan]);
+        }
+
+        // Booking columns
+        if ($bookingFlg) {
+            $bookingCols = array_map(function ($col) use ($tblBooking) {
+                return "$tblBooking.$col";
+            }, $tableCols[$tblBooking]);
+        }
+
+        // Customer columns
+        if ($customerFlg && $planFlg) {
+            $customerCols = array_map(function ($col) use ($tblCustomer) {
+                return "$tblCustomer.$col";
+            }, $tableCols[$tblCustomer]);
+
+        }
+        // Product columns
+        if ($productFlg) {
+            $productCols = array_map(function ($col) use ($tblProduct) {
+                return "$tblProduct.$col";
+            }, $tableCols[$tblProduct]);
+        }
+
+        //Merge all Columns
+        $selectCols = array_merge($planCols, $bookingCols, $customerCols, $productCols);
+        $query = $this->model->newQuery()->select($selectCols);
+
+        if ($planFlg) {
+            $query->join("$tblPlan", "$tblBooking.plan_id", "=", "$tblPlan.plan_id");
+        }
+
+        if ($bookingFlg) {
+            $query->join("$tblCustomer", "$tblPlan.customer_id", "=", "$tblCustomer.customer_id");
+        }
+
+        if ($productFlg) {
+            $query->join("$tblProduct", function ($join) use ($tblProduct, $tblBooking) {
+                $join->on("$tblBooking.prd_id", '=', "$tblProduct.prd_id");
+                $join->on("$tblBooking.vendor_service_id", '=', "$tblProduct.vendor_service_id");
+            });
+        }
+
+        $query->where('booked_cd','=',$booked_cd);
+        return $query->first();
+
+    }
+
 
 }

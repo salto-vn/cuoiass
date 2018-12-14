@@ -7,7 +7,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 // @material-ui/icons
 // core components
 import customSelectStyle from "../../../../styles/components/customSelectStyle";
-import { FormHelperText, Select, MenuItem } from '@material-ui/core';
+import { FormHelperText, Select, MenuItem, Input } from '@material-ui/core';
 
 export interface ICustomSelect {
   classes?: any,
@@ -21,7 +21,7 @@ export interface ICustomSelect {
   helpText?: string,
   items: IOption[],
   onChange?: any,
-  value?: string
+  value?: string,
 }
 
 export interface IOption {
@@ -52,10 +52,16 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
       [classes.labelRootError]: error,
       [classes.labelRootSuccess]: success && !error
     });
+    const underlineClasses = classNames({
+      [classes.underlineError]: error,
+      [classes.underlineSuccess]: success && !error,
+      [classes.underline]: true
+    });
+
     return (
 
       <>
-        <FormControl
+        <FormControl 
           {...formControlProps}
           className={formControlProps.className + " " + classes.selectFormControl}
         >
@@ -64,7 +70,6 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
               className={classes.labelRoot + labelClasses}
               htmlFor={id}
               {...labelProps}
-
             >
               {labelText}
             </InputLabel>
@@ -78,13 +83,13 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
             id={id}
             {...inputProps}
             classes={{
-              select: classes.select
+              select: classes.select,
             }}
           >
             <MenuItem value=""
               classes={{
                 root: classes.selectMenuItem,
-                selected: classes.selectMenuItemSelected
+                selected: classes.selectMenuItemSelected,
               }}>
               <em key={0}>Chọn</em>
             </MenuItem>

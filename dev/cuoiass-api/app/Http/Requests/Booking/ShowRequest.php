@@ -2,10 +2,18 @@
 
 namespace App\Http\Requests\Booking;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\RequestAbstract;
+use App\Models\Booking;
+use App\Models\Customer;
+use App\Models\Plan;
+use App\Models\Product;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class GetRequest extends FormRequest
+use App\Utils\TableName as TBL;
+
+class ShowRequest extends RequestAbstract
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +32,26 @@ class GetRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'limit' => 'integer',
-            'orderBy' => Rule::in([
-                    'booked_cd', 'booked_pro_name', 'booked_date'
-                    ,'try_date', 'activate_date','status'
-                    , 'customer_name']
-            ),
-            'order' => Rule::in(['asc', 'desc']),
+        $booking = new Booking();
+        $customer = new Customer();
+        $product = new Product();
+        $plan = new Plan();
+        $tblBooking = TBL::TBL_BOOKINGS;
+        $tblProduct = TBL::TBL_PRODUCTS;
+        $tblCustomer = TBL::TBL_CUSTOMERS;
+        $tblPlan = TBL::TBL_PLANS;
+        $rule = [
+            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
+            'booked_cd' => ['required','exists:bookings,booked_cd'],
+            'columns.*' => [Rule::in($tblBooking,$tblProduct,$tblCustomer,$tblPlan)],
+            "columns.$tblBooking" => ['required','array',Rule::in($booking->getColumns())],
+            "columns.$tblProduct" => ['array', Rule::in($product->getColumns())],
+            "columns.$tblPlan" => ['array',"required_with:columns.$tblCustomer",Rule::in($plan->getColumns())],
+            "columns.$tblCustomer" => ['array', Rule::in($customer->getColumns())],
         ];
+
+
+        return $rule;
     }
+
 }

@@ -97,6 +97,23 @@ export const Edit = async (url: string, id: number | string) => {
     return HandleResponse(result);
 };
 
+
+/**
+* Function edit
+* @method GET
+* @param url 
+* 
+* @return HandleResponse
+*/
+export const Show = async (url: string, id: number | string) => {
+    const result = await fetch(`${url}/${id}`, {
+        method: "GET",
+        headers: headerOptions,
+    });
+
+    return HandleResponse(result);
+};
+
 /**
  * Function update
  * @method GET

@@ -2,13 +2,12 @@
 
 namespace App\Api;
 
-use App\Exceptions\VeltraException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Cache\Repository as Cache;
 
-class Veltra implements Contracts\Factory
+class Wedding implements Contracts\Factory
 {
     /**
      * @var Client
@@ -35,16 +34,15 @@ class Veltra implements Contracts\Factory
     public function __construct(Cache $cache, $config)
     {
         $this->client = new Client([
-            'base_uri' => $config['base_uri'],
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
+            'base_uri' => config('wedding.api_url'),
             'http_errors' => false,
-            'timeout' => 60.0,
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ],
+            'verify' => false
         ]);
-
-        $this->setDefaultParams($config['common']);
+        $this->params['common'] = config('wedding.common');
         $this->cache = $cache;
     }
 
@@ -55,19 +53,20 @@ class Veltra implements Contracts\Factory
      * @return mixed
      * @throws GuzzleException
      */
-    public function request($path, $params = [], $cacheKey = null)
+    public function request($path, $method, $params = [], $cacheKey = null)
     {
+
         if ($cacheKey === null) {
             $cacheKey = $this->prepareCacheKey($path, $params);
         }
+
 
         if ($this->cache->has($cacheKey)) {
             return $this->cache->get($cacheKey);
         }
 
-        $result = $this->requestNoCache($path, $params);
-
-        $this->cache->put($cacheKey, $result, \Constant::API_CACHE_EXPIRE);
+        $result = $this->requestNoCache($path, $method, $params);
+//        $this->cache->put($cacheKey, json_encode(json_decode($result)), 1440);
 
         return $result;
     }
@@ -78,23 +77,12 @@ class Veltra implements Contracts\Factory
      * @return object
      * @throws GuzzleException
      */
-    public function requestNoCache($path, $params = [])
+    public function requestNoCache($path, $method, $params = [])
     {
-        # Not log common and credit card info
-        Log::info('API request: ' . $path . PHP_EOL . json_encode(isset($params['credit_card']) ? array_except($params, ['credit_card']) : $params));
         $params = array_merge($this->params, $params);
-        $response = $this->client->request('POST', $path, ['json' => $params]);
 
-        $body = $response->getBody();
-        $result = json_decode($body);
-
-        if (400 <= $statusCode = $response->getStatusCode()) {
-            Log::alert('API response: ' . $statusCode . PHP_EOL . $body);
-
-            throw new VeltraException($statusCode, $path, $result->common->error_code ?? null);
-        }
-
-        return $result;
+        $response = $this->client->request($method, $path, ['json' => $params]);
+        return $response;
     }
 
     /**
@@ -107,13 +95,4 @@ class Veltra implements Contracts\Factory
         return md5(sprintf("%s.%s", $path, json_encode($params)));
     }
 
-    /**
-     * @param array $params
-     */
-    private function setDefaultParams($params)
-    {
-        $this->params = [
-            'common' => $params,
-        ];
-    }
 }

@@ -1,3 +1,6 @@
+/**
+ * Use it for list screen 
+ */
 export interface IListResultState{
     datas: any,
     headers: any,

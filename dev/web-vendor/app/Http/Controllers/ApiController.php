@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class ApiController extends Controller
@@ -15,23 +16,11 @@ class ApiController extends Controller
      */
     public function index(Request $request)
     {
-        $client = new Client([
-            'base_uri' => config('wedding.api_url'),
-            'http_errors' => false,
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ],
-            'verify' => false
-        ]);
 
         $routeName = str_replace(config('wedding.api_prefix') . '/', '', $request->path());
         $input = $this->convertColumns($routeName, array_filter($request->input()));
-        $response = $client->request($request->method(), $routeName, [
-            'json' => $input,
-        ]);
-
-        return response($response->getBody(), $response->getStatusCode());
+        $response = $this->api->request($routeName, $request->method(), $input);
+        return json_decode($response,true);
     }
 
     /**
@@ -102,7 +91,7 @@ class ApiController extends Controller
      *
      * @return array
      */
-    private function reviewColumns()
+    public function reviewColumns()
     {
         return [
             'filter_prd_cd' => 'products.prd_cd',
