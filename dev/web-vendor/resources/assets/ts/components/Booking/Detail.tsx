@@ -21,6 +21,7 @@ import { IFormState } from '../../interface/IForm';
 import API_URL from '../../bootstrap/Url';
 import * as HandleRequest from '../../api/HandleRequest';
 
+
 const styles = () => createStyles(
     {
         cardCategoryWhite: {
@@ -116,7 +117,8 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
     async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
         const signal = this.abortControler.signal;
-        const response = await HandleRequest.findOne(API_URL.BOOKING, this.props.match.params.id,signal);
+        const response = await HandleRequest.findOne(API_URL.BOOKING_CRL, this.props.match.params.booked_cd,signal);
+        debugger;
         // let model = Object.assign(new FeedbackModel(), response.result);
         this.setState({
             // model,

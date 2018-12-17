@@ -66,17 +66,16 @@ class Booking extends Model
         'gross_price' => 'float',
         'prd_id' => 'int',
         'vendor_service_id' => 'int',
-        'try_date' => 'date:d-m-Y H:m:i',
-        'activate_date' => 'date:d-m-Y H:m:i',
-        'booked_date' => 'date:d-m-Y H:m:i'
+//        'try_date' => 'date:d-m-Y H:m:i',
+//        'activate_date' => 'date:d-m-Y H:m:i',
+//        'booked_date' => 'date:d-m-Y H:m:i'
     ];
 
-    protected $dates = [
-        'booked_time',
-        'try_date',
-        'activate_date',
-        'booked_date'
-    ];
+//    protected $dates = [
+//        'try_date',
+//        'activate_date',
+//        'booked_date'
+//    ];
 
     protected $fillable = [
         'booked_cd',

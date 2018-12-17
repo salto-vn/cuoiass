@@ -36,7 +36,14 @@ class BookingController extends ApiController
         //TODO:
         //bookings
         $bookingCols = ['status','booked_cd','booked_pro_name','booked_size','booked_color'
-                        , 'booked_material','booked_style', ''];
+                        , 'booked_material','booked_style', 'booked_album_page'
+                        , 'booked_photo_size','booked_size_2', 'booked_color_2'
+                        , 'booked_time','try_date', 'activate_date'
+                        , 'status','memo', 'booked_date'
+                        , 'payment_name','payment_phone', 'payment_email'
+                        , 'net_price','gross_price', 'invoice_url'
+                        ];
+        $params['columns']['bookings'] = $bookingCols;
         $response = $this->api->requestNoCache($routeName, "POST", $params);
         return response()->json(
             json_decode($response->getBody()),

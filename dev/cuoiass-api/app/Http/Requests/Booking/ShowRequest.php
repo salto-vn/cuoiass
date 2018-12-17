@@ -43,7 +43,6 @@ class ShowRequest extends RequestAbstract
         $rule = [
             'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
             'booked_cd' => ['required','exists:bookings,booked_cd'],
-            'columns.*' => [Rule::in($tblBooking,$tblProduct,$tblCustomer,$tblPlan)],
             "columns.$tblBooking" => ['required','array',Rule::in($booking->getColumns())],
             "columns.$tblProduct" => ['array', Rule::in($product->getColumns())],
             "columns.$tblPlan" => ['array',"required_with:columns.$tblCustomer",Rule::in($plan->getColumns())],

@@ -6,7 +6,7 @@ import StarRate from '../../common/FormControls/StarRate';
 import { Link } from 'react-router-dom';
 import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
-import { isEmptyKeyInObject, showError, createSnackBarMess } from '../../common/Utils';
+import { isEmptyKeyInObject, showError, createSnackBarMess, parseDateFormat } from '../../common/Utils';
 import { ReviewValidate } from '../../common/Validate/ReviewValidate';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
@@ -21,7 +21,6 @@ import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import CONSTANT from '../../bootstrap/Constant';
 import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
 import SweetAlert from "react-bootstrap-sweetalert";
-
 
 
 const styles = (theme: Theme) => createStyles({
@@ -336,9 +335,9 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
                                 <div className={classes.description}>
                                     <b>Mã đặt: <Link to={"/booking/" + model.booking[0].booked_cd}> {model.booking[0].booked_cd}</Link><br /></b>
 
-                                    Ngày mua: {model.booking[0].booked_date}<br />
-                                    Ngày xem(trải nghiệm): {model.booking[0].try_date}<br />
-                                    Ngày nhận(tổ chức): {model.booking[0].activate_date}<br />
+                                    Ngày mua: {parseDateFormat(model.booking[0].booked_date, "DD-MM-YYYY")}<br />
+                                    Ngày xem(trải nghiệm): {parseDateFormat(model.booking[0].try_date, "DD-MM-YYYY")}<br />
+                                    Ngày nhận(tổ chức): {parseDateFormat(model.booking[0].activate_date, "DD-MM-YYYY")}<br />
                                 </div></>}
                         </CardBody>
                     </Card>

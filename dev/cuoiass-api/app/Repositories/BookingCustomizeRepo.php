@@ -9,18 +9,16 @@
 namespace App\Repositories;
 
 
-use App\Models\BookedOption;
+use App\Models\BookedCustomizeField;
 use App\Utils\TableName as TBL;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 /**
- * Class BookingRepo
+ * Class BookingCustomizeRepo
  *
- * @property Booking $model
- * @method Booking create(array $attributes)
+ * @property BookedCustomizeField $model
+ * @method BookedCustomizeField create(array $attributes)
  */
-class BookingOptionRepo extends Repository
+class BookingCustomizeRepo extends Repository
 {
     public $model;
 
@@ -30,9 +28,24 @@ class BookingOptionRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = BookedOption::class;
+        $this->model = BookedCustomizeField::class;
         return $this->model;
     }
 
+
+    public function getBookedCusFldsByBookedId($bookedId) {
+        $tblCustomizeField = TBL::TBL_CUSTOMIZE_FIELDS;
+        $tblBookingCusFld = TBL::TBL_BOOKED_CUSTOMIZE_FIELDS;
+
+        $query = $this->model->newQuery()->select([
+                "$tblBookingCusFld.customize_field_answer"
+                ,"$tblCustomizeField.customize_field_id"
+                ,"$tblCustomizeField.customize_field_name",
+                "$tblCustomizeField.customize_field_type"
+                ,"$tblCustomizeField.customize_field_value"
+            ])->join("$tblCustomizeField","$tblBookingCusFld.customize_field_id","=","$tblCustomizeField.customize_field_id")
+        ->where("$tblBookingCusFld.booked_id","=",$bookedId);
+        return $query->get();
+    }
 
 }

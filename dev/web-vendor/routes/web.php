@@ -30,6 +30,7 @@ $router->group(['prefix' => 'controller'], function () use ($router) {
     $router->put('/reviews/{review_id}', 'ReviewController@update');
 
     $router->get('/bookings', 'BookingController@initial');
+    $router->get('/bookings/{booked_cd}', 'BookingController@show');
 });
 
 $router->get('/{any:.*}', 'HomeController@index');

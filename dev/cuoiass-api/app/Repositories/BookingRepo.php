@@ -11,8 +11,6 @@ namespace App\Repositories;
 
 use App\Models\Booking;
 use App\Utils\TableName as TBL;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class BookingRepo
@@ -39,10 +37,10 @@ class BookingRepo extends Repository
      * @param $page
      * @param $limit
      * @param $orderBy
-     * @param $sortBy
+     * @param $order
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getListBookingbyVendor($search, $page, $limit, $orderBy, $order)
+    public function getListBookingByVendor($search, $page, $limit, $orderBy, $order)
     {
         $fieldsSearchable = [
             'booked_cd', 'booked_pro_name', 'booked_date'
@@ -110,7 +108,7 @@ class BookingRepo extends Repository
     /**
      * Get Booking info(Product, Customer, Booking, Plan info)
      * @param $booked_cd
-     * @param columns:json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
+     * @param $tableCols:json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getBookingByCd($booked_cd, $tableCols)
@@ -119,6 +117,7 @@ class BookingRepo extends Repository
         $tblCustomer = TBL::TBL_CUSTOMERS;
         $tblPlan = TBL::TBL_PLANS;
         $tblProduct = TBL::TBL_PRODUCTS;
+        $tblVendorService = TBL::TBL_VENDOR_SERVICES;
 
         //Build columns search
         $planCols = [];
@@ -158,15 +157,19 @@ class BookingRepo extends Repository
             }, $tableCols[$tblProduct]);
         }
 
+        //Default col
+        $defaultCols = ["$tblVendorService.vendor_service_id","$tblVendorService.service_code"];
+
         //Merge all Columns
-        $selectCols = array_merge($planCols, $bookingCols, $customerCols, $productCols);
+        $selectCols = array_merge($defaultCols, $planCols, $bookingCols, $customerCols, $productCols);
         $query = $this->model->newQuery()->select($selectCols);
+        $query->join("$tblVendorService", "$tblBooking.vendor_service_id", "=", "$tblVendorService.vendor_service_id");
 
         if ($planFlg) {
             $query->join("$tblPlan", "$tblBooking.plan_id", "=", "$tblPlan.plan_id");
         }
 
-        if ($bookingFlg) {
+        if ($customerFlg) {
             $query->join("$tblCustomer", "$tblPlan.customer_id", "=", "$tblCustomer.customer_id");
         }
 
@@ -179,7 +182,6 @@ class BookingRepo extends Repository
 
         $query->where('booked_cd','=',$booked_cd);
         return $query->first();
-
     }
 
 

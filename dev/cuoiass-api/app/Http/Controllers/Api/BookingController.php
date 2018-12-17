@@ -47,7 +47,7 @@ class BookingController extends Controller
         $orderBy = $request->get('orderBy', 'booked_date');
         $sortBy = $request->get('order', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $data = $this->bookingRepo->getListBookingbyVendor($search, $page, $limit, $orderBy, $sortBy);
+        $data = $this->bookingRepo->getListBookingByVendor($search, $page, $limit, $orderBy, $sortBy);
 
         return $this->toJsonPaginate($data);
 
@@ -76,7 +76,6 @@ class BookingController extends Controller
         $booked_cd = $params['booked_cd'];
         $columns = $params['columns'];
         $response = $this->bookingService->getBookingByCd($booked_cd, $columns);
-
         return response()->success($response);
 
 

@@ -90,6 +90,10 @@ export const isDateCorrectFormat = (dateString:string, format:string) => {
     return moment(dateString, format, true).isValid()
 }
 
+export const parseDateFormat = (dateString: string, format: string) => {
+    return moment(dateString).format(format);
+} 
+
 export const createSnackBarMess = (isValidate: boolean | undefined, isError: boolean, showMessage: boolean, handleCloseMessage: any) => {
     var snack;
     if (isError) {
