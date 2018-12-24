@@ -52,7 +52,7 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
         }
     }
 
-    return undefined;
+    return "";
 };
 
 export const ValidateAllStaff = (model: any, isCreate: boolean) => {

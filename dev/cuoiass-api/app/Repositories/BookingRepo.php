@@ -108,7 +108,7 @@ class BookingRepo extends Repository
     /**
      * Get Booking info(Product, Customer, Booking, Plan info)
      * @param $booked_cd
-     * @param $tableCols:json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
+     * @param $tableCols :json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getBookingByCd($booked_cd, $tableCols)
@@ -124,10 +124,13 @@ class BookingRepo extends Repository
         $bookingCols = [];
         $customerCols = [];
         $productCols = [];
+        $vendorServiceCols = [];
+
         $planFlg = isset($tableCols[$tblPlan]) ? true : false;
         $bookingFlg = isset($tableCols[$tblBooking]) ? true : false;
         $customerFlg = isset($tableCols[$tblCustomer]) ? true : false;
         $productFlg = isset($tableCols[$tblProduct]) ? true : false;
+        $vendorServiceFlg = isset($tableCols[$tblVendorService]) ? true : false;
 
         // Plan columns
         if ($planFlg) {
@@ -150,20 +153,29 @@ class BookingRepo extends Repository
             }, $tableCols[$tblCustomer]);
 
         }
+
         // Product columns
         if ($productFlg) {
             $productCols = array_map(function ($col) use ($tblProduct) {
                 return "$tblProduct.$col";
             }, $tableCols[$tblProduct]);
+
         }
 
+        // Vendor service columns
+        if ($vendorServiceFlg) {
+            $vendorServiceCols = array_map(function ($col) use ($tblVendorService) {
+                return "$tblVendorService.$col";
+            }, $tableCols[$tblVendorService]);
+        }
+
+
         //Default col
-        $defaultCols = ["$tblVendorService.vendor_service_id","$tblVendorService.service_code"];
+        $defaultCols = ["$tblBooking.booked_id","$tblProduct.prd_images"];
 
         //Merge all Columns
-        $selectCols = array_merge($defaultCols, $planCols, $bookingCols, $customerCols, $productCols);
+        $selectCols = array_merge($defaultCols, $planCols, $bookingCols, $customerCols, $productCols, $vendorServiceCols);
         $query = $this->model->newQuery()->select($selectCols);
-        $query->join("$tblVendorService", "$tblBooking.vendor_service_id", "=", "$tblVendorService.vendor_service_id");
 
         if ($planFlg) {
             $query->join("$tblPlan", "$tblBooking.plan_id", "=", "$tblPlan.plan_id");
@@ -179,8 +191,14 @@ class BookingRepo extends Repository
                 $join->on("$tblBooking.vendor_service_id", '=', "$tblProduct.vendor_service_id");
             });
         }
+        if ($vendorServiceFlg) {
+            $query->join("$tblVendorService", function ($join) use ($tblBooking, $tblVendorService) {
+                $join->on("$tblBooking.vendor_service_id", '=', "$tblVendorService.vendor_service_id");
+            });
+        }
 
-        $query->where('booked_cd','=',$booked_cd);
+
+        $query->where('booked_cd', '=', $booked_cd);
         return $query->first();
     }
 

@@ -8,5 +8,5 @@ export const BookingValidate = (isRequired: boolean, name: string, value: string
     }
 
 
-    return undefined;
+    return "";
 };

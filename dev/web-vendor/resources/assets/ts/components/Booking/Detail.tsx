@@ -1,6 +1,6 @@
 import * as React from "react";
 import CONSTANT from '../../bootstrap/Constant';
-import { withStyles, createStyles, LinearProgress, FormLabel, Typography } from '@material-ui/core';
+import { withStyles, createStyles, FormLabel } from '@material-ui/core';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
@@ -16,10 +16,13 @@ import Button from '../../common/FormControls/CustomButtons/Button';
 import EditIcon from '@material-ui/icons/Edit';
 import CustomSelect from '../../common/FormControls/CustomSelect/CustomSelect';
 import { BookingValidate } from '../../common/Validate/BookingValidate';
-import { isEmptyKeyInObject, showError, bookingStatusList } from '../../common/Utils';
+import { isEmptyKeyInObject, showError, bookingStatusList, parseDateFormat } from '../../common/Utils';
 import { IFormState } from '../../interface/IForm';
 import API_URL from '../../bootstrap/Url';
 import * as HandleRequest from '../../api/HandleRequest';
+import { BookingModel } from '../../model/BookingModel';
+import Badge from '../../common/Badge/Badge';
+import { IBooking } from '../../interface/IBooking';
 
 
 const styles = () => createStyles(
@@ -98,7 +101,7 @@ export interface IDetailBookingState extends IFormState {
 
 }
 
-class DetailBookingScreen extends React.Component<{match:any, classes: any }, IDetailBookingState> {
+class DetailBookingScreen extends React.Component<{ match: any, classes: any }, IDetailBookingState> {
 
     abortControler = new AbortController();
     public state = {
@@ -108,7 +111,7 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
         isValidate: false,
         isError: false,
         showMessage: false,
-        model: [],
+        model: new BookingModel(),
         status: "",
         clientError: { status: undefined },
         validateMessage: { errors: "" },
@@ -117,11 +120,11 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
     async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
         const signal = this.abortControler.signal;
-        const response = await HandleRequest.findOne(API_URL.BOOKING_CRL, this.props.match.params.booked_cd,signal);
-        debugger;
-        // let model = Object.assign(new FeedbackModel(), response.result);
+        const response = await HandleRequest.findOne(API_URL.BOOKING_CRL, this.props.match.params.booked_cd, signal);
+        let model = Object.assign(new BookingModel(), response.result.data);
+
         this.setState({
-            // model,
+            model,
             isLoading: false
         })
     }
@@ -152,8 +155,34 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
 
     render() {
         const { classes } = this.props;
-        const { isLoading, model, clientError, validateMessage } = this.state;
+        const { isLoading, clientError, validateMessage } = this.state;
+        const model: IBooking = this.state.model;
         const inputStStatus = showError(clientError, validateMessage, "status");
+        var status = undefined;
+        switch (model.status) {
+            case CONSTANT.PROGRESS.key:
+                status = <Badge color="info">{model.status}</Badge>;
+                break;
+            case CONSTANT.ACCEPTED.key:
+                status = <Badge color="rose">{model.status}</Badge>;
+                break;
+            case CONSTANT.PAID.key:
+                status = <Badge color="primary">{model.status}</Badge>;
+                break;
+            case CONSTANT.CANCELLED.key:
+                status = <Badge color="warning">{model.status}</Badge>;
+                break;
+            case CONSTANT.DENIED.key:
+                status = <Badge color="danger">{model.status}</Badge>;
+                break;
+            case CONSTANT.FINISHED.key:
+                status = <Badge color="success">{model.status}</Badge>;
+                break;
+            default:
+                status = <Badge color="info">{model.status}</Badge>;
+                break;
+        }
+
         return (
             <>
                 <GridContainer>
@@ -183,7 +212,7 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    PAID
+                                                    {status}
                                                 </FormLabel>
                                                 <div className={classes.footerRight} >
                                                     <a href="#" onClick={this.handleEdit}>
@@ -197,24 +226,24 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             <GridItem xs={12} sm={3} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>
                                                     Ngày mua
-                                        </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    01-01-2018
-                                        </FormLabel>
+                                                    {parseDateFormat(model.booked_date, "DD-MM-YYYY")}
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
                                             <GridItem xs={12} sm={3} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>
                                                     Ngày xem
-                                        </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    01-01-2018
-                                        </FormLabel>
+                                                    {parseDateFormat(model.try_date, "DD-MM-YYYY")}
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -225,8 +254,8 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    01-01-2018
-                                        </FormLabel>
+                                                    {parseDateFormat(model.activate_date, "DD-MM-YYYY")}
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -237,7 +266,7 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    Nguyen A
+                                                    {model.customer.first_name + " " + model.customer.last_name}
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -249,7 +278,7 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    09090909090
+                                                    {model.customer.phone}
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -261,7 +290,7 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={9} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    12 Khue Trung Cam le
+                                                    {model.customer.address}
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -270,6 +299,33 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                                 <h6>Thông tin chi tiết</h6>
                                             </GridItem>
                                         </GridContainer>
+
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={3}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    Tên cô dâu
+                                            </FormLabel>
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={9}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    {model.plan.br_name}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+                                        
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={3}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    Tên chú rễ
+                                            </FormLabel>
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={9}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    {model.plan.gr_name}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>
@@ -278,8 +334,8 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    10X10
-                                            </FormLabel>
+                                                    {model.booked_size}
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -290,10 +346,36 @@ class DetailBookingScreen extends React.Component<{match:any, classes: any }, ID
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    Red
-                                            </FormLabel>
+                                                    <div style={{background:model.booked_color, width: "28px", height: "28px"}}></div>
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
+
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={3}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    Kích cỡ 2
+                                            </FormLabel>
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={9}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    {model.booked_size_2}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={3}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    Màu 2
+                                            </FormLabel>
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={9}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                <div style={{background:model.booked_color_2, width: "28px", height: "28px"}}></div>
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>

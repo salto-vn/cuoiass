@@ -38,12 +38,16 @@ class BookingCustomizeRepo extends Repository
         $tblBookingCusFld = TBL::TBL_BOOKED_CUSTOMIZE_FIELDS;
 
         $query = $this->model->newQuery()->select([
-                "$tblBookingCusFld.customize_field_answer"
-                ,"$tblCustomizeField.customize_field_id"
-                ,"$tblCustomizeField.customize_field_name",
-                "$tblCustomizeField.customize_field_type"
+                "$tblCustomizeField.customize_field_id"
+                ,"$tblCustomizeField.customize_field_name"
+                ,"$tblCustomizeField.customize_field_type"
                 ,"$tblCustomizeField.customize_field_value"
-            ])->join("$tblCustomizeField","$tblBookingCusFld.customize_field_id","=","$tblCustomizeField.customize_field_id")
+                ,"$tblBookingCusFld.customize_field_answer"
+            ])->join("$tblCustomizeField", function ($join) use ($tblBookingCusFld, $tblCustomizeField) {
+                $join->on("$tblBookingCusFld.customize_field_id","=","$tblCustomizeField.customize_field_id");
+                $join->on("$tblBookingCusFld.pro_id","=","$tblCustomizeField.prd_id");
+            })
+
         ->where("$tblBookingCusFld.booked_id","=",$bookedId);
         return $query->get();
     }

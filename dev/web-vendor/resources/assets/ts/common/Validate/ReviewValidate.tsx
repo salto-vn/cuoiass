@@ -19,7 +19,7 @@ export const ReviewValidate = (isRequired: boolean, name: string, value: string)
         return "Nội dung trả lời phải nhiều hơn 20 ký tự";
     }
     
-    return undefined;
+    return "";
 
 }
 

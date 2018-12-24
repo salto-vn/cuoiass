@@ -29,7 +29,7 @@ export const objectToQueryString = (params: object | any, glue: string = ':', de
  * @param query 
  */
 export const searchQueryStringToArray = (query: string) => {
-    if(isEmpty(query)){
+    if (isEmpty(query)) {
         return null;
     }
     var rs = query.split(";").map(value => { return value.split(":") });
@@ -60,7 +60,7 @@ export const isEmptyKeyInObject = (params: object) => {
  * @return boolean
  */
 export const showError = (clientError: any, errorInfo: any, key: string) => {
-    if (clientError[key] === undefined && errorInfo.errors[key] === undefined &&!Array.isArray(errorInfo.errors[key])) { // Initial
+    if ((clientError[key] === undefined && errorInfo.errors[key] === undefined) && !Array.isArray(errorInfo.errors[key])) { // Initial
         return 'init';
     }
 
@@ -86,13 +86,15 @@ export const isEmpty = (value: any) => {
 }
 
 
-export const isDateCorrectFormat = (dateString:string, format:string) => {
+export const isDateCorrectFormat = (dateString: string, format: string) => {
     return moment(dateString, format, true).isValid()
 }
 
 export const parseDateFormat = (dateString: string, format: string) => {
+    if (dateString === "")
+        return dateString;
     return moment(dateString).format(format);
-} 
+}
 
 export const createSnackBarMess = (isValidate: boolean | undefined, isError: boolean, showMessage: boolean, handleCloseMessage: any) => {
     var snack;
@@ -167,10 +169,10 @@ export const bookingStatusList: IOption[] = [
  * get status by key
  * @param key 
  */
-export const getStatus = (key:string) =>{
+export const getStatus = (key: string) => {
 
     return bookingStatusList.map(value => {
-        if (value.key === key )
+        if (value.key === key)
             return value.value + "";
     })
 }

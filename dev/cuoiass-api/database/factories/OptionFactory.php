@@ -2,12 +2,11 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(\App\Models\CustomizeField::class, function (Faker $faker) {
-    $inputType = ['combobox', 'textbox', 'radio', 'checkbox', 'textarea'];
+$factory->define(\App\Models\Option::class, function (Faker $faker) {
     return [
-        'customize_field_name' => $faker->text(20),
-        'customize_field_type' => $faker->randomElement($inputType),
-        'customize_field_value' => $faker->word,
+        'option_name' => $faker->text(10),
+        'image_ids' => '3',
+        'option_price' => $faker->randomFloat(10),
         'prd_id' => '',
         'vendor_service_id' => '',
         'created_by' => 'admin@test.com'

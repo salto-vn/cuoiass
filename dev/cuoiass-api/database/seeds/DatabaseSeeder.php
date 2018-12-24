@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BookingsTableSeeder::class);
         $this->call(ReviewsTableSeeder::class);
         $this->call(ImagesTableSeeder::class);
+        $this->call(CustomizeFieldsTableSeeder::class);
+        $this->call(BookedCustomizeFieldsTableSeeder::class);
     }
 }

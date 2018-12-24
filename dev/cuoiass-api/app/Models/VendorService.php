@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class VendorService
- * 
+ *
  * @property int $vendor_service_id
  * @property int $vendor_id
  * @property string $service_code
@@ -24,14 +24,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\MasterService $master_service
  * @property \App\Models\Vendor $vendor
  * @property \Illuminate\Database\Eloquent\Collection $products
  *
  * @package App\Models
  */
-class VendorService extends Eloquent
+class VendorService extends Model
 {
 	protected $primaryKey = 'vendor_service_id';
 
