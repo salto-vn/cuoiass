@@ -37,8 +37,6 @@ class BookedFood extends Eloquent
 
 	protected $casts = [
 		'booked_total' => 'int',
-		'unit_price' => 'float',
-		'drink_unit_price' => 'float',
 		'booked_id' => 'int',
 		'menu_id' => 'int'
 	];
@@ -47,9 +45,7 @@ class BookedFood extends Eloquent
 		'booked_menu',
 		'service_code',
 		'booked_total',
-		'unit_price',
-		'booked_drink',
-		'drink_unit_price',
+		'booked_drink_total',
 		'booked_id',
 		'menu_id',
 		'created_by',

@@ -6,7 +6,7 @@ $factory->define(\App\Models\Plan::class, function (Faker $faker) {
 
     return [
         //
-        'plan_id'=>'PLAN-'.$faker->numerify('######'),
+        'plan_id'=>'PLAN-'.$faker->unique()->numerify('#########'),
         'plan_date' => $faker->date('Y-m-d'),
         'org_date' => $faker->date('Y-m-d'),
         'gr_name' => $faker->firstName,

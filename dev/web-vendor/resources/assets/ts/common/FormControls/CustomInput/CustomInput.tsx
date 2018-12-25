@@ -7,8 +7,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import PropTypes from "prop-types";
 // @material-ui/icons
-import Clear from "@material-ui/icons/Clear";
-import Check from "@material-ui/icons/Check";
+// import Clear from "@material-ui/icons/Clear";
+// import Check from "@material-ui/icons/Check";
 // core components
 import customInputStyle from "../../../../styles/components/customInputStyle";
 import { FormHelperText } from '@material-ui/core';

@@ -38,5 +38,12 @@ class DatabaseSeeder extends Seeder
         $this->call(ImagesTableSeeder::class);
         $this->call(CustomizeFieldsTableSeeder::class);
         $this->call(BookedCustomizeFieldsTableSeeder::class);
+        $this->call(OptionsTableSeeder::class);
+        $this->call(BookingOptionsTableSeeder::class);
+        $this->call(MenusTableSeeder::class);
+        $this->call(FoodsTableSeeder::class);
+        $this->call(DrinksTableSeeder::class);
+        $this->call(BookedFoodTableSeeder::class);
+
     }
 }

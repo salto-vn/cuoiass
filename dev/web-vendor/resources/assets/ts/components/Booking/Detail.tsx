@@ -23,6 +23,7 @@ import * as HandleRequest from '../../api/HandleRequest';
 import { BookingModel } from '../../model/BookingModel';
 import Badge from '../../common/Badge/Badge';
 import { IBooking } from '../../interface/IBooking';
+import { ICustomizeFieldsItem } from '../../interface/ICustomizeFieldsItem';
 
 
 const styles = () => createStyles(
@@ -384,7 +385,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    Red
+                                                    {model.booked_material}
                                             </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -396,7 +397,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    Red
+                                                    {model.booked_style}
                                             </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -408,7 +409,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    Red
+                                                    {model.booked_album_page}
                                             </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -420,31 +421,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    Red
-                                            </FormLabel>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Kích cỡ 2
-                                            </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.valueHorizontal}>
-                                                    Red
-                                            </FormLabel>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Màu 2
-                                            </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.valueHorizontal}>
-                                                    Red
+                                                    {model.booked_photo_size}
                                             </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -456,35 +433,26 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    2018/01/01 20:00
+                                                    {model.booked_time}
                                             </FormLabel>
                                             </GridItem>
                                         </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Customize Field 1
-                                            </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.valueHorizontal}>
-                                                    Answer Field 1
+                                        {model.customize_fields.map((field: ICustomizeFieldsItem) => {
+                                            return <>
+                                            <GridContainer>
+                                                <GridItem xs={12} sm={12} md={3}>
+                                                    <FormLabel className={classes.labelHorizontal}>
+                                                            {field.customize_field_name}
+                                                    </FormLabel>
+                                                </GridItem>
+                                                <GridItem xs={12} sm={12} md={9}>
+                                                    <FormLabel className={classes.valueHorizontal}>
+                                                            {field.customize_field_value}
                                                 </FormLabel>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Customize Field 2
-                                            </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.valueHorizontal}>
-                                                    Answer Field 2
-                                                </FormLabel>
-                                            </GridItem>
-                                        </GridContainer>
-
+                                                </GridItem>
+                                            </GridContainer></>;
+                                        })}
+                                        
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={12}>
                                                 <h6>Quả cưới </h6>

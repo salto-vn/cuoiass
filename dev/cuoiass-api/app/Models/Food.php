@@ -35,6 +35,7 @@ class Food extends Eloquent
 
 	protected $fillable = [
 		'food_name',
+        'unit_price',
 		'image_ids',
 		'menu_id',
 		'created_by',

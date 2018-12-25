@@ -2,10 +2,13 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(\App\Models\Food::class, function (Faker $faker) {
+$factory->define(\App\Models\BookedFood::class, function (Faker $faker) {
     return [
-        'food_name' => $faker->text(10),
-        'image_ids' => '1,2,3',
+        'booked_menu' => '', //menu name
+        'service_code' => '',
+        'booked_total' => $faker->randomNumber(1), //quantity
+        'booked_drink_total' => $faker->randomNumber(1),  // drink name
+        'booked_id' => '',
         'menu_id' => '',
         'created_by' => 'admin@test.com'
     ];

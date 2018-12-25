@@ -276,6 +276,7 @@ drop table if exists `drinks` cascade;
 create table `drinks` (
     `drink_id` int(11) auto_increment not null comment 'drink id'
   , `drink_name` varchar(255) not null comment 'drink name'
+  , `unit_price` float not null comment 'unit price:don gia'
   , `image_ids` varchar(255) not null comment 'images id'
   , `menu_id` int(11) not null comment 'menu id'
   , `created_by` varchar(255) not null comment 'create user'
@@ -376,10 +377,8 @@ create table `booked_foods` (
     `booked_food_id` int(11) auto_increment not null comment 'booked menu id'
   , `booked_menu` varchar(255) not null comment 'menu name'
   , `service_code` char(12) not null comment 'service code:quc:qua cuoi, rst: restaurant,'
-  , `booked_total` int(11) not null comment 'total:so nguoi'
-  , `unit_price` float not null comment 'unit price:don gia'
-  , `booked_drink` varchar(255) comment 'drink'
-  , `drink_unit_price` float comment 'drink unit price'
+  , `booked_total` int(11) not null comment 'total:so nguoi(food)'
+  , `booked_drink_total` int(11) comment 'drink quanlity'
   , `booked_id` int(11) not null comment 'booked id'
   , `menu_id` int(11) not null comment 'menu id'
   , `created_by` varchar(255) not null comment 'create user'
@@ -588,6 +587,7 @@ drop table if exists `foods` cascade;
 create table `foods` (
     `food_id` int(11) auto_increment not null comment 'food id'
   , `food_name` varchar(255) not null comment 'food name'
+  , `unit_price` float not null comment 'unit price:don gia'
   , `image_ids` varchar(255) not null comment 'images id'
   , `menu_id` int(11) not null comment 'menu id'
   , `created_by` varchar(255) not null comment 'create user'

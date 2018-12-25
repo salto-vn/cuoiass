@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class DrinksTableSeeder extends Seeder
+class MenusTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -12,11 +12,11 @@ class DrinksTableSeeder extends Seeder
     public function run()
     {
         //
-        $menus = \App\Models\Menu::query()->get();
-        foreach ($menus as $menu) {
-            factory(\App\Models\Drink::class, 10)->create(
+        $products = \App\Models\Product::query()->get();
+        foreach ($products as $pro) {
+            factory(\App\Models\Menu::class, 5)->create(
                 [
-                    'menu_id' => $menu['menu_id'],
+                    'prd_id' => $pro['prd_id'],
                 ]
             );
         }
