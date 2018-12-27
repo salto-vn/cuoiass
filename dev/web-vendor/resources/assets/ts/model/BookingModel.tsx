@@ -1,10 +1,11 @@
-import { IBooking } from '../interface/IBooking';
+import { IBooking, IFoodDetail } from '../interface/IBooking';
 import { IVendorService } from '../interface/IVendorService';
-import { IOptionsItem } from '../interface/IOptionsItem';
 import { ICustomizeFieldsItem } from '../interface/ICustomizeFieldsItem';
 import { IPlan } from '../interface/IPlan';
 import { IProduct } from '../interface/IProduct';
 import { ICustomer } from '../interface/ICustomer';
+import { IBookedOption } from '../interface/IBookedOption';
+import { IPromotion } from '../interface/IPromotion';
 
 export class BookingModel implements IBooking {
     public status: string = "";
@@ -23,6 +24,7 @@ export class BookingModel implements IBooking {
     public activate_date: string = "";
     public memo: string = "";
     public booked_date: string = "";
+    public payment_method: string = "";
     public payment_name: string = "";
     public payment_phone: string = "";
     public payment_email: string = "";
@@ -57,7 +59,15 @@ export class BookingModel implements IBooking {
         last_name: "",
         email: ""
     };
-    public options: IOptionsItem[] = [];
+    public options: IBookedOption[] = [];
     public customize_fields: ICustomizeFieldsItem[] = [];
-    public foods: [] = [];
+    public foods:IFoodDetail[] = [];
+    public promotion:IPromotion = {
+        end_date: "",
+        promotion_amount: "",
+        promotion_code: "",
+        promotion_title: "",
+        promotion_type: "",
+        start_date: ""
+    };
 }

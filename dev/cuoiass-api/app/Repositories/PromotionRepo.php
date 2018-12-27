@@ -9,15 +9,15 @@
 namespace App\Repositories;
 
 
-use App\Models\Role;
+use App\Models\Promotion;
 
 /**
- * Class RoleRepo
+ * Class PromotionRepo
  *
- * @property Role $model
- * @method Role create(array $attributes)
+ * @property Promotion $model
+ * @method Promotion create(array $attributes)
  */
-class RoleRepo extends Repository
+class PromotionRepo extends Repository
 {
     public $model;
     /**
@@ -26,7 +26,7 @@ class RoleRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = Role::class;
+        $this->model = Promotion::class;
         return $this->model;
     }
 

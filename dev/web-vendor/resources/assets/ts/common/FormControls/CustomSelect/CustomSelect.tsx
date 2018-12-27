@@ -7,7 +7,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 // @material-ui/icons
 // core components
 import customSelectStyle from "../../../../styles/components/customSelectStyle";
-import { FormHelperText, Select, MenuItem, Input } from '@material-ui/core';
+import { FormHelperText, Select, MenuItem } from '@material-ui/core';
 
 export interface ICustomSelect {
   classes?: any,
@@ -51,11 +51,6 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
     var helpTextClasses = classNames({
       [classes.labelRootError]: error,
       [classes.labelRootSuccess]: success && !error
-    });
-    const underlineClasses = classNames({
-      [classes.underlineError]: error,
-      [classes.underlineSuccess]: success && !error,
-      [classes.underline]: true
     });
 
     return (

@@ -9,15 +9,15 @@
 namespace App\Repositories;
 
 
-use App\Models\Role;
+use App\Models\MasterService;
 
 /**
- * Class StaffRepo
+ * Class ServiceRepo
  *
- * @property Role $model
- * @method Role create(array $attributes)
+ * @property MasterService $model
+ * @method MasterService create(array $attributes)
  */
-class RoleRepo extends Repository
+class ServiceRepo extends Repository
 {
     public $model;
     /**
@@ -26,7 +26,7 @@ class RoleRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = Role::class;
+        $this->model = MasterService::class;
         return $this->model;
     }
 

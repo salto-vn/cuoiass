@@ -45,19 +45,22 @@ class BookingRepo extends Repository
         $fieldsSearchable = [
             'booked_cd', 'booked_pro_name', 'booked_date'
             , 'try_date', 'activate_date', 'status'
-            , 'customer_name'
+            , 'customer_name', 'service_code'
         ];
         $tblBooking = TBL::TBL_BOOKINGS;
         $tblCustomer = TBL::TBL_CUSTOMERS;
         $tblPlan = TBL::TBL_PLANS;
+        $tblVendorSvrs = TBL::TBL_VENDOR_SERVICES;
         $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
         $order = ($order === \Constant::ORDER_BY_DESC) ? $order : \Constant::ORDER_BY_ASC;
         $model = $this->model->newQuery()->select([
+            "$tblVendorSvrs.service_code",
             "$tblBooking.booked_cd", "$tblBooking.booked_pro_name", "$tblBooking.booked_date",
             "$tblBooking.try_date", "$tblBooking.activate_date", "$tblBooking.status",
             "$tblCustomer.first_name", "$tblCustomer.last_name"
         ])
             ->join("$tblPlan", "$tblBooking.plan_id", '=', "$tblPlan.plan_id")
+            ->join("$tblVendorSvrs", "$tblBooking.vendor_service_id", '=', "$tblVendorSvrs.vendor_service_id")
             ->join("$tblCustomer", "$tblPlan.customer_id", '=', "$tblCustomer.customer_id");
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
@@ -79,7 +82,7 @@ class BookingRepo extends Repository
                                     ->orWhere("$tblCustomer.first_name", 'like', "%{$value}%");
                             });
                         }
-                    } else if ($field == "status" || $field == "booked_cd") {
+                    } else if ($field == "status" || $field == "booked_cd" || $field == "service_code") {
                         $value = addslashes($value);
                         if (isset($value)) {
                             $model->where($field, '=', "{$value}");
@@ -171,7 +174,7 @@ class BookingRepo extends Repository
 
 
         //Default col
-        $defaultCols = ["$tblBooking.booked_id","$tblProduct.prd_images"];
+        $defaultCols = ["$tblProduct.service_code","$tblBooking.promotion_code","$tblBooking.booked_id","$tblProduct.prd_images"];
 
         //Merge all Columns
         $selectCols = array_merge($defaultCols, $planCols, $bookingCols, $customerCols, $productCols, $vendorServiceCols);

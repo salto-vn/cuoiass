@@ -1,8 +1,8 @@
 import CustomSnackbar from './CustomSnackbar/CustomSnackbar';
 import { Snackbar } from '@material-ui/core';
 import React from 'react';
-import { IOption } from './FormControls/CustomSelect/CustomSelect';
 import moment = require('moment');
+import { bookingStatusList } from './Resources';
 
 /**
  * Convert object to query string: page=1&limit=20
@@ -135,35 +135,6 @@ export const createSnackBarMess = (isValidate: boolean | undefined, isError: boo
         </Snackbar>)
 }
 
-/**
- * Status list
- */
-export const bookingStatusList: IOption[] = [
-    {
-        key: "IN-PROGRESS",
-        value: 'Đang xử lý'
-    },
-    {
-        key: "ACCEPTED",
-        value: 'Đã xác nhận'
-    },
-    {
-        key: "PAID",
-        value: 'Đã thanh toán'
-    },
-    {
-        key: "CANCELLED",
-        value: 'Đã huỷ lịch'
-    },
-    {
-        key: "DENIED",
-        value: 'Từ chối'
-    },
-    {
-        key: "FINISHED",
-        value: 'Hoàn thành'
-    }
-];
 
 /**
  * get status by key
@@ -175,4 +146,12 @@ export const getStatus = (key: string) => {
         if (value.key === key)
             return value.value + "";
     })
+}
+
+/**
+ * local:vi-VN
+ * value: number
+ */
+export const convertCurrency = (local: string, value: number) => {
+    return new Intl.NumberFormat(local, { style: 'currency', currency: 'VND' }).format(value);
 }

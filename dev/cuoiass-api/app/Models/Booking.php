@@ -29,10 +29,12 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $status
  * @property string $memo
  * @property \Carbon\Carbon $booked_date
+ * @property string $payment_method 0:Tra sau,1:Credit Card, 2: Tien mat, 3: Internet banking
  * @property string $payment_name
  * @property string $payment_phone
  * @property string $payment_email
  * @property float $net_price
+ * @property string $promotion_code
  * @property float $gross_price
  * @property string $invoice_url
  * @property string $plan_id
@@ -66,6 +68,7 @@ class Booking extends Model
         'gross_price' => 'float',
         'prd_id' => 'int',
         'vendor_service_id' => 'int',
+        'payment_method' => 'int',
 //        'try_date' => 'date:d-m-Y H:m:i',
 //        'activate_date' => 'date:d-m-Y H:m:i',
 //        'booked_date' => 'date:d-m-Y H:m:i'
@@ -94,10 +97,12 @@ class Booking extends Model
         'status',
         'memo',
         'booked_date',
+        'payment_method',
         'payment_name',
         'payment_phone',
         'payment_email',
         'net_price',
+        'promotion_code',
         'gross_price',
         'invoice_url',
         'plan_id',
@@ -129,7 +134,10 @@ class Booking extends Model
             'status',
             'memo',
             'booked_date',
-            'gross_price'
+            'gross_price',
+            'net_price',
+            'promotion_code',
+            'payment_method'
         ];
     }
 

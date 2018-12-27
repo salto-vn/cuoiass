@@ -36,6 +36,28 @@ export const findOne = async (url: string, id: string, signal:any, columns?: str
  * Make request with method get
  * @method GET
  * @param url 
+ * @param columns 
+ * 
+ * @return HandleResponse
+ */
+
+export const Get = async (url: string, search?: string, signal?:any,columns?: string[],) => {
+    const params: any = { search };
+    const queryString = objectToQueryString(params, '=', '&');
+    const result = await fetch(`${url}?${queryString}`, {
+        method: "GET",
+        signal: signal,
+        headers: headerOptions,
+    });
+
+    return HandleResponse(result);
+};
+
+
+/**
+ * Make request with method get
+ * @method GET
+ * @param url 
  * @param page 
  * @param limit 
  * @param sortbyc 

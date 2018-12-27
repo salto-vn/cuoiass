@@ -4,7 +4,7 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\Models\Booking::class, function (Faker $faker) {
 
-    $statues = ['IN-PROGESS','ACCEPTED','PAID','CANCELLED','DENIED','FINISHED'];
+    $statues = ['IN-PROGRESS','ACCEPTED','PAID','CANCELLED','DENIED','FINISHED'];
 
 
     return [

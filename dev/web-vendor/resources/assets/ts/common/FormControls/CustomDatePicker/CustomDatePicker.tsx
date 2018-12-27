@@ -7,9 +7,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 // @material-ui/icons
 // core components
 import customDatePickerStyle from "../../../../styles/components/customDatePickerStyle";
-import { FormHelperText, Icon } from '@material-ui/core';
+import { FormHelperText } from '@material-ui/core';
 import DateTime = require('react-datetime');
-import Button from '../CustomButtons/Button';
 import { isEmpty } from '../../Utils';
 
 export interface ICustomDatePicker {

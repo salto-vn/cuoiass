@@ -12,7 +12,7 @@ namespace App\Repositories;
 use App\Models\Role;
 
 /**
- * Class StaffRepo
+ * Class RoleRepo
  *
  * @property Role $model
  * @method Role create(array $attributes)

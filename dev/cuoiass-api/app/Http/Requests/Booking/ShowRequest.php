@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Plan;
 use App\Models\Product;
+use App\Models\Promotion;
 use App\Models\VendorService;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -36,6 +37,7 @@ class ShowRequest extends RequestAbstract
         $booking = new Booking();
         $customer = new Customer();
         $product = new Product();
+        $promotion = new Promotion();
         $vendorService = new VendorService();
         $plan = new Plan();
         $tblBooking = TBL::TBL_BOOKINGS;
@@ -43,6 +45,7 @@ class ShowRequest extends RequestAbstract
         $tblCustomer = TBL::TBL_CUSTOMERS;
         $tblPlan = TBL::TBL_PLANS;
         $tblVendorService = TBL::TBL_VENDOR_SERVICES;
+        $tblPromotion = TBL::TBL_PROMOTIONS;
 
         $rule = [
             'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
@@ -52,6 +55,7 @@ class ShowRequest extends RequestAbstract
             "columns.$tblVendorService" => ['array', Rule::in($vendorService->getColumns())],
             "columns.$tblPlan" => ['array',"required_with:columns.$tblCustomer",Rule::in($plan->getColumns())],
             "columns.$tblCustomer" => ['array', Rule::in($customer->getColumns())],
+            "columns.$tblPromotion" => ['array', Rule::in($promotion->getColumns())],
 
         ];
 

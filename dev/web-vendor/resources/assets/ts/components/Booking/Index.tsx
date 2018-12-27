@@ -1,7 +1,7 @@
 import * as React from "react";
 import CONSTANT from '../../bootstrap/Constant';
 import { IBookingSearchState, IBooking } from '../../interface/IBooking';
-import CustomSelect from '../../common/FormControls/CustomSelect/CustomSelect';
+import CustomSelect, { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
@@ -13,8 +13,10 @@ import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import CardFooter from '../../common/Card/CardFooter';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import CustomDatePicker from '../../common/FormControls/CustomDatePicker/CustomDatePicker';
-import { objectToQueryString, bookingStatusList, searchQueryStringToArray, isDateCorrectFormat } from '../../common/Utils';
-
+import { objectToQueryString, searchQueryStringToArray, isDateCorrectFormat } from '../../common/Utils';
+import * as HandleRequest from '../../api/HandleRequest';
+import API_URL from '../../bootstrap/Url';
+import { bookingStatusList } from '../../common/Resources';
 
 const styles = (theme: Theme) => createStyles({
     cardCategoryWhite: {
@@ -60,7 +62,7 @@ class BookingSearchScreen extends React.Component<{ match: any, history: any, cl
 
     search = this.props.match.params.search;
     searchParams: IBooking = searchQueryStringToArray(this.search);
-    
+    abortControler = new AbortController();
     searchForm = Object.assign({
         try_date: "",
         activate_date: "",
@@ -72,20 +74,37 @@ class BookingSearchScreen extends React.Component<{ match: any, history: any, cl
     }, this.searchParams);
 
     public state = {
-        searchForm: this.searchForm
+        searchForm: this.searchForm,
+        services: []
+    }
+
+    public componentWillUnmount() {
+        this.abortControler.abort();
     }
 
     /**
      * Event usualy mount data to State variale
      */
-    componentDidMount() {
+    async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Get(API_URL.getServices, '', signal);
+        var services = response.result.data;
+        var serviceList = services.map((service:any,index:number)=>{
+            var rs:IOption = {key:service.service_code, value:service.service_name};
+            return rs;
+        });
+        this.setState({
+            services: serviceList,
+        })
+        
     }
 
 
     public render() {
         const { classes } = this.props;
-        const { searchForm } = this.state;
+        const { searchForm,services } = this.state;
+        
         return (
             <>
                 <GridContainer>
@@ -110,6 +129,24 @@ class BookingSearchScreen extends React.Component<{ match: any, history: any, cl
                                             }}
 
                                         />
+                                    </GridItem>
+                                </GridContainer>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={6}>
+                                        <CustomSelect
+                                                labelText="Dịch vụ"
+                                                id="service_code"
+                                                value={searchForm.status}
+                                                onChange={this.onChange.bind(this, "service_code")}
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    name: "service_code",
+
+                                                }}
+                                                items={services}
+                                            />
                                     </GridItem>
                                 </GridContainer>
                                 <GridContainer>

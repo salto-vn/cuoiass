@@ -1,11 +1,10 @@
 import * as React from "react";
 import CONSTANT from '../../bootstrap/Constant';
-import { withStyles, createStyles, FormLabel } from '@material-ui/core';
+import { withStyles, createStyles, FormLabel, Modal, Theme } from '@material-ui/core';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
 import CardHeader from '../../common/Card/CardHeader';
-import { infoColor } from '../../../styles/material-dashboard-pro-react';
 import CardBody from '../../common/Card/CardBody';
 import { Link } from 'react-router-dom';
 import Accordion from '../../common/Accordion/Accordion';
@@ -16,17 +15,22 @@ import Button from '../../common/FormControls/CustomButtons/Button';
 import EditIcon from '@material-ui/icons/Edit';
 import CustomSelect from '../../common/FormControls/CustomSelect/CustomSelect';
 import { BookingValidate } from '../../common/Validate/BookingValidate';
-import { isEmptyKeyInObject, showError, bookingStatusList, parseDateFormat } from '../../common/Utils';
+import { isEmptyKeyInObject, showError, parseDateFormat, convertCurrency } from '../../common/Utils';
 import { IFormState } from '../../interface/IForm';
 import API_URL from '../../bootstrap/Url';
 import * as HandleRequest from '../../api/HandleRequest';
 import { BookingModel } from '../../model/BookingModel';
 import Badge from '../../common/Badge/Badge';
-import { IBooking } from '../../interface/IBooking';
+import { IFoodDetail } from '../../interface/IBooking';
 import { ICustomizeFieldsItem } from '../../interface/ICustomizeFieldsItem';
+import CustomTable from '../../common/Table/CustomTable';
+import { IBookedOption } from '../../interface/IBookedOption';
+import { paymentMethods, ResourceUtil, bookingStatusList } from '../../common/Resources';
+import Info from '../../common/Typography/Info';
+import { Carousel } from 'react-responsive-carousel';
 
 
-const styles = () => createStyles(
+const styles = (theme: Theme) => createStyles(
     {
         cardCategoryWhite: {
             "&,& a,& a:hover,& a:focus": {
@@ -66,6 +70,10 @@ const styles = () => createStyles(
             }
         },
 
+        uppercase: {
+            textTransform: "uppercase"
+        },
+
         valueHorizontal: {
             fontSize: "14px",
             lineHeight: "1.428571429",
@@ -75,25 +83,26 @@ const styles = () => createStyles(
                 float: "left"
             }
         },
-        icon: {
-            width: "17px",
-            height: "17px",
-            position: "relative",
-            top: "3px"
-        },
         footerRight: {
             textAlign: "right",
             width: "100%"
         },
-        progress: {
-            color: infoColor
+        right: {
+            textAlign: "right"
         },
-        linearColorPrimary: {
-            backgroundColor: '#FFFFFF',
+        center: {
+            textAlign: "center"
         },
-        linearBarColorPrimary: {
-            backgroundColor: infoColor,
-        },
+        modal: {
+            position: 'absolute',
+            width: theme.spacing.unit * 100,
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[5],
+            padding: theme.spacing.unit * 1,
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%, -50%)`,
+        }
     }
 );
 
@@ -116,6 +125,8 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
         status: "",
         clientError: { status: undefined },
         validateMessage: { errors: "" },
+        modalImage: "",
+        isShowImageModal:false,
     }
 
     async componentDidMount() {
@@ -128,6 +139,10 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
             model,
             isLoading: false
         })
+    }
+
+    public componentWillUnmount() {
+        this.abortControler.abort();
     }
 
     private handleEdit = () => {
@@ -154,10 +169,20 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
         return this.setState({ isSubmitDisabled: true });
     }
 
+    public handleClickPhoto = (index: any) => {
+        const { model } = this.state;
+        this.setState({ isShowImageModal: true, modalImage: model.product.prd_images[index] });
+    }
+
+    public onToggleModal = (event: any) => {
+        const { isShowImageModal } = this.state;
+        this.setState({ isShowImageModal: !isShowImageModal });
+    }
+
     render() {
         const { classes } = this.props;
         const { isLoading, clientError, validateMessage } = this.state;
-        const model: IBooking = this.state.model;
+        const model: BookingModel = this.state.model;
         const inputStStatus = showError(clientError, validateMessage, "status");
         var status = undefined;
         switch (model.status) {
@@ -184,6 +209,102 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                 break;
         }
 
+        //Food info
+        var totalFood = 0;
+        var qcName = "";
+        var foodList;
+        if (model.foods.length > 0) {
+            var foods: any = model.foods.map((object: IFoodDetail, key: number) => {
+                var price = Math.ceil(object.unit_price);
+                qcName = object.booked_menu;
+                totalFood += price * object.booked_total;
+                return [object.food_id, object.food_name, object.booked_total, convertCurrency('vi-VN', price), convertCurrency('vi-VN', price * object.booked_total)]
+            });
+            var total = {
+                total: true, colspan: "3", amount: convertCurrency('vi-VN', totalFood)
+            };
+            foods.push(total);
+            var quacuoi = <CustomTable
+                tableHeaderColor="primary"
+                tableHead={["ID", "Tên quả", "Số lượng", "Đơn giá", "Thành tiền"]}
+                tableData={foods}
+                coloredColls={[4]}
+                colorsColls={["primary"]}
+                customCellClasses={[
+                    classes.center,
+                    classes.right,
+                    classes.right
+                ]}
+                customHeadClassesForCells={[2, 3, 4]}
+                customClassesForCells={[2, 3, 4]}
+                customHeadCellClasses={[
+                    classes.center,
+                    classes.right,
+                    classes.right
+                ]}
+            />;
+            foodList = <>
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={12}>
+                        <h6>{model.vendor_service.service_code == 'QUAC' ? "Mâm quả" : "Nhà hàng"}</h6>
+                    </GridItem>
+                </GridContainer>
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={3}>
+                        <FormLabel className={classes.labelHorizontal}>
+                            {model.vendor_service.service_code == 'QUAC' ? "Quả cưới" : "Thực đơn"}
+                        </FormLabel>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={9}>
+                        <Accordion
+                            active={0}
+                            collapses={[
+                                {
+                                    title: qcName,
+                                    content: quacuoi
+                                },
+                            ]} />
+                    </GridItem>
+                </GridContainer>
+            </>;
+        }
+
+        //Option info
+        var optionLists;
+        if (model.options.length > 0) {
+            var options = model.options.map((option: IBookedOption, index: number) => {
+                var optionPrice = convertCurrency('vi-VN', option.option_price * option.option_quality);
+                return <GridContainer key={index}>
+                    <GridItem xs={12} sm={12} md={3}>
+                        <FormLabel className={classes.labelHorizontal}>
+                            {option.option_name}
+                        </FormLabel>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={9}>
+                        <FormLabel className={classes.valueHorizontal}>
+                            x{option.option_quality} = {optionPrice}
+                        </FormLabel>
+                    </GridItem>
+                </GridContainer>;
+            });
+
+            optionLists = <>
+                <GridContainer>
+                    <GridItem xs={12} sm={12} md={12}>
+                        <h6>Tuỳ chọn </h6>
+                    </GridItem>
+                </GridContainer>
+                {options}
+            </>;
+        }
+
+        var discount = 0;
+        if (model.promotion.promotion_type == 'Direct') {
+            discount = model.promotion.promotion_amount;
+        } else {
+            discount = model.gross_price / model.promotion.promotion_amount;
+        }
+
         return (
             <>
                 <GridContainer>
@@ -195,7 +316,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                         <h4 className={classes.cardTitleWhite}>Đơn hàng: AAAAAA</h4>
                                         <div className={classes.cardCategoryWhite}>
                                             Chi tiết thông tin đơn hàng
-                                </div>
+                                        </div>
                                         <div>
                                             {isLoading &&
                                                 <CustomLinearProgress
@@ -204,7 +325,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             }
                                         </div>
                                     </CardHeader>
-                                    <CardBody>
+                                    {!isLoading && <CardBody>
                                         <GridContainer>
                                             <GridItem xs={12} sm={3} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>
@@ -313,7 +434,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
-                                        
+
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>
@@ -347,7 +468,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                    <div style={{background:model.booked_color, width: "28px", height: "28px"}}></div>
+                                                    <div style={{ background: model.booked_color, width: "28px", height: "28px" }}></div>
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -372,7 +493,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
-                                                <div style={{background:model.booked_color_2, width: "28px", height: "28px"}}></div>
+                                                    <div style={{ background: model.booked_color_2, width: "28px", height: "28px" }}></div>
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -386,7 +507,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
                                                     {model.booked_material}
-                                            </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -398,7 +519,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
                                                     {model.booked_style}
-                                            </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -410,7 +531,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
                                                     {model.booked_album_page}
-                                            </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -422,7 +543,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
                                                     {model.booked_photo_size}
-                                            </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
                                         <GridContainer>
@@ -434,100 +555,28 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.valueHorizontal}>
                                                     {model.booked_time}
-                                            </FormLabel>
+                                                </FormLabel>
                                             </GridItem>
                                         </GridContainer>
-                                        {model.customize_fields.map((field: ICustomizeFieldsItem) => {
-                                            return <>
-                                            <GridContainer>
-                                                <GridItem xs={12} sm={12} md={3}>
-                                                    <FormLabel className={classes.labelHorizontal}>
+                                        {model.customize_fields.map((field: ICustomizeFieldsItem, k: number) => {
+                                            return (
+                                                <GridContainer key={k}>
+                                                    <GridItem xs={12} sm={12} md={3}>
+                                                        <FormLabel className={classes.labelHorizontal}>
                                                             {field.customize_field_name}
-                                                    </FormLabel>
-                                                </GridItem>
-                                                <GridItem xs={12} sm={12} md={9}>
-                                                    <FormLabel className={classes.valueHorizontal}>
+                                                        </FormLabel>
+                                                    </GridItem>
+                                                    <GridItem xs={12} sm={12} md={9}>
+                                                        <FormLabel className={classes.valueHorizontal}>
                                                             {field.customize_field_value}
-                                                </FormLabel>
-                                                </GridItem>
-                                            </GridContainer></>;
+                                                        </FormLabel>
+                                                    </GridItem>
+                                                </GridContainer>);
                                         })}
-                                        
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={12}>
-                                                <h6>Quả cưới </h6>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Quả cưới
-                                                </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <Accordion
-                                                    active={0}
-                                                    collapses={[
-                                                        {
-                                                            title: "9 Quả",
-                                                            content: "Quả 1(20 quả)"
-                                                        },
-                                                    ]} />
-                                            </GridItem>
-                                        </GridContainer>
-
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={12}>
-                                                <h6>Nhà hàng </h6>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Thực đơn
-                                                </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <Accordion
-                                                    active={0}
-                                                    collapses={[
-                                                        {
-                                                            title: "Thức ăn",
-                                                            content: "Quả 1(20 quả)"
-                                                        },
-                                                    ]} />
-                                            </GridItem>
-                                        </GridContainer>
-
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={12}>
-                                                <h6>Tuỳ chọn </h6>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Option Name 1
-                                            </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.valueHorizontal}>
-                                                    x2 = 20,000,000đ
-                                                </FormLabel>
-                                            </GridItem>
-                                        </GridContainer>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={3}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Option Name 2
-                                            </FormLabel>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.valueHorizontal}>
-                                                    x2 = 20,000,000đ
-                                                </FormLabel>
-                                            </GridItem>
-                                        </GridContainer>
+                                        {/*Food info*/}
+                                        {foodList}
+                                        {/*Option info*/}
+                                        {optionLists}
 
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={12}>
@@ -541,8 +590,8 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </FormLabel>
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
-                                                <FormLabel className={classes.labelHorizontal}>
-                                                    Trả sau, Credit card
+                                                <FormLabel className={classes.labelHorizontal + " " + classes.uppercase}>
+                                                    {new ResourceUtil(paymentMethods).getValue(model.payment_method)}
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -554,7 +603,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.labelHorizontal}>
-                                                    20,000,000đ
+                                                    {convertCurrency('vi-VN', model.gross_price)}
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -566,7 +615,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.labelHorizontal}>
-                                                    + 200,000đ
+                                                    <Info>+ {convertCurrency('vi-VN', model.gross_price / 10)}</Info>
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -578,7 +627,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.labelHorizontal}>
-                                                    <Danger>- 200,000đ</Danger>
+                                                    <Danger>- {convertCurrency('vi-VN', discount)}</Danger>
                                                 </FormLabel>
                                             </GridItem>
                                         </GridContainer>
@@ -591,7 +640,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <FormLabel className={classes.labelHorizontal}>
                                                     <Danger>
-                                                        20,000,000đ
+                                                        {convertCurrency('vi-VN', model.net_price)}
                                                     </Danger>
                                                 </FormLabel>
                                             </GridItem>
@@ -618,7 +667,8 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                                 />
                                             </GridItem>
                                         </GridContainer>
-                                    </CardBody>
+                                    </CardBody>}
+                                    
                                     <CardFooter>
                                         <div className={classes.footerRight}>
                                             <Button color="primary" onClick={this.handleEdit}>
@@ -637,10 +687,17 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                 <p className={classes.cardCategoryWhite}>Sản phẩm dịch vụ đã sử dụng</p>
                             </CardHeader>
                             <CardBody >
-                                <a href="#product" onClick={e => e.preventDefault()}>
-                                    <img width="100%" src="" />
-                                </a>
-                                <h6 className={classes.cardCategory}><Link to={"/product/"}> Tên sản phẩm</Link></h6>
+                                {model.product.prd_images.length !== 0 ?
+                                    <Carousel onClickItem={this.handleClickPhoto}>
+                                        {model.product.prd_images.map((image, key) =>
+                                            <div key={key}>
+                                                <img key={key} src={image} />
+                                            </div>
+                                        )}
+                                    </Carousel>
+                                    : ''}
+
+                                <h6 className={classes.cardCategory}><Link to={"/product/"}> {model.product.prd_name}</Link></h6>
                                 <p className={classes.cardTitle}>Mô tả sản phẩm</p>
                                 <div className={classes.description}>
                                     <GridContainer>
@@ -651,7 +708,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={7}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                ABCD
+                                                {model.product.prd_cd}
                                             </FormLabel>
                                         </GridItem>
                                     </GridContainer>
@@ -663,7 +720,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={8}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                Cưới
+                                                {model.vendor_service.ven_serv_name}
                                             </FormLabel>
                                         </GridItem>
                                     </GridContainer>
@@ -675,7 +732,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={8}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                123 2-9 Đà Nẵng
+                                                {model.customer.address}
                                             </FormLabel>
                                         </GridItem>
                                     </GridContainer>
@@ -687,7 +744,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={7}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                090909090
+                                                {model.customer.phone}
                                             </FormLabel>
                                         </GridItem>
                                     </GridContainer>
@@ -696,6 +753,18 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                         </Card>
                     </GridItem>
                 </GridContainer>
+                <div>
+                <Modal
+                    aria-labelledby="Hình ảnh"
+                    aria-describedby="Chi tiết hình ảnh"
+                    open={this.state.isShowImageModal}
+                    onClose={this.onToggleModal}
+                >
+                    <div className={classes.modal}>
+                        <img src={this.state.modalImage} width="100%" />
+                    </div>
+                </Modal>
+            </div>
 
             </>
         );

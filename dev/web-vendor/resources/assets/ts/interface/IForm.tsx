@@ -5,8 +5,10 @@ export interface IFormState {
     isHandleEvent?: boolean,
     isValidate?: boolean | undefined,
     isError: boolean,
-    isLoading?:boolean,
+    isLoading?: boolean,
     showMessage?: boolean,
     validateMessage: any,
-    alert ?: any
+    alert?: any,
+    isShowImageModal?: any,
+    modalImage?: string | undefined,
 }

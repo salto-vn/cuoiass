@@ -41,20 +41,21 @@ class BookingController extends ApiController
                         , 'booked_material','booked_style', 'booked_album_page'
                         , 'booked_photo_size','booked_size_2', 'booked_color_2'
                         , 'booked_time','try_date', 'activate_date'
-                        , 'status','memo', 'booked_date'
-                        , 'payment_name','payment_phone', 'payment_email'
+                        , 'status','memo', 'booked_date','promotion_code'
+                        , 'payment_method', 'payment_name','payment_phone', 'payment_email'
                         , 'net_price','gross_price', 'invoice_url'
                         ];
         $customerCols = ['first_name','last_name','phone','address'];
         $productCols = ['prd_cd','prd_name','prd_desc','prd_images','service_code'];
         $planCols = ['plan_date','org_date','gr_name','br_name','org_address'];
         $serviceCols = ['vendor_id','service_code','ven_serv_name','add_service','city','phone_service'];
-
+        $promotionCols = ['promotion_title','promotion_code','start_date','end_date','promotion_type','promotion_amount'];
         $params['columns']['customers'] = $customerCols;
         $params['columns']['bookings'] = $bookingCols;
         $params['columns']['products'] = $productCols;
         $params['columns']['plans'] = $planCols;
         $params['columns']['vendor_services'] = $serviceCols;
+        $params['columns']['promotions'] = $promotionCols;
         $response = $this->api->requestNoCache($routeName, "POST", $params);
         return response()->json(
             json_decode($response->getBody()),
@@ -79,4 +80,14 @@ class BookingController extends ApiController
         );
     }
 
+
+    public function getServices(Request $request)
+    {
+        $params['vendor_id'] = '1'; //TODO;
+        $response = $this->api->requestNoCache("services", "GET", $params);
+        return response()->json(
+            json_decode($response->getBody()),
+            $response->getStatusCode()
+        );
+    }
 }

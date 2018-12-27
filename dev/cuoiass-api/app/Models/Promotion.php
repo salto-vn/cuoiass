@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Promotion
- * 
+ *
  * @property int $promotion_id
  * @property string $promotion_title
  * @property string $promotion_code
@@ -23,12 +23,12 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \Illuminate\Database\Eloquent\Collection $products
  *
  * @package App\Models
  */
-class Promotion extends Eloquent
+class Promotion extends Model
 {
 	protected $primaryKey = 'promotion_id';
 
@@ -36,10 +36,10 @@ class Promotion extends Eloquent
 		'promotion_amount' => 'int'
 	];
 
-	protected $dates = [
-		'start_date',
-		'end_date'
-	];
+//	protected $dates = [
+//		'start_date',
+//		'end_date'
+//	];
 
 	protected $fillable = [
 		'promotion_title',

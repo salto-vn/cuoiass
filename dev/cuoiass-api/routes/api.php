@@ -25,6 +25,7 @@ use Illuminate\Http\Request;
     Route::resource('bookings','Api\BookingController')->except(['show']);
 
 
+    $router->get('/services', 'Api\MasterServiceController@index');
     $router->post('/bookings/{booked_cd}', 'Api\BookingController@show');
     $router->get('/reviews', 'Api\ReviewController@index');
     $router->get('/reviews/{review_id}', 'Api\ReviewController@show');

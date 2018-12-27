@@ -3,8 +3,10 @@ import { IProduct } from './IProduct';
 import { IPlan } from './IPlan';
 import { IVendorService } from './IVendorService';
 import { ICustomer } from './ICustomer';
-import { IOptionsItem } from './IOptionsItem';
 import { ICustomizeFieldsItem } from './ICustomizeFieldsItem';
+import { IFood } from './IFood';
+import { IBookedFood } from './IBookedFood';
+import { IBookedOption } from './IBookedOption';
 
 export interface IBooking {
     try_date: string,
@@ -26,6 +28,7 @@ export interface IBooking {
     booked_color_2: string;
     booked_time: string;
     memo: string;
+    payment_method: string;
     payment_name: string;
     payment_phone: string;
     payment_email: string;
@@ -36,14 +39,19 @@ export interface IBooking {
     plan: IPlan;
     product: IProduct;
     customer: ICustomer;
-    options: IOptionsItem[];
+    options: IBookedOption[];
     customize_fields: ICustomizeFieldsItem[];
-    foods: [];
+    foods: any;
+
+}
+
+export interface IFoodDetail extends IFood, IBookedFood{
 
 }
 
 export interface IBookingSearchState {
-    searchForm: IBooking
+    searchForm: IBooking,
+    services?:any
 }
 
 
