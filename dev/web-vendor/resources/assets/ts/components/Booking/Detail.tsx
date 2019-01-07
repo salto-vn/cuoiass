@@ -1,5 +1,4 @@
 import * as React from "react";
-import CONSTANT from '../../bootstrap/Constant';
 import { withStyles, createStyles, FormLabel, Modal, Theme } from '@material-ui/core';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
@@ -28,6 +27,7 @@ import { IBookedOption } from '../../interface/IBookedOption';
 import { paymentMethods, ResourceUtil, bookingStatusList } from '../../common/Resources';
 import Info from '../../common/Typography/Info';
 import { Carousel } from 'react-responsive-carousel';
+import CONSTANT from '../../bootstrap/Constant';
 
 
 const styles = (theme: Theme) => createStyles(
@@ -111,13 +111,13 @@ export interface IDetailBookingState extends IFormState {
 
 }
 
-class DetailBookingScreen extends React.Component<{ match: any, classes: any }, IDetailBookingState> {
+class DetailBookingScreen extends React.Component<{ match: any, classes: any, history: any }, IDetailBookingState> {
 
     abortControler = new AbortController();
     public state = {
         isLoading: true,
         isSubmitDisabled: true,
-        isHandleEvent: true,
+        isHandleEvent: false,
         isValidate: false,
         isError: false,
         showMessage: false,
@@ -126,7 +126,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
         clientError: { status: undefined },
         validateMessage: { errors: "" },
         modalImage: "",
-        isShowImageModal:false,
+        isShowImageModal: false,
     }
 
     async componentDidMount() {
@@ -145,8 +145,50 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
         this.abortControler.abort();
     }
 
-    private handleEdit = () => {
-        debugger;
+    private handleOpenEdit = (evt: any) => {
+        this.props.history.push(this.props.history.location.pathname + "/edit");
+    }
+
+    private handleEdit = async () => {
+        this.setState({ isLoading: true });
+        if (this.state.isHandleEvent) {
+            return;
+        }
+
+        const { model } = this.state;
+        this.setState({ isHandleEvent: true });
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Update(API_URL.BOOKING_CRL, model, this.props.match.params.booked_cd, signal);
+        if (response.isError) { //Server Error 500 not 422 validtion
+
+            return this.setState({
+                isValidate: response.isValidate,
+                isError: response.isError,
+                showMessage: response.isError,
+                isHandleEvent: false,
+                isLoading: false,
+            });
+        }
+
+        if (response.isValidate) {
+            return this.setState({
+                isValidate: response.isValidate,
+                isError: response.isError,
+                showMessage: response.isValidate,
+                validateMessage: response.validateMessage,
+                isHandleEvent: false,
+                isLoading: false,
+            });
+        } else {
+            return this.setState({
+                showMessage: true,
+                isValidate: response.isValidate,
+                isError: response.isError,
+                isHandleEvent: false,
+                isLoading: false,
+            });
+        }
+
     }
 
     public handleChange = (isRequired: boolean, event: any) => {
@@ -313,7 +355,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                             <GridItem xs={12} sm={12} md={12}>
                                 <Card>
                                     <CardHeader color="primary">
-                                        <h4 className={classes.cardTitleWhite}>Đơn hàng: AAAAAA</h4>
+                                        <h4 className={classes.cardTitleWhite}>Đơn hàng: {model.booked_cd}</h4>
                                         <div className={classes.cardCategoryWhite}>
                                             Chi tiết thông tin đơn hàng
                                         </div>
@@ -325,7 +367,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             }
                                         </div>
                                     </CardHeader>
-                                    {!isLoading && <CardBody>
+                                    {model.booked_cd != '' && <CardBody>
                                         <GridContainer>
                                             <GridItem xs={12} sm={3} md={3}>
                                                 <FormLabel className={classes.labelHorizontal}>
@@ -337,7 +379,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                                     {status}
                                                 </FormLabel>
                                                 <div className={classes.footerRight} >
-                                                    <a href="#" onClick={this.handleEdit}>
+                                                    <a href={"/booking/detail/" + model.booked_cd + "/edit"} >
                                                         <EditIcon className={classes.icon} />
                                                         Chỉnh sửa
                                                     </a>
@@ -655,7 +697,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                                     formControlProps={{
                                                         fullWidth: true,
                                                     }}
-                                                    value={this.state.status}
+                                                    value={model.status}
                                                     onChange={this.handleChange.bind(this, true)}
                                                     helpText={inputStStatus !== "init" ? inputStStatus : ''}
                                                     error={inputStStatus !== 'init' && inputStStatus !== ''}
@@ -668,7 +710,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                             </GridItem>
                                         </GridContainer>
                                     </CardBody>}
-                                    
+
                                     <CardFooter>
                                         <div className={classes.footerRight}>
                                             <Button color="primary" onClick={this.handleEdit}>
@@ -686,85 +728,87 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any }, 
                                 <h4 className={classes.cardTitleWhite}>Sản phẩm</h4>
                                 <p className={classes.cardCategoryWhite}>Sản phẩm dịch vụ đã sử dụng</p>
                             </CardHeader>
-                            <CardBody >
-                                {model.product.prd_images.length !== 0 ?
-                                    <Carousel onClickItem={this.handleClickPhoto}>
-                                        {model.product.prd_images.map((image, key) =>
-                                            <div key={key}>
-                                                <img key={key} src={image} />
-                                            </div>
-                                        )}
-                                    </Carousel>
-                                    : ''}
+                            {model.product.prd_cd != '' &&
+                                <CardBody >
+                                    {model.product.prd_images.length !== 0 ?
+                                        <Carousel onClickItem={this.handleClickPhoto}>
+                                            {model.product.prd_images.map((image, key) =>
+                                                <div key={key}>
+                                                    <img key={key} src={image} />
+                                                </div>
+                                            )}
+                                        </Carousel>
+                                        : ''}
 
-                                <h6 className={classes.cardCategory}><Link to={"/product/"}> {model.product.prd_name}</Link></h6>
-                                <p className={classes.cardTitle}>Mô tả sản phẩm</p>
-                                <div className={classes.description}>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={5}>
-                                            <FormLabel className={classes.valueHorizontal}>
-                                                Mã Sản phẩm
+                                    <h6 className={classes.cardCategory}><Link to={"/product/"}> {model.product.prd_name}</Link></h6>
+                                    <p className={classes.cardTitle}>Mô tả sản phẩm</p>
+                                    <div className={classes.description}>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={5}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    Mã Sản phẩm
                                             </FormLabel>
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={7}>
-                                            <FormLabel className={classes.labelHorizontal}>
-                                                {model.product.prd_cd}
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={7}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    {model.product.prd_cd}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={4}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    Dịch vụ
                                             </FormLabel>
-                                        </GridItem>
-                                    </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={4}>
-                                            <FormLabel className={classes.valueHorizontal}>
-                                                Dịch vụ
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={8}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    {model.vendor_service.ven_serv_name}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={4}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    Địa chỉ
                                             </FormLabel>
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={8}>
-                                            <FormLabel className={classes.labelHorizontal}>
-                                                {model.vendor_service.ven_serv_name}
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={8}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    {model.customer.address}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={5}>
+                                                <FormLabel className={classes.valueHorizontal}>
+                                                    Số điện thoại
                                             </FormLabel>
-                                        </GridItem>
-                                    </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={4}>
-                                            <FormLabel className={classes.valueHorizontal}>
-                                                Địa chỉ
-                                            </FormLabel>
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={8}>
-                                            <FormLabel className={classes.labelHorizontal}>
-                                                {model.customer.address}
-                                            </FormLabel>
-                                        </GridItem>
-                                    </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={5}>
-                                            <FormLabel className={classes.valueHorizontal}>
-                                                Số điện thoại
-                                            </FormLabel>
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={7}>
-                                            <FormLabel className={classes.labelHorizontal}>
-                                                {model.customer.phone}
-                                            </FormLabel>
-                                        </GridItem>
-                                    </GridContainer>
-                                </div>
-                            </CardBody>
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={7}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    {model.customer.phone}
+                                                </FormLabel>
+                                            </GridItem>
+                                        </GridContainer>
+                                    </div>
+                                </CardBody>
+                            }
                         </Card>
                     </GridItem>
                 </GridContainer>
                 <div>
-                <Modal
-                    aria-labelledby="Hình ảnh"
-                    aria-describedby="Chi tiết hình ảnh"
-                    open={this.state.isShowImageModal}
-                    onClose={this.onToggleModal}
-                >
-                    <div className={classes.modal}>
-                        <img src={this.state.modalImage} width="100%" />
-                    </div>
-                </Modal>
-            </div>
+                    <Modal
+                        aria-labelledby="Hình ảnh"
+                        aria-describedby="Chi tiết hình ảnh"
+                        open={this.state.isShowImageModal}
+                        onClose={this.onToggleModal}
+                    >
+                        <div className={classes.modal}>
+                            <img src={this.state.modalImage} width="100%" />
+                        </div>
+                    </Modal>
+                </div>
 
             </>
         );

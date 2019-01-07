@@ -421,6 +421,7 @@ denied: vendor tu choi
 finished: da hoan thanh, to chuc.'
   , `memo` varchar(255) comment 'memo'
   , `booked_date` datetime comment 'booked date:systemdate'
+  , `promotion_code` char(20) comment 'promotion code'
   , `payment_method` varchar(255) comment 'payment name'
   , `payment_name` varchar(255) comment 'payment name'
   , `payment_phone` varchar(255) comment 'payment phone'

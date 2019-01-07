@@ -8,6 +8,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 // core components
 import customSelectStyle from "../../../../styles/components/customSelectStyle";
 import { FormHelperText, Select, MenuItem } from '@material-ui/core';
+import { isEmpty } from '../../Utils';
 
 export interface ICustomSelect {
   classes?: any,
@@ -56,7 +57,7 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
     return (
 
       <>
-        <FormControl 
+        <FormControl
           {...formControlProps}
           className={formControlProps.className + " " + classes.selectFormControl}
         >
@@ -89,7 +90,7 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
               <em key={0}>Chọn</em>
             </MenuItem>
             {items.map((option: IOption, i: any) => (
-              <MenuItem key={option.key} value={option.key}
+              <MenuItem key={i} value={option.key == undefined ? i : option.key}
                 classes={{
                   root: classes.selectMenuItem,
                   selected: classes.selectMenuItemSelected
@@ -98,7 +99,7 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
               </MenuItem>
             ))}
           </Select>
-          {helpText !== undefined ? (
+          {!isEmpty(helpText) ? (
             <FormHelperText id={id + "-select"} className={helpTextClasses + " " + classes.error}>
               {helpText}
             </FormHelperText>

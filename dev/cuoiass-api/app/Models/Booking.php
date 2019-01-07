@@ -81,6 +81,7 @@ class Booking extends Model
 //    ];
 
     protected $fillable = [
+        'booked_id',
         'booked_cd',
         'booked_pro_name',
         'booked_size',

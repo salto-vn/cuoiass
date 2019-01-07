@@ -89,7 +89,7 @@ class StaffController extends Controller
             $input['password'] = bcrypt($input['password']);
         }
 
-        return tap($staff)->update($input);
+        return response()->success(tap($staff)->update($input));
     }
 
     /**

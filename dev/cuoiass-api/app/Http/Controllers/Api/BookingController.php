@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Booking\GetRequest;
 use App\Http\Requests\Booking\ShowRequest;
+use App\Http\Requests\Booking\UpdateRequest;
 use App\Models\Booking;
 use App\Repositories\BookingRepo;
 use App\Services\BookingService;
@@ -56,7 +57,7 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -88,9 +89,17 @@ class BookingController extends Controller
      * @param Booking $booking
      * @return void
      */
-    public function update(Request $request, Booking $booking)
+    public function update(UpdateRequest $request, Booking $booking)
     {
         //
+        $input = array_filter($request->validated());
+        $input['updated_by'] = 'test@gmail.com';
+        $bookingBb = $this->bookingRepo->findByField('booked_cd',$input['booked_cd']);
+        if (!empty($bookingBb)) {
+            $rs = $this->bookingRepo->update($input, $bookingBb[0]['booked_id']);
+        }
+
+        return response()->success($rs);
     }
 
     /**

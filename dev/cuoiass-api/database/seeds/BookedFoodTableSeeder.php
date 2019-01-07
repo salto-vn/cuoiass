@@ -13,15 +13,15 @@ class BookedFoodTableSeeder extends Seeder
     public function run()
     {
         //
-        $bookings = \App\Models\Booking::query()->get();
         $tblProduct = \App\Utils\TableName::TBL_PRODUCTS;
         $tblMenu = \App\Utils\TableName::TBL_MENUS;
-        $menus = \App\Models\Menu::query()->select(["$tblMenu.menu_id", "$tblMenu.menu_name", "$tblProduct.service_code"])
+        $menus = \App\Models\Menu::query()->select(["$tblMenu.prd_id", "$tblMenu.menu_id", "$tblMenu.menu_name", "$tblProduct.service_code"])
             ->join("$tblProduct", "$tblMenu.prd_id", "=", "$tblProduct.prd_id")
             ->get();
-        foreach ($bookings as $booking) {
-            foreach ($menus as $menu) {
-                if (in_array($menu['service_code'], [\App\Enums\ServiceCodeEnum::REST, \App\Enums\ServiceCodeEnum::QUAC])) {
+        foreach ($menus as $menu) {
+            if (in_array($menu['service_code'], [\App\Enums\ServiceCodeEnum::REST, \App\Enums\ServiceCodeEnum::QUAC])) {
+                $bookings = \App\Models\Booking::query()->where("prd_id","=",$menu["prd_id"])->get();
+                foreach ($bookings as $booking) {
                     factory(\App\Models\BookedFood::class)->create(
                         [
                             'booked_menu' => $menu['menu_name'],

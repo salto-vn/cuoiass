@@ -15,7 +15,7 @@ const headerOptions = {
  * 
  * @return HandleResponse
  */
-export const findOne = async (url: string, id: string, signal:any, columns?: string[]) => {
+export const findOne = async (url: string, id: string, signal: any, columns?: string[]) => {
     var fullUrl: string = "";
     if (columns == undefined) {
         fullUrl = `${url}/${id}`;
@@ -41,7 +41,7 @@ export const findOne = async (url: string, id: string, signal:any, columns?: str
  * @return HandleResponse
  */
 
-export const Get = async (url: string, search?: string, signal?:any,columns?: string[],) => {
+export const Get = async (url: string, search?: string, signal?: any, columns?: string[], ) => {
     const params: any = { search };
     const queryString = objectToQueryString(params, '=', '&');
     const result = await fetch(`${url}?${queryString}`, {
@@ -68,7 +68,7 @@ export const Get = async (url: string, search?: string, signal?:any,columns?: st
  * @return HandleResponse
  */
 
-export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, signal?:any,columns?: string[],) => {
+export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, signal?: any, columns?: string[], ) => {
     const params: any = { page, limit, orderBy, order, search };
     const queryString = objectToQueryString(params, '=', '&');
     const result = await fetch(`${url}?${queryString}`, {
@@ -87,9 +87,10 @@ export const GetList = async (url: string, page: number = 1, limit: number = 10,
  * @param model 
  * @return HandleResponse
  */
-export const Store = async (url: string, model: object) => {
+export const Store = async (url: string, model: object, signal: any) => {
     const result = await fetch(`${url}`, {
         method: "POST",
+        signal: signal,
         headers: headerOptions,
         body: JSON.stringify(model)
     });
@@ -110,9 +111,10 @@ export const Store = async (url: string, model: object) => {
 * 
 * @return HandleResponse
 */
-export const Edit = async (url: string, id: number | string) => {
+export const Edit = async (url: string, id: number | string, signal: any) => {
     const result = await fetch(`${url}/${id}/edit`, {
         method: "GET",
+        signal: signal,
         headers: headerOptions,
     });
 
@@ -127,9 +129,10 @@ export const Edit = async (url: string, id: number | string) => {
 * 
 * @return HandleResponse
 */
-export const Show = async (url: string, id: number | string) => {
+export const Show = async (url: string, id: number | string, signal: any) => {
     const result = await fetch(`${url}/${id}`, {
         method: "GET",
+        signal: signal
         headers: headerOptions,
     });
 
@@ -145,9 +148,10 @@ export const Show = async (url: string, id: number | string) => {
  * 
  * @return HandleResponse
  */
-export const Update = async (url: string, model: object, id: string | number) => {
+export const Update = async (url: string, model: object, id: string | number, signal: any) => {
     const result = await fetch(`${url}/${id}`, {
         method: "PUT",
+        signal: signal,
         headers: headerOptions,
         body: JSON.stringify(model)
     });
@@ -162,9 +166,10 @@ export const Update = async (url: string, model: object, id: string | number) =>
  * 
  * @return HandleResponse
  */
-export const Destroy = async (url: string, id: string) => {
+export const Destroy = async (url: string, id: string, signal: any) => {
     const result = await fetch(`${url}/${id}`, {
         method: "DELETE",
+        signal: signal,
         headers: headerOptions
     });
 

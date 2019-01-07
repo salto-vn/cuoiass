@@ -11,6 +11,8 @@ import ViewDetailFeedbackScreen from '../components/Feedback/ViewDetail';
 import BookingSearchResultScreen from '../components/Booking/Results';
 import BookingSearchScreen from '../components/Booking/Index';
 import DetailBookingScreen from '../components/Booking/Detail';
+import BookingEditScreen from '../components/Booking/Edit';
+
 export const routes =
   [
     {
@@ -24,6 +26,11 @@ export const routes =
       name: "Order",
     },
     {
+      path: "/booking/detail/:booked_cd/edit",
+      component: BookingEditScreen,
+      name: "Chi tiết đơn hàng"
+    },
+    {
       path: "/booking/detail/:booked_cd",
       component: DetailBookingScreen,
       name: "Chi tiết đơn hàng"
@@ -33,6 +40,6 @@ export const routes =
       component: BookingSearchScreen,
       name: "Tìm kiếm đơn hàng"
     },
-    
+
   ];
 

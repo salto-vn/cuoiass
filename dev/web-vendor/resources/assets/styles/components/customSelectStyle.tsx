@@ -165,6 +165,9 @@ const customSelectStyle = createStyles({
     listStyle: "none",
     backgroundColor: "transparent",
     maxHeight: "266px"
+  },
+  error: {
+    color: dangerColor
   }
 });
 

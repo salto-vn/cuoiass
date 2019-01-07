@@ -12,6 +12,7 @@ import PropTypes from "prop-types";
 // core components
 import customInputStyle from "../../../../styles/components/customInputStyle";
 import { FormHelperText } from '@material-ui/core';
+import { isEmpty } from '../../Utils';
 
 export interface ICustomInput {
   classes?: any,
@@ -100,7 +101,7 @@ function CustomInput({ ...props }) {
         id={id}
         {...inputProps}
       />
-      {helpText !== undefined ? (
+      {!isEmpty(helpText) ? (
         <FormHelperText id={id + "-text"} className={helpTextClasses + " " + classes.error}>
           {helpText}
         </FormHelperText>

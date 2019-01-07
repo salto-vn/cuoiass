@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(FoodsTableSeeder::class);
         $this->call(DrinksTableSeeder::class);
         $this->call(BookedFoodTableSeeder::class);
+        $this->call(PromotionTableSeeder::class);
 
     }
 }
