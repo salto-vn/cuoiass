@@ -105476,11 +105476,23 @@ var BookingEditScreen = /** @class */ (function (_super) {
                                                     var option = { key: i + "", value: val };
                                                     return option;
                                                 });
-                                                React.createElement(CustomSelect_1.default, { id: "customize_field_" + field.customize_field_id, formControlProps: {
+                                                input = React.createElement(CustomSelect_1.default, { id: "customize_field_" + field.customize_field_id, formControlProps: {
                                                         fullWidth: true,
                                                     }, value: model.status, onChange: _this.handleChange.bind(_this, true, "customize_field_" + field.customize_field_id), inputProps: {
                                                         name: "customize_field_" + field.customize_field_id,
                                                     }, items: values });
+                                                break;
+                                            case "radio":
+                                                var values = field.customize_field_value.trim().split(",").map(function (val, i) {
+                                                    var option = { key: i + "", value: val };
+                                                    return option;
+                                                });
+                                                input = React.createElement(core_1.FormControlLabel, { control: React.createElement(core_1.Radio, { checked: _this.state.selectedEnabled === "a", onChange: _this.handleChangeEnabled, value: "a", name: "radio button enabled", "aria-label": "A", icon: React.createElement(FiberManualRecord, { className: classes.radioUnchecked }), checkedIcon: React.createElement(FiberManualRecord, { className: classes.radioChecked }), classes: {
+                                                            checked: classes.radio,
+                                                            root: classes.radioRoot
+                                                        } }), classes: {
+                                                        label: classes.label
+                                                    }, label: "First Radio" });
                                                 break;
                                             default:
                                                 break;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withStyles, Theme, createStyles, FormLabel, Modal, Popover } from '@material-ui/core';
+import { withStyles, Theme, createStyles, FormLabel, Modal, Popover, FormControlLabel, Radio } from '@material-ui/core';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
@@ -870,7 +870,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     var option: IOption = { key: i + "", value: val };
                                                     return option;
                                                 });
-                                                <CustomSelect
+                                                input = <CustomSelect
                                                     id={"customize_field_" + field.customize_field_id}
                                                     formControlProps={{
                                                         fullWidth: true,
@@ -881,6 +881,41 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                         name: "customize_field_" + field.customize_field_id,
                                                     }}
                                                     items={values}
+                                                />
+                                                break;
+                                            case "radio":
+                                                var values: IOption[] = field.customize_field_value.trim().split(",").map((val, i) => {
+                                                    var option: IOption = { key: i + "", value: val };
+                                                    return option;
+                                                });
+                                                input = <FormControlLabel
+                                                    control={
+                                                        <Radio
+                                                            checked={this.state.selectedEnabled === "a"}
+                                                            onChange={this.handleChangeEnabled}
+                                                            value="a"
+                                                            name="radio button enabled"
+                                                            aria-label="A"
+                                                            icon={
+                                                                <FiberManualRecord
+                                                                    className={classes.radioUnchecked}
+                                                                />
+                                                            }
+                                                            checkedIcon={
+                                                                <FiberManualRecord
+                                                                    className={classes.radioChecked}
+                                                                />
+                                                            }
+                                                            classes={{
+                                                                checked: classes.radio,
+                                                                root: classes.radioRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{
+                                                        label: classes.label
+                                                    }}
+                                                    label="First Radio"
                                                 />
                                                 break;
                                             default:
