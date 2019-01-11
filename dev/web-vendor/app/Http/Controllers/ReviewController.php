@@ -19,8 +19,8 @@ class ReviewController extends ApiController
     public function initial(Request $request) {
 
         $params = array_filter($request->input());
-        $params['review_response_vendor_id'] = '1'; //TODO;
-        $params['vendor_id'] = '1'; //TODO;
+        $params['review_response_vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = '3'; //TODO;
         $response = $this->api->requestNoCache($this->apiName, "GET", $params);
         return response()->json(
             json_decode($response->getBody()),
@@ -30,8 +30,8 @@ class ReviewController extends ApiController
 
     public function show(Request $request) {
         $params = array_filter($request->input());
-        $params['review_response_vendor_id'] = '1'; //TODO;
-        $params['vendor_id'] = '1'; //TODO;
+        $params['review_response_vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = '3'; //TODO;
         $params['review_id'] = $request->review_id; //TODO;
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "GET", $params);
@@ -49,8 +49,8 @@ class ReviewController extends ApiController
     {
         //Call Update Review API
         $params = array_filter($request->input());
-        $params['review_response_vendor_id'] = '1'; //TODO;
-        $params['vendor_id'] = '1'; //TODO;
+        $params['review_response_vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = '3'; //TODO;
         $response = $this->api->requestNoCache($this->apiName, "PUT", $params);
         return response()->json(
             json_decode($response->getBody()),

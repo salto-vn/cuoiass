@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Review;
+namespace App\Http\Requests\Menu;
 
 use App\Http\Requests\RequestAbstract;
-use Illuminate\Validation\Rule;
 
 class ShowRequest extends RequestAbstract
 {
@@ -25,9 +24,8 @@ class ShowRequest extends RequestAbstract
     public function rules()
     {
         return [
-            'review_response_vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
             'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
-            'review_id' => ['required','integer', 'exists:reviews,review_id'],
+            'service_code' => ['required','string'],
         ];
     }
 }

@@ -28,7 +28,7 @@ class StaffController extends ApiController
         if (!empty($roles_rs)) {
             $columns = $this->staffColumns();
             $params = array_filter($request->input());
-            $params['vendor_id'] = '1'; //TODO: hard data
+            $params['vendor_id'] = '3'; //TODO: hard data
             $input = $this->buildSearchColumn($params, $columns);
             $response = $this->api->requestNoCache($this->apiName, "GET", $input);
         }
@@ -49,7 +49,7 @@ class StaffController extends ApiController
     {
 
         $input = array_filter($request->input());
-        $input['vendor_id'] = '1'; //TODO: hard data
+        $input['vendor_id'] = '3'; //TODO: hard data
         $input['staff_id'] = $request->staff_id;
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "GET", $input);
@@ -62,7 +62,7 @@ class StaffController extends ApiController
     {
 
         $input = array_filter($request->input());
-        $input['vendor_id'] = '1'; //TODO: hard data
+        $input['vendor_id'] = '3'; //TODO: hard data
         $input['staff_id'] = $request->staff_id;
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "PUT", $input);
@@ -73,7 +73,7 @@ class StaffController extends ApiController
     public function store(Request $request)
     {
         $input = array_filter($request->input());
-        $input['vendor_id'] = '1'; //TODO: hard data
+        $input['vendor_id'] = '3'; //TODO: hard data
         $input['staff_id'] = $request->staff_id;
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "POST", $input);
@@ -84,7 +84,7 @@ class StaffController extends ApiController
     public function destroy(Request $request)
     {
         $input = array_filter($request->input());
-        $input['vendor_id'] = '1'; //TODO: hard data
+        $input['vendor_id'] = '3'; //TODO: hard data
         $input['staff_id'] = $request->staff_id;
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "DELETE", $input);

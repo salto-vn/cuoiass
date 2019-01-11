@@ -12,7 +12,7 @@ import Danger from '../../common/Typography/Danger';
 import CardFooter from '../../common/Card/CardFooter';
 import Button from '../../common/FormControls/CustomButtons/Button';
 import EditIcon from '@material-ui/icons/Edit';
-import CustomSelect from '../../common/FormControls/CustomSelect/CustomSelect';
+import CustomSelect, { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 import { BookingValidate } from '../../common/Validate/BookingValidate';
 import { isEmptyKeyInObject, showError, parseDateFormat, convertCurrency } from '../../common/Utils';
 import { IFormState } from '../../interface/IForm';
@@ -145,9 +145,6 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any, hi
         this.abortControler.abort();
     }
 
-    private handleOpenEdit = (evt: any) => {
-        this.props.history.push(this.props.history.location.pathname + "/edit");
-    }
 
     private handleEdit = async () => {
         this.setState({ isLoading: true });
@@ -601,6 +598,27 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any, hi
                                             </GridItem>
                                         </GridContainer>
                                         {model.customize_fields.map((field: ICustomizeFieldsItem, k: number) => {
+                                            var anwser;
+                                            switch (field.customize_field_type) {
+                                                case "textbox":
+                                                    anwser = field.customize_field_answer;
+                                                    break;
+                                                case "combobox":
+                                                    const customize_field_value: IOption[] = field.customize_field_value
+                                                    anwser = new ResourceUtil(customize_field_value).getValue(field.customize_field_answer)
+                                                    break;
+                                                case "radio":
+                                                    const customize_field_value: IOption[] = field.customize_field_value
+                                                    anwser = new ResourceUtil(customize_field_value).getValue(field.customize_field_answer)
+                                                    break;
+                                                case "checkbox":
+                                                    const customize_field_value: IOption[] = field.customize_field_value
+                                                    anwser = new ResourceUtil(customize_field_value).getValue(field.customize_field_answer)
+                                                    break;
+                                                default:
+                                                anwser = field.customize_field_answer;
+                                                    break;
+                                            }
                                             return (
                                                 <GridContainer key={k}>
                                                     <GridItem xs={12} sm={12} md={3}>
@@ -610,7 +628,7 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any, hi
                                                     </GridItem>
                                                     <GridItem xs={12} sm={12} md={9}>
                                                         <FormLabel className={classes.valueHorizontal}>
-                                                            {field.customize_field_value}
+                                                            {anwser}
                                                         </FormLabel>
                                                     </GridItem>
                                                 </GridContainer>);

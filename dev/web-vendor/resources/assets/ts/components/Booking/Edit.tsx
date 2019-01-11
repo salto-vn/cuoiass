@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withStyles, Theme, createStyles, FormLabel, Modal, Popover, FormControlLabel, Radio } from '@material-ui/core';
+import { withStyles, Theme, createStyles, FormLabel, Modal, Popover, FormControlLabel, Radio, Checkbox, RadioGroup, IconButton, List, ListItem, ListItemIcon, ListSubheader, ListItemText } from '@material-ui/core';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
@@ -10,7 +10,7 @@ import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinear
 import CardBody from '../../common/Card/CardBody';
 import CustomSelect, { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 import { BookingValidate } from '../../common/Validate/BookingValidate';
-import { isEmptyKeyInObject, showError, convertCurrency, isDateCorrectFormat } from '../../common/Utils';
+import { isEmptyKeyInObject, showError, convertCurrency, isDateCorrectFormat, isEmpty } from '../../common/Utils';
 import { bookingStatusList, ResourceUtil, paymentMethods } from '../../common/Resources';
 import CustomDatePicker from '../../common/FormControls/CustomDatePicker/CustomDatePicker';
 import { ICustomizeFieldsItem } from '../../interface/ICustomizeFieldsItem';
@@ -31,10 +31,21 @@ import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
 import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import { SketchPicker } from 'react-color';
+import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
+import Check from "@material-ui/icons/Check";
+import Remove from "@material-ui/icons/Remove";
+import Add from "@material-ui/icons/Add";
 
+import customCheckboxRadioSwitch from "../../../styles/components/regularFormStyle";
+import buttonGroupStyle from "../../../styles/components/buttonGroupStyle";
+import { IMenu } from '../../interface/IMenu';
+
+import MenuPopup from '../Menu/MenuPopup';
 
 
 const styles = (theme: Theme) => createStyles({
+    ...customCheckboxRadioSwitch,
+    ...buttonGroupStyle,
     cardCategoryWhite: {
         "&,& a,& a:hover,& a:focus": {
             color: "rgba(255,255,255,.62)",
@@ -93,14 +104,38 @@ const styles = (theme: Theme) => createStyles({
     formControl: {
         paddingTop: "5px !important",
         margin: "0px !important"
+    },
+    footerRight: {
+        textAlign: "right",
+        width: "100%"
+    },
+    right: {
+        textAlign: "right"
+    },
+    center: {
+        textAlign: "center"
+    },
+    total: {
+        fontSize: "14px",
+    },
+    modal: {
+        position: 'absolute',
+        width: theme.spacing.unit * 100,
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 1,
+        top: "50%",
+        left: "50%",
+        transform: `translate(-50%, -50%)`,
     }
-}
-);
+});
 
 
 export interface IEditBookingState extends IFormState {
     anchorEl: any,
-    anchorEl2: any
+    anchorEl2: any,
+    menus: any,
+    isShowMenuModal: boolean
 }
 
 class BookingEditScreen extends React.Component<{ classes: any, match: any }, IEditBookingState> {
@@ -116,11 +151,13 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         isError: false,
         showMessage: false,
         model: new BookingModel(),
+        menus: [],
         status: "",
         clientError: { status: undefined },
         validateMessage: { errors: "" },
         modalImage: "",
         isShowImageModal: false,
+        isShowMenuModal: false,
     }
 
     async componentDidMount() {
@@ -128,7 +165,6 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         const signal = this.abortControler.signal;
         const response = await HandleRequest.findOne(API_URL.BOOKING_CRL, this.props.match.params.booked_cd, signal);
         let model = Object.assign(new BookingModel(), response.result.data);
-
         this.setState({
             model,
             isLoading: false
@@ -142,7 +178,9 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
     public handleChange = (isRequired: boolean, name: string, event: any) => {
         var value = event.target.value;
         const { model } = this.state;
-        debugger;
+
+
+        //Change Booking infor with Date formate
         if (name == "try_date" || name == "activate_date") {
             if (event._isValid !== undefined) {
                 value = event.format('DD-MM-YYYY');
@@ -154,23 +192,81 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
 
         }
 
+        // Change Customer info model.customer
         var customerInfo = ["first_name", "last_name", "address", "phone"];
         if (customerInfo.includes(name)) {
             model.customer[name] = value;
         }
 
-        var planInfo = ["br_name", "gr_name", "org_address", "org_date", "plan_date"]
+        //Change Plan info model.plan
+        var planInfo = ["br_name", "gr_name", "org_address", "org_date", "plan_date"];
         if (planInfo.includes(name)) {
             model.plan[name] = value;
         }
 
+        // Change Custom Fields
+        var customizeFields = model.customize_fields.map((field: ICustomizeFieldsItem, index) => {
+            var customize_field_answers = field.customize_field_answer.trim().split(",");
+            if (field.customize_field_type.toLowerCase() == "checkbox") {
+                var checked = event.target.checked;
+                field.customize_field_value.map((option: IOption, index: number) => {
+                    if (name == field.customize_field_id + ":" + option.key) {
+                        var buildedAws: [] = this.buildAnswerCustomField(customize_field_answers, value, checked);
+                        field.customize_field_answer = buildedAws.filter(function (el: any) { return !isEmpty(el) }).join(",")
+                    }
+                });
+            } else if (field.customize_field_type.toLowerCase() == "radio") {
+                field.customize_field_value.map((option: IOption, index: number) => {
+                    if (name == field.customize_field_id + ":" + option.key) {
+                        field.customize_field_answer = value;
+                    }
+                });
+            } else {
+                if (name == "customize_field_" + field.customize_field_id) {
+                    field.customize_field_answer = value;
+                }
+            }
+            return field;
+        });
+        //build answer
+        model.customize_fields = customizeFields;
+
+
         const errMessage = BookingValidate(isRequired, name, value);
         this.setState({
-            model: { ...this.state.model, [name]: value ? value : "" },
+            model: { ...model, [name]: value ? value : "" },
             clientError: { ...this.state.clientError, [name]: errMessage },
         }, () => {
             this.canSubmit();
         });
+    }
+
+    /**
+     * build answer 
+     * @param answers array
+     * @param answer string
+     * @param checked boolean
+     */
+    private buildAnswerCustomField = (answers: any, answer: string, checked: boolean) => {
+        if (answers.length == 0) {
+            return answers;
+        }
+
+        if (answers.indexOf(answer) < 0) {
+            if (checked) {
+
+                answers.push(answer);
+            }
+        } else {
+            if (checked) {
+                answers[answers.indexOf(answer)] = answer;
+            } else {
+                answers[answers.indexOf(answer)] = "";
+            }
+        }
+
+
+        return answers;
     }
 
     public canSubmit = () => {
@@ -191,11 +287,15 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         this.setState({ isShowImageModal: !isShowImageModal });
     }
 
+    public onToggleMenuModal = (event: any) => {
+        const { isShowMenuModal } = this.state;
+        this.setState({ isShowMenuModal: !isShowMenuModal });
+    }
+
     private handleEdit = async () => {
     }
 
     private handleChangeComplete = (id: any, color: any) => {
-        debugger;
         const { model } = this.state;
         if (id == "color_picker_1") {
             model.booked_color = color.hex;
@@ -227,29 +327,78 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
 
     };
 
+    /**
+     * Edit Menu Action
+     * 
+     */
+    private handleEditMenu = async (evt: any) => {
+        this.setState({ isLoading: true })
+        const signal = this.abortControler.signal;
+        var param = "service_code="+this.state.model.product.service_code;
+        const response = await HandleRequest.Get(API_URL.getMenus, param, signal);
+        this.setState({
+            menus: response.result.data,
+            isShowMenuModal: true,
+            isLoading: false
+        })
+    }
+
+
     public render() {
 
         const { classes } = this.props;
-        const { isLoading, anchorEl, anchorEl2, model, clientError, validateMessage } = this.state;
+        const { isLoading, anchorEl, anchorEl2, model, clientError, validateMessage, menus } = this.state;
         const openColor = Boolean(anchorEl);
         const openColor2 = Boolean(anchorEl2);
         const inputStStatus = showError(clientError, validateMessage, "status");
 
         //Food info
         var totalFood = 0;
-        var qcName = "";
+        var qcName: any;
         var foodList;
         if (model.foods.length > 0) {
             var foods: any = model.foods.map((object: IFoodDetail, key: number) => {
                 var price = Math.ceil(object.unit_price);
-                qcName = object.booked_menu;
+                qcName = <div style={{ width: "100%" }}><span>{object.booked_menu}</span><a style={{ float: "right" }} onClick={this.handleEditMenu} href="#">Thay đổi</a></div>;
                 totalFood += price * object.booked_total;
-                return [object.food_id, object.food_name, object.booked_total, convertCurrency('vi-VN', price), convertCurrency('vi-VN', price * object.booked_total)]
+                return [object.food_id, object.food_name,
+                <>
+
+                    <div className={classes.buttonGroup}>
+                        <Button
+                            color="info"
+                            size="sm"
+                            round
+                            className={classes.firstButton}
+                        >
+                            <Remove className={classes.icon} />
+                        </Button>
+                        <Button
+                            disabled
+                            color="info"
+                            size="sm"
+                            round
+                            className={classes.middleButton}
+                        >
+                            <span style={{ fontWeight: "bold" }}>{object.booked_total}</span>
+                        </Button>
+                        <Button
+                            color="info"
+                            size="sm"
+                            round
+                            className={classes.lastButton}
+                        >
+                            <Add className={classes.icon} />
+                        </Button>
+                    </div></>
+                    , convertCurrency('vi-VN', price), convertCurrency('vi-VN', price * object.booked_total)
+                ]
             });
             var total = {
                 total: true, colspan: "3", amount: convertCurrency('vi-VN', totalFood)
             };
             foods.push(total);
+
             var quacuoi = <CustomTable
                 tableHeaderColor="primary"
                 tableHead={["ID", "Tên quả", "Số lượng", "Đơn giá", "Thành tiền"]}
@@ -268,6 +417,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                     classes.right,
                     classes.right
                 ]}
+                customTotalClassForCell={classes.total}
             />;
             foodList = <>
                 <GridContainer>
@@ -332,6 +482,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         }
 
 
+
         return <>
             <GridContainer>
                 <GridItem xs={12} sm={12} md={8}>
@@ -342,7 +493,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                     <h4 className={classes.cardTitleWhite}>Đơn hàng: AAAAAA</h4>
                                     <div className={classes.cardCategoryWhite}>
                                         Chi tiết thông tin đơn hàng
-                                        </div>
+                                    </div>
                                     <div>
                                         {isLoading &&
                                             <CustomLinearProgress
@@ -848,10 +999,122 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                             />
                                         </GridItem>
                                     </GridContainer>
+                                    {/** Customize Field */}
                                     {model.customize_fields.map((field: ICustomizeFieldsItem, k: number) => {
-                                        var input;
-                                        switch (field.customize_field_type) {
+                                        var input: any;
+                                        switch (field.customize_field_type.toLowerCase()) {
                                             case "textbox":
+                                                input = <CustomInput key={k}
+                                                    id={"customize_field_" + field.customize_field_id}
+                                                    formControlProps={{
+                                                        fullWidth: true,
+                                                        className: classes.formControl
+                                                    }}
+                                                    inputProps={{
+                                                        type: "text",
+                                                        value: field.customize_field_answer,
+                                                        onChange: this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id)
+                                                    }}
+                                                />
+                                                break;
+                                            case "textarea":
+                                                input = <CustomInput key={k}
+                                                    multiline={true}
+                                                    id={"customize_field_" + field.customize_field_id}
+                                                    formControlProps={{
+                                                        fullWidth: true,
+                                                        className: classes.formControl
+                                                    }}
+                                                    inputProps={{
+                                                        type: "text",
+                                                        value: field.customize_field_answer,
+                                                        onChange: this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id),
+                                                        rows: 3
+                                                    }}
+                                                />
+                                                break;
+                                            case "combobox":
+                                                var values: IOption[] = field.customize_field_value;
+                                                input = <CustomSelect
+                                                    id={"customize_field_" + field.customize_field_id}
+                                                    formControlProps={{
+                                                        fullWidth: true,
+                                                    }}
+                                                    value={field.customize_field_answer}
+                                                    onChange={this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id)}
+                                                    inputProps={{
+                                                        name: "customize_field_" + field.customize_field_id,
+                                                    }}
+                                                    items={values}
+                                                />
+                                                break;
+                                            case "checkbox":
+                                                var values: IOption[] = field.customize_field_value;
+                                                var checkbox: any;
+                                                input = [];
+                                                var customize_field_answers = field.customize_field_answer.trim().split(",");
+                                                values.map((option: IOption, index: number) => {
+                                                    var checked = customize_field_answers.includes(option.key);
+                                                    checkbox = <FormControlLabel key={index}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={checked}
+                                                                value={option.key}
+                                                                onChange={this.handleChange.bind(this, false, field.customize_field_id + ":" + option.key)}
+                                                                checkedIcon={
+                                                                    <Check className={classes.checkedIcon} />
+                                                                }
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{
+                                                            label: classes.label
+                                                        }}
+                                                        label={option.value}
+                                                    />
+                                                    input.push(checkbox)
+                                                })
+                                                break;
+                                            case "radio":
+                                                var values: IOption[] = field.customize_field_value;
+                                                var radio: any;
+                                                input = [];
+                                                values.map((option: IOption, index: number) => {
+                                                    radio = <FormControlLabel key={index}
+                                                        control={
+                                                            <Radio
+                                                                checked={option.key == field.customize_field_answer}
+                                                                value={option.key}
+                                                                onChange={this.handleChange.bind(this, false, field.customize_field_id + ":" + option.key)}
+                                                                icon={
+                                                                    <FiberManualRecord
+                                                                        className={classes.radioUnchecked}
+                                                                    />
+                                                                }
+                                                                checkedIcon={
+                                                                    <FiberManualRecord
+                                                                        className={classes.radioChecked}
+                                                                    />
+                                                                }
+                                                                classes={{
+                                                                    checked: classes.radio,
+                                                                    root: classes.radioRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{
+                                                            label: classes.label
+                                                        }}
+                                                        label={option.value}
+                                                    />
+                                                    input.push(radio)
+                                                })
+                                                break;
+                                            default:
                                                 input = <CustomInput key={k}
                                                     id={"customize_field_" + field.customize_field_id}
                                                     formControlProps={{
@@ -865,61 +1128,6 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     }}
                                                 />
                                                 break;
-                                            case "combobox":
-                                                var values: IOption[] = field.customize_field_value.trim().split(",").map((val, i) => {
-                                                    var option: IOption = { key: i + "", value: val };
-                                                    return option;
-                                                });
-                                                input = <CustomSelect
-                                                    id={"customize_field_" + field.customize_field_id}
-                                                    formControlProps={{
-                                                        fullWidth: true,
-                                                    }}
-                                                    value={model.status}
-                                                    onChange={this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id)}
-                                                    inputProps={{
-                                                        name: "customize_field_" + field.customize_field_id,
-                                                    }}
-                                                    items={values}
-                                                />
-                                                break;
-                                            case "radio":
-                                                var values: IOption[] = field.customize_field_value.trim().split(",").map((val, i) => {
-                                                    var option: IOption = { key: i + "", value: val };
-                                                    return option;
-                                                });
-                                                input = <FormControlLabel
-                                                    control={
-                                                        <Radio
-                                                            checked={this.state.selectedEnabled === "a"}
-                                                            onChange={this.handleChangeEnabled}
-                                                            value="a"
-                                                            name="radio button enabled"
-                                                            aria-label="A"
-                                                            icon={
-                                                                <FiberManualRecord
-                                                                    className={classes.radioUnchecked}
-                                                                />
-                                                            }
-                                                            checkedIcon={
-                                                                <FiberManualRecord
-                                                                    className={classes.radioChecked}
-                                                                />
-                                                            }
-                                                            classes={{
-                                                                checked: classes.radio,
-                                                                root: classes.radioRoot
-                                                            }}
-                                                        />
-                                                    }
-                                                    classes={{
-                                                        label: classes.label
-                                                    }}
-                                                    label="First Radio"
-                                                />
-                                                break;
-                                            default:
-                                                break;
                                         }
 
                                         return (
@@ -930,9 +1138,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     </FormLabel>
                                                 </GridItem>
                                                 <GridItem xs={12} sm={12} md={9}>
-                                                    <FormLabel className={classes.valueHorizontal}>
-                                                        {field.customize_field_value}
-                                                    </FormLabel>
+                                                    {input}
                                                 </GridItem>
                                             </GridContainer>);
                                     })}
@@ -1119,6 +1325,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                 </GridItem>
             </GridContainer>
             <div>
+                <MenuPopup title="Danh sách thực đơn" data={menus} isShowModal={this.state.isShowMenuModal} onToggleMenuModal={this.onToggleMenuModal} />
                 <Modal
                     aria-labelledby="Hình ảnh"
                     aria-describedby="Chi tiết hình ảnh"

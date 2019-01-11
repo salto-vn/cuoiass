@@ -58,7 +58,8 @@ const accordionStyle = (theme:Theme) => createStyles({
     fontWeight: "bolder",
     marginTop: "0",
     marginBottom: "0",
-    color: "inherit"
+    color: "inherit",
+    width:"100%"
   },
   expansionPanelDetails: {
     padding: "15px 0px 5px",

@@ -41,6 +41,7 @@ class BookingCustomizeRepo extends Repository
                 "$tblCustomizeField.customize_field_id"
                 ,"$tblCustomizeField.customize_field_name"
                 ,"$tblCustomizeField.customize_field_type"
+                ,"$tblCustomizeField.customize_field_key"
                 ,"$tblCustomizeField.customize_field_value"
                 ,"$tblBookingCusFld.customize_field_answer"
             ])->join("$tblCustomizeField", function ($join) use ($tblBookingCusFld, $tblCustomizeField) {

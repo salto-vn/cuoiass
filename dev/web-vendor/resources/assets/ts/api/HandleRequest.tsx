@@ -41,9 +41,7 @@ export const findOne = async (url: string, id: string, signal: any, columns?: st
  * @return HandleResponse
  */
 
-export const Get = async (url: string, search?: string, signal?: any, columns?: string[], ) => {
-    const params: any = { search };
-    const queryString = objectToQueryString(params, '=', '&');
+export const Get = async (url: string, queryString?: string, signal?: any, columns?: string[], ) => {
     const result = await fetch(`${url}?${queryString}`, {
         method: "GET",
         signal: signal,
@@ -132,7 +130,7 @@ export const Edit = async (url: string, id: number | string, signal: any) => {
 export const Show = async (url: string, id: number | string, signal: any) => {
     const result = await fetch(`${url}/${id}`, {
         method: "GET",
-        signal: signal
+        signal: signal,
         headers: headerOptions,
     });
 

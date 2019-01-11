@@ -26,7 +26,8 @@ function CustomTable({ ...props }) {
     striped,
     tableShopping,
     customHeadCellClasses,
-    customHeadClassesForCells
+    customHeadClassesForCells,
+    customTotalClassForCell,
   } = props;
   return (
     <div className={classes.tableResponsive}>
@@ -34,7 +35,7 @@ function CustomTable({ ...props }) {
         {tableHead !== undefined ? (
           <TableHead className={classes[tableHeaderColor]}>
             <TableRow className={classes.tableRow}>
-              {tableHead.map((prop:any, key:any) => {
+              {tableHead.map((prop: any, key: any) => {
                 const tableCellClasses =
                   classes.tableHeadCell +
                   " " +
@@ -58,7 +59,7 @@ function CustomTable({ ...props }) {
           </TableHead>
         ) : null}
         <TableBody>
-          {tableData.map((prop:any, key:any) => {
+          {tableData.map((prop: any, key: any) => {
             var rowColor = "";
             var rowColored = false;
             if (prop.color !== undefined) {
@@ -79,13 +80,13 @@ function CustomTable({ ...props }) {
                     colSpan={prop.colspan}
                   />
                   <TableCell
-                    className={classes.tableCell + " " + classes.tableCellTotal}
+                    className={classes.tableCell + " " + classes.tableCellTotal + " " + customTotalClassForCell}
                   >
                     Tổng cộng
                   </TableCell>
                   <TableCell
                     className={
-                      classes.tableCell + " " + classes.tableCellAmount
+                      classes.tableCell + " " + classes.tableCellAmount + " " + customTotalClassForCell
                     }
                   >
                     {prop.amount}
@@ -121,7 +122,7 @@ function CustomTable({ ...props }) {
                 hover={hover}
                 className={classes.tableRow + " " + tableRowClasses}
               >
-                {prop.map((prop:any, key:any) => {
+                {prop.map((prop: any, key: any) => {
                   const tableCellClasses =
                     classes.tableCell +
                     " " +
@@ -155,7 +156,8 @@ CustomTable.defaultProps = {
   customCellClasses: [],
   customClassesForCells: [],
   customHeadCellClasses: [],
-  customHeadClassesForCells: []
+  customHeadClassesForCells: [],
+  customTotalClassForCell: ""
 };
 
 CustomTable.propTypes = {
@@ -180,6 +182,7 @@ CustomTable.propTypes = {
   customClassesForCells: PropTypes.arrayOf(PropTypes.number),
   customHeadCellClasses: PropTypes.arrayOf(PropTypes.string),
   customHeadClassesForCells: PropTypes.arrayOf(PropTypes.number),
+  customTotalClassForCell: PropTypes.string,
   striped: PropTypes.bool,
   // this will cause some changes in font
   tableShopping: PropTypes.bool

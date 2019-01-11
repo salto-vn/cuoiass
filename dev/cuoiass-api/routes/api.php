@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 //    return $request->user();
 //});
 
-//Route::group(['middleware' => ['api']], function(){
+//Route::group(['middleware' => ['api']], function($router){
     //Review Route
     Route::resource('reviews', 'Api\ReviewController');
     Route::resource('roles', 'Api\RoleController')->except(['create', 'destroy']);
@@ -25,6 +25,7 @@ use Illuminate\Http\Request;
     Route::resource('bookings','Api\BookingController')->except(['show']);
 
 
+    $router->get('/menus', 'Api\MenuController@index');
     $router->get('/services', 'Api\MasterServiceController@index');
     $router->post('/bookings/{booked_cd}', 'Api\BookingController@show');
     $router->put('/bookings', 'Api\BookingController@update');

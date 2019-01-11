@@ -33,6 +33,8 @@ $router->group(['prefix' => 'controller'], function () use ($router) {
     $router->get('/bookings/{booked_cd}', 'BookingController@show');
     $router->put('/bookings/{booked_cd}', 'BookingController@update');
     $router->get('/getServices', 'BookingController@getServices');
+    $router->get('/getMenus', 'BookingController@getMenus');
+
 
 });
 

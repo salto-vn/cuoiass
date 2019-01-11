@@ -75,8 +75,9 @@ class BookingController extends Controller
     {
         $params = $request->validated();
         $booked_cd = $params['booked_cd'];
+        $vendor_id = $params['vendor_id'];
         $columns = $params['columns'];
-        $response = $this->bookingService->getBookingByCd($booked_cd, $columns);
+        $response = $this->bookingService->getBookingByCd($vendor_id, $booked_cd, $columns);
         return response()->success($response);
 
 

@@ -571,6 +571,7 @@ create table `customize_fields` (
   , `vendor_service_id` int(11) not null comment 'vendor services id'
   , `customize_field_name` char(20) not null comment 'customize field name'
   , `customize_field_type` enum('textbox','combobox','textarea','file','radio','checkbox') not null comment 'customize field type:textbox, combobox, textarea, file, radio, checkbox'
+  , `customize_field_key` varchar(255) comment 'customize field value'
   , `customize_field_value` varchar(255) comment 'customize field value'
   , `created_by` varchar(255) not null comment 'create user'
   , `created_at` datetime comment 'create at date time'

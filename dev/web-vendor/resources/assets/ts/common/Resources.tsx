@@ -1,4 +1,5 @@
 import { IOption } from './FormControls/CustomSelect/CustomSelect';
+import { isEmpty } from './Utils';
 
 /**
  * Payment method
@@ -63,8 +64,21 @@ export class ResourceUtil {
 
     public getValue = (key: string) => {
         return this.array.map((value: IOption) => {
-            if (value.key == key)
+            if (value.key == key) {
                 return value.value + "";
+            } else {
+                return undefined;
+            }
+                
         })
+    }
+
+    public existKey = (key: string) => {
+        if (isEmpty(this.getValue(key))) {
+            return false;
+        } else {
+            return true;
+        }
+
     }
 }

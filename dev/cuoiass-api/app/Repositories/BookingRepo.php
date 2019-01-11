@@ -114,7 +114,7 @@ class BookingRepo extends Repository
      * @param $tableCols :json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getBookingByCd($booked_cd, $tableCols)
+    public function getBookingByCd($vendor_id, $booked_cd, $tableCols)
     {
         $tblBooking = TBL::TBL_BOOKINGS;
         $tblCustomer = TBL::TBL_CUSTOMERS;
@@ -202,6 +202,7 @@ class BookingRepo extends Repository
 
 
         $query->where('booked_cd', '=', $booked_cd);
+        $query->where("$tblVendorService.vendor_id", '=', $vendor_id);
         return $query->first();
     }
 

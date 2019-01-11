@@ -3,50 +3,49 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
-use App\Repositories\RoleRepo;
+use App\Http\Requests\Menu\ShowRequest;
+use App\Models\Menu;
+use App\Repositories\MenuRepo;
 use Illuminate\Http\Request;
 
-class RoleController extends Controller
+class MenuController extends Controller
 {
     /**
-     * @var RoleRepo
+     * @var MenuRepo
      */
-    private $roleRepo;
+    private $menuRepo;
 
     /**
      * StaffController constructor.
-     * @param RoleRepo $roleRepo
+     * @param MenuRepo $menuRepo
      */
-    public function __construct(RoleRepo $roleRepo)
+    public function __construct(MenuRepo $menuRepo)
     {
-        $this->roleRepo = $roleRepo;
+        $this->menuRepo = $menuRepo;
     }
 
     /**
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function index(Request $request)
+    public function index(ShowRequest $request)
     {
 
-        $system_code = $request->get('system_code');
-        //TODO:vendor
-        $query = $this->roleRepo->model->newQuery();
-        $query->select(['role_id', 'role_name'])
-            ->where('system_code', $system_code);
-        return $query->get();
+        $service_code = $request->get('service_code');
+        $vendor_id = $request->get('vendor_id');
+        $menus = $this->menuRepo->getMenuWithProduct($service_code,$vendor_id);
+        return response()->success($menus);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  Review $review
+     * @param  Menu $menu
      * @return \Illuminate\Http\Response
      */
-    public function show(Role $role){
+    public function show(Menu $menu){
 
-        return $role;
+        return $menu;
     }
 
     /**
@@ -60,22 +59,22 @@ class RoleController extends Controller
     }
 
     /**
-     * @param Role $role
+     * @param Menu $menu
      * @return void
      */
-    public function edit(Role $role)
+    public function edit(Menu $menu)
     {
-        return $role;
+        return $menu;
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateStaff $request
-     * @param Staff $staff
+     * @param Request $request
+     * @param Menu $staff
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateStaff $request, Staff $staff)
+    public function update(Request $request, Menu $menu)
     {
     }
 
@@ -85,7 +84,7 @@ class RoleController extends Controller
      * @param Staff $staff
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Staff $staff)
+    public function destroy(Menu $menu)
     {
     }
 }
