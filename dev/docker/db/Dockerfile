@@ -1,4 +1,4 @@
-FROM mysql:5.6
+FROM mysql:5.7
 ARG CONF_DIR=./docker/db/conf
 
 COPY ${CONF_DIR}/my.cnf /etc/mysql/conf.d/my.cnf

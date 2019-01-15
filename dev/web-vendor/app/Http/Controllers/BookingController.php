@@ -19,7 +19,7 @@ class BookingController extends ApiController
     {
 
         $params = array_filter($request->input());
-        $params['vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO;
         $response = $this->api->requestNoCache($this->apiName, "GET", $params);
         return response()->json(
             json_decode($response->getBody()),
@@ -34,7 +34,7 @@ class BookingController extends ApiController
     public function show(Request $request)
     {
         $params = array_filter($request->input());
-        $params['vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO;
         $params['booked_cd'] = $request->booked_cd; //TODO;
         $routeName = str_replace('controller' . '/', '', $request->path());
 
@@ -74,7 +74,7 @@ class BookingController extends ApiController
     {
         //Call Update Review API
         $params = array_filter($request->input());
-        $params['vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO;
         $params['booked_cd'] = $request->booked_cd;
         $response = $this->api->requestNoCache($this->apiName, "PUT", $params);
         return response()->json(
@@ -86,7 +86,7 @@ class BookingController extends ApiController
 
     public function getServices(Request $request)
     {
-        $params['vendor_id'] = '3'; //TODO;
+        $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO;
         $response = $this->api->requestNoCache("services", "GET", $params);
         return response()->json(
             json_decode($response->getBody()),
@@ -101,7 +101,7 @@ class BookingController extends ApiController
     public function getMenus(Request $request) {
         //Call Update Review API
         $params = array_filter($request->input());
-        $params['vendor_id'] = '3'; //TODO;vendor_id will be get on auth
+        $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO;vendor_id will be get on auth
         $menus = $this->api->requestNoCache('menus', "GET", $params);
         return response()->json(
             json_decode($menus->getBody()),

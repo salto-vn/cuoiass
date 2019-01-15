@@ -15,6 +15,8 @@ class Controller extends BaseController
 
     protected $apiName = "";
 
+    protected $userAuth;
+
     /**
      * StaffController constructor.
      * @param Factory $api
@@ -22,5 +24,8 @@ class Controller extends BaseController
     public function __construct(Factory $api)
     {
         $this->api = $api;
+
+        //TODO: Vendor id
+        $this->userAuth = ['vendor_id' => '5'];
     }
 }

@@ -40,7 +40,7 @@ class BookingRepo extends Repository
      * @param $order
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getListBookingByVendor($search, $page, $limit, $orderBy, $order)
+    public function getListBookingByVendor($vendor_id, $search, $page, $limit, $orderBy, $order)
     {
         $fieldsSearchable = [
             'booked_cd', 'booked_pro_name', 'booked_date'
@@ -97,6 +97,7 @@ class BookingRepo extends Repository
                 }
             }
         }
+        $model->where("$tblVendorSvrs.vendor_id", '=', $vendor_id);
         if (!empty($orderBy)) {
             if ($orderBy == 'customer_name') {
                 $model->orderBy('first_name', $order);

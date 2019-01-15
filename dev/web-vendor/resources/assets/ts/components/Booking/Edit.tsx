@@ -127,6 +127,10 @@ const styles = (theme: Theme) => createStyles({
         top: "50%",
         left: "50%",
         transform: `translate(-50%, -50%)`,
+    },
+    editlink:{
+        zIndex:1,
+        float: "right"
     }
 });
 
@@ -332,13 +336,12 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
      * 
      */
     private handleEditMenu = async (evt: any) => {
-        this.setState({ isLoading: true })
+        this.setState({ isLoading: true, isShowMenuModal: true })
         const signal = this.abortControler.signal;
-        var param = "service_code="+this.state.model.product.service_code;
+        var param = "service_code=" + this.state.model.product.service_code;
         const response = await HandleRequest.Get(API_URL.getMenus, param, signal);
         this.setState({
             menus: response.result.data,
-            isShowMenuModal: true,
             isLoading: false
         })
     }
@@ -359,7 +362,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         if (model.foods.length > 0) {
             var foods: any = model.foods.map((object: IFoodDetail, key: number) => {
                 var price = Math.ceil(object.unit_price);
-                qcName = <div style={{ width: "100%" }}><span>{object.booked_menu}</span><a style={{ float: "right" }} onClick={this.handleEditMenu} href="#">Thay đổi</a></div>;
+                qcName = <div style={{ width: "100%" }}><span>{object.booked_menu}</span>
+                    <a className={classes.right + " " + classes.editlink} onClick={this.handleEditMenu} href="#">Thay đổi</a></div>;
                 totalFood += price * object.booked_total;
                 return [object.food_id, object.food_name,
                 <>
@@ -1325,7 +1329,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                 </GridItem>
             </GridContainer>
             <div>
-                <MenuPopup title="Danh sách thực đơn" data={menus} isShowModal={this.state.isShowMenuModal} onToggleMenuModal={this.onToggleMenuModal} />
+                <MenuPopup title="Thực đơn" data={menus} isShowModal={this.state.isShowMenuModal} onToggleMenuModal={this.onToggleMenuModal} />
                 <Modal
                     aria-labelledby="Hình ảnh"
                     aria-describedby="Chi tiết hình ảnh"

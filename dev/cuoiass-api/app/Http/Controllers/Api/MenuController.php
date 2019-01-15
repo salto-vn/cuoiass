@@ -25,7 +25,7 @@ class MenuController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param ShowRequest $request(service_code, vendor_id, search)
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function index(ShowRequest $request)
@@ -33,7 +33,8 @@ class MenuController extends Controller
 
         $service_code = $request->get('service_code');
         $vendor_id = $request->get('vendor_id');
-        $menus = $this->menuRepo->getMenuWithProduct($service_code,$vendor_id);
+        $search = $request->get('search');
+        $menus = $this->menuRepo->getMenuWithFoods($service_code,$vendor_id,$search);
         return response()->success($menus);
     }
 

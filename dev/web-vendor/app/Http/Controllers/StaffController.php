@@ -28,7 +28,7 @@ class StaffController extends ApiController
         if (!empty($roles_rs)) {
             $columns = $this->staffColumns();
             $params = array_filter($request->input());
-            $params['vendor_id'] = '3'; //TODO: hard data
+            $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO: hard data
             $input = $this->buildSearchColumn($params, $columns);
             $response = $this->api->requestNoCache($this->apiName, "GET", $input);
         }

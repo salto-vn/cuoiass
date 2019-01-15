@@ -48,7 +48,8 @@ class BookingController extends Controller
         $orderBy = $request->get('orderBy', 'booked_date');
         $sortBy = $request->get('order', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $data = $this->bookingRepo->getListBookingByVendor($search, $page, $limit, $orderBy, $sortBy);
+        $vendor_id = $request->get('vendor_id');
+        $data = $this->bookingRepo->getListBookingByVendor($vendor_id, $search, $page, $limit, $orderBy, $sortBy);
 
         return $this->toJsonPaginate($data);
 

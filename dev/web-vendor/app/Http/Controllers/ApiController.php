@@ -31,7 +31,7 @@ class ApiController extends Controller
     private function convertColumns($apiName, $params)
     {
         //TODO HARD CODE Vendor ID
-        $params['vendor_id'] = '1';
+        $params['vendor_id'] = $this->userAuth['vendor_id'];
 
         switch (trim($apiName, '/')) {
             case 'reviews':
