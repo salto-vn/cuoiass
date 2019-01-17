@@ -11,21 +11,20 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class BookedFood
- * 
+ *
  * @property int $booked_food_id
  * @property string $booked_menu
  * @property string $service_code
  * @property int $booked_total
  * @property float $unit_price
  * @property string $booked_drink
- * @property float $drink_unit_price
  * @property int $booked_id
  * @property int $menu_id
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Menu $menu
  * @property \App\Models\Booking $booking
  *
@@ -45,7 +44,6 @@ class BookedFood extends Eloquent
 		'booked_menu',
 		'service_code',
 		'booked_total',
-		'booked_drink_total',
 		'booked_id',
 		'menu_id',
 		'created_by',

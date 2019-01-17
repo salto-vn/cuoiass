@@ -15,6 +15,8 @@ import Accordion from '../../common/Accordion/Accordion';
 import Table from '../../common/Table/Table';
 import API_URL from '../../bootstrap/Url';
 import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
+import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import { ResourceUtil } from '../../common/Resources';
 
 
 const styles = (theme: Theme) => createStyles({
@@ -94,7 +96,8 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
             booked_cd: "",
             booked_pro_name: '',
             status: '',
-            customer_name: ''
+            customer_name: '',
+
         }
     }
 
@@ -137,7 +140,9 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
     public render() {
 
         const { datas, totalItem, limit, orderBy, order, activePage, isLoading, headers } = this.state;
-
+        const cachedService:string = localStorage.getItem(CONSTANT.LOCAL_STORE.services);
+        const services_mst:IOption[] = JSON.parse(cachedService);
+        debugger;
         const { classes } = this.props;
         const listdata: Array<string[]> = new Array();
         //Convert Datajson to Array with last index id PK key.
@@ -165,6 +170,21 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
                     </GridItem>
                 </GridContainer>
             }
+            {!isEmpty(searchParams.service_code) &&
+                <GridContainer>
+                    <GridItem xs={12} sm={4} md={2}>
+                        <FormLabel className={classes.labelHorizontal}>
+                            Mã đơn hàng
+                </FormLabel>
+                    </GridItem>
+                    <GridItem xs={12} sm={8} md={10}>
+                        <FormLabel className={classes.valueHorizontal}>
+                        {new ResourceUtil(services_mst).getValue(searchParams.service_code)}
+                        </FormLabel>
+                    </GridItem>
+                </GridContainer>
+            }
+
             {!isEmpty(searchParams.booked_pro_name) &&
                 <GridContainer>
                     <GridItem xs={12} sm={4} md={2}>
@@ -384,7 +404,7 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
         const signal = this.abortControler.signal;
         //TODO set request api page, limit
         // Call api get bookings
-        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL, activePage + 1, limit, orderBy, order, filters, signal);
+        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL_initial, activePage + 1, limit, orderBy, order, filters, signal);
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }

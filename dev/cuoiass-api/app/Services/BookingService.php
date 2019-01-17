@@ -11,6 +11,7 @@ namespace App\Services;
 use App\Enums\ServiceCodeEnum;
 use App\Models\Image;
 use App\Repositories\BookingCustomizeRepo;
+use App\Repositories\BookingDrinkRepo;
 use App\Repositories\BookingFoodRepo;
 use App\Repositories\BookingOptionRepo;
 use App\Repositories\BookingRepo;
@@ -24,6 +25,7 @@ class BookingService
     private $bookingOptionRepo;
     private $bookingCustomizeRepo;
     private $bookingFoodRepo;
+    private $bookingDrinkRepo;
     private $promotionRepo;
 
     /**
@@ -32,17 +34,20 @@ class BookingService
      * @param BookingOptionRepo $bookingOptionRepo
      * @param BookingCustomizeRepo $bookingCustomizeRepo
      * @param BookingFoodRepo $bookingFoodRepo
+     * @param BookingDrinkRepo $bookingDrinkRepo
      * @param PromotionRepo $promotionRepo
      */
     public function __construct(BookingRepo $bookingRepo, BookingOptionRepo $bookingOptionRepo
         , BookingCustomizeRepo $bookingCustomizeRepo
         , BookingFoodRepo $bookingFoodRepo
+        , BookingDrinkRepo $bookingDrinkRepo
         , PromotionRepo $promotionRepo)
     {
         $this->bookingRepo = $bookingRepo;
         $this->bookingOptionRepo = $bookingOptionRepo;
         $this->bookingCustomizeRepo = $bookingCustomizeRepo;
         $this->bookingFoodRepo = $bookingFoodRepo;
+        $this->bookingDrinkRepo = $bookingDrinkRepo;
         $this->promotionRepo = $promotionRepo;
     }
 
@@ -130,7 +135,25 @@ class BookingService
 
             if (isset($booking['service_code']) &&
                 (in_array($booking['service_code'], [ServiceCodeEnum::REST, ServiceCodeEnum::QUAC]))) {
-                $foods = $this->bookingFoodRepo->getBookingFoodsByBookedId($booking['booked_id']);
+                $foods = $this->bookingFoodRepo->getBookingFoodsByBookedId($booking['booked_id'])
+                    ->map(function($food){
+                        $food['id'] = $food['food_id'];
+                        $food['name'] = $food['food_name'];
+                        unset($food['food_id']);
+                        unset($food['food_name']);
+                        return $food;
+
+                    });
+                $drinks = $this->bookingDrinkRepo->getBookingDrinksByBookedId($booking['booked_id'])
+                    ->map(function($drink){
+                        $drink['id'] = $drink['drink_id'];
+                        $drink['name'] = $drink['drink_name'];
+                        unset($drink['drink_id']);
+                        unset($drink['drink_name']);
+                        return $drink;
+
+                    });;
+                $rs['drinks'] = $drinks;
                 $rs['foods'] = $foods;
             }
         }

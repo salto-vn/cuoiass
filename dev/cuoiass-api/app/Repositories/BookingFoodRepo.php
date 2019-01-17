@@ -47,8 +47,7 @@ class BookingFoodRepo extends Repository
         $tblBooking = TBL::TBL_BOOKINGS;
         $query = $this->model->newQuery()->select([
             "$tblBookedFood.booked_menu", "$tblBookedFood.service_code", "$tblBookedFood.booked_total",
-            "$tblBookedFood.booked_drink_total", "$tblFood.food_id", "$tblFood.food_name",
-            "$tblFood.food_name", "$tblFood.unit_price"
+            "$tblFood.food_id", "$tblFood.food_name", "$tblFood.unit_price", "$tblFood.image_ids"
         ])
             ->join($tblMenu, "$tblBookedFood.menu_id", "=", "$tblMenu.menu_id")
             ->join($tblProduct, "$tblMenu.prd_id", "=", "$tblProduct.prd_id")

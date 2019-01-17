@@ -11,4 +11,5 @@ export interface IFormState {
     alert?: any,
     isShowImageModal?: any,
     modalImage?: string | undefined,
+    time:any,
 }

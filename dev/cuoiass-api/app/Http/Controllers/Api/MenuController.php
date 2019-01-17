@@ -31,10 +31,9 @@ class MenuController extends Controller
     public function index(ShowRequest $request)
     {
 
-        $service_code = $request->get('service_code');
         $vendor_id = $request->get('vendor_id');
         $search = $request->get('search');
-        $menus = $this->menuRepo->getMenuWithFoods($service_code,$vendor_id,$search);
+        $menus = $this->menuRepo->getMenuWithFoods($vendor_id,$search);
         return response()->success($menus);
     }
 

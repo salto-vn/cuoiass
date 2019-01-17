@@ -31,6 +31,10 @@ const CONSTANT = {
     FINISHED: {
         key: 'FINISHED',
         value: "Đã hoàn thành"
+    },
+
+    LOCAL_STORE : {
+        services: 'SERVICES'
     }
 }
 

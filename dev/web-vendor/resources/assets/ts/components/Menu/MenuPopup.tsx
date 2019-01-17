@@ -1,17 +1,20 @@
 import * as React from 'react';
-import { Theme, createStyles, withStyles, List, Modal, ListItem, ListItemText, Collapse, ListItemAvatar, Avatar, IconButton, CircularProgress } from '@material-ui/core';
+import { Theme, createStyles, withStyles, List, Modal, ListItem, ListItemText, Collapse, ListItemAvatar, Avatar, IconButton, InputAdornment, ListItemSecondaryAction } from '@material-ui/core';
 import { IMenu } from '../../interface/IMenu';
 
 import * as HandleRequest from '../../api/HandleRequest';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { IFood } from '../../interface/IFood';
-import { convertCurrency, objectToQueryString } from '../../common/Utils';
+import { convertCurrency, objectToQueryString, delay } from '../../common/Utils';
 import Danger from '../../common/Typography/Danger';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import SearchIcon from '@material-ui/icons/Search';
+
 import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import API_URL from '../../bootstrap/Url';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
 
 const styles = (theme: Theme) => createStyles({
     modal: {
@@ -19,7 +22,7 @@ const styles = (theme: Theme) => createStyles({
         width: theme.spacing.unit * 100,
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
-        padding: theme.spacing.unit * 1,
+        // padding: theme.spacing.unit * 1,
         top: "50%",
         left: "50%",
         transform: `translate(-50%, -50%)`,
@@ -27,9 +30,7 @@ const styles = (theme: Theme) => createStyles({
         maxHeight: "92%"
     },
     progress: {
-        top: "calc(50% - 50px)",
-        left: "calc(50% - 50px)",
-        position: 'absolute',
+        margin: 0
     },
     nested: {
         paddingLeft: theme.spacing.unit * 4,
@@ -38,12 +39,15 @@ const styles = (theme: Theme) => createStyles({
         textTransform: "uppercase",
         position: "absolute",
         top: "20px",
+        left: "10px",
         fontSize: "15px"
 
     },
     formControl: {
         paddingTop: "5px !important",
-        margin: "0px !important"
+        marginTop: "0px !important",
+        paddingRight: "33px",
+        paddingLeft: "33px",
     },
     id: {
         paddingRight: "5px",
@@ -64,26 +68,28 @@ const styles = (theme: Theme) => createStyles({
 
     root: {
         overflowY: "scroll",
-        maxHeight: "90%",
-        height: "80vh",
+        maxHeight: "75vh",
+        height: "fit-content",
     },
-    filterHeader: {
-        paddingTop: 0,
-    }
 
+    flag: {
+        zIndex:999
+    }
 });
 
-class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, onToggleMenuModal: any, data: any, classes?: any },
-    { open: any, openAll: boolean, filters: any, isLoading: boolean, searchRs: any, errorInfo: string }> {
+class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, onToggleMenuModal: any, data: any, classes?: any, service_code: string, type: string, isLoading: boolean },
+    { time: any, open: any, openAll: boolean, menu_name: any, isLoading: boolean, searchRs: any, errorInfo: string, isFilter: boolean }> {
 
     abortControler = new AbortController();
     public state = {
         open: [],
         openAll: false,
-        filters: { filter_word: '', service_code: 0 },
-        isLoading: true,
+        menu_name: "",
+        isLoading: this.props.isLoading,
         searchRs: this.props.data,
         errorInfo: '',
+        time: undefined,
+        isFilter: false,
     }
 
     public componentWillUnmount() {
@@ -96,7 +102,13 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
         data.forEach((element: any) => {
             open.push(false);
         });
-        this.setState({ open, isLoading: false });
+        this.setState({ open });
+    }
+
+    public componentDidUpdate(prevProps: any) {
+        if (this.props.isLoading !== prevProps.isLoading) {
+            this.setState({ isLoading: this.props.isLoading });
+        }
     }
 
     public onToggleModal = (evt: any) => {
@@ -112,7 +124,6 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
     public handleExplanAll = (evt: any) => {
         const { data } = this.props;
         let open: any = [];
-        debugger;
         data.forEach((element: any) => {
             open.push(!this.state.openAll);
         });
@@ -121,27 +132,30 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
 
     public handleFilter = (evt: any) => {
         this.setState({
-            filters: {
-                ...this.state.filters,
-                [evt.target.name]: evt.target.value ? evt.target.value : undefined
-            }
+            menu_name: evt.target.value
         }, () => {
-            this.getMenuByMenuName();
+            return
         });
-
+        // set interval time
+        clearTimeout(this.state.time);
+        const that = this;
+        const timeout = setTimeout(() => {
+            that.getMenuByMenuName();
+        }, 800);
+        this.setState({ time: timeout });
     }
 
     private getMenuByMenuName = async () => {
 
         this.setState({ isLoading: true });
-        const { filters } = this.state;
-        filters.service_code = this.props.data.product.service_code;
-        const filter = objectToQueryString(filters);
+        const { menu_name } = this.state;
+        var param = { service_code: this.props.service_code, menu_name: menu_name }
+        const filters = objectToQueryString(param);
         const signal = this.abortControler.signal;
         //TODO set request api page, limit
         // Call api get Feedback
-        const response = await HandleRequest.GetList(API_URL.getMenus, 1, 100000, "menu_name", "desc", filter, signal);
-        debugger;
+        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL_getMenus, 1, 100000, "menu_name", "desc", filters, signal);
+
         if (response.isError) {
             return this.setState({ errorInfo: response.message });
         }
@@ -149,50 +163,61 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
         this.setState({
             searchRs: response.result.data,
             isLoading: false,
+            isFilter: true,
         });
 
     }
 
     public render() {
         const { classes, title, data } = this.props;
-        const { open, openAll, searchRs } = this.state;
-        var menus = searchRs.length > 0 ? searchRs : data;
+        const { open, openAll, searchRs, isLoading, isFilter } = this.state;
+        var menus = isFilter ? searchRs : data;
         let filterHeader = <CustomInput
-            id="filter_word"
+            id="menu_name"
             formControlProps={{
                 fullWidth: true,
                 className: classes.formControl
             }}
             inputProps={{
                 type: "text",
-                value: this.state.filters.filter_word,
+                name: "menu_name",
+                value: this.state.menu_name,
                 onChange: this.handleFilter,
-                placeholder: "Tìm kiếm"
+                placeholder: "Tìm kiếm",
+                autoFocus: true,
+                endAdornment: (
+                    <InputAdornment
+                        position="end"
+                        className={classes.inputAdornment}
+                    >
+                        <SearchIcon />
+                    </InputAdornment>
+                )
             }}
         />
-        var listItemsMain = [<ListItem key={0} className={classes.filterHeader}>
-            <ListItemText primary={filterHeader} />
-        </ListItem>];
-        menus.map((menu: IMenu, index: number) => {
+        var listItemsMain = menus.map((menu: IMenu, index: number) => {
+            var m: any = this.props.type === 'food' ? menu.foods : menu.drinks;
             var item = <div key={index + 1}>
-                <ListItem button onClick={this.handleClick.bind(this, index)}>
+                <ListItem button>
                     <span className={classes.id}>{menu.id}</span>
                     <ListItemText primary={menu.name} />
-                    {open[index] ? <ExpandLess /> : <ExpandMore />}
+                    <IconButton aria-label="Select" onClick={this.handleClick.bind(this, index)}> 
+                        {open[index] ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
                 </ListItem>
                 <Collapse in={open[index]} timeout="auto" unmountOnExit>
                     <List component="dt" disablePadding>
                         {
-                            menu.foods.map((food: IFood, i: number) => {
+                            m.map((food: IFood, i: number) => {
                                 var foodItem = <div className={classes.inline}>
-                                    <span>{food.food_name}</span>
+                                    <span>{food.name}</span>
                                     <span className={classes.right}>
                                         <Danger>{convertCurrency('vi-VN', food.unit_price)}</Danger>
                                     </span>
                                 </div>
                                 return <ListItem key={i} className={classes.nested}>
                                     <ListItemAvatar>
-                                        <Avatar src={food.food_images[0]} />
+                                        <Avatar src={food.images[0].img_url} />
                                     </ListItemAvatar>
                                     <ListItemText inset primary={foodItem} />
                                 </ListItem>
@@ -201,7 +226,6 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
                     </List>
                 </Collapse>
             </div>
-            listItemsMain.push(item);
             return item;
         })
 
@@ -210,8 +234,15 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
                 open={this.props.isShowModal}
                 onClose={this.onToggleModal}>
                 <div className={classes.modal}>
+                    <div>
+                        {isLoading &&
+                            <CustomLinearProgress className={classes.progress}
+                                color="info"
+                            />
+                        }
+                    </div>
                     <div style={{ display: "flow-root" }}>
-                        <span className={classes.title}>{title}</span>
+                        <span className={classes.title}>{title + this.props.type === 'drink' ? "Nước uống" : "Món ăn"}</span>
                         {!openAll ?
                             <IconButton aria-label="Explain all" className={classes.right + " " + classes.icon} onClick={this.handleExplanAll}>
                                 <AddIcon fontSize="small" />
@@ -221,12 +252,16 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
                             </IconButton>
                         }
                     </div>
+                    <div>
+                        {filterHeader}
+                    </div>
+
                     <List
                         component="nav"
                         // subheader={<ListSubheader className={classes.title} component="div">{title}</ListSubheader>}
                         className={classes.root}
                     >
-                        {menus.length > 0 ? listItemsMain : <CircularProgress className={classes.progress} />}
+                        {listItemsMain}
                     </List>
                 </div>
             </Modal>

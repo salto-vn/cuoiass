@@ -378,7 +378,6 @@ create table `booked_foods` (
   , `booked_menu` varchar(255) not null comment 'menu name'
   , `service_code` char(12) not null comment 'service code:quc:qua cuoi, rst: restaurant,'
   , `booked_total` int(11) not null comment 'total:so nguoi(food)'
-  , `booked_drink_total` int(11) comment 'drink quanlity'
   , `booked_id` int(11) not null comment 'booked id'
   , `menu_id` int(11) not null comment 'menu id'
   , `created_by` varchar(255) not null comment 'create user'
@@ -393,6 +392,32 @@ create index `booked_foods_ix1`
 
 create index `booked_foods_ix2`
   on `booked_foods`(`booked_id`);
+
+
+##* backuptotemptable
+drop table if exists `booked_drinks` cascade;
+
+##* restorefromtemptable
+create table `booked_drinks` (
+    `booked_drink_id` int(11) auto_increment not null comment 'booked menu id'
+  , `booked_menu` varchar(255) not null comment 'menu name'
+  , `service_code` char(12) not null comment 'service code:quc:qua cuoi, rst: restaurant,'
+  , `booked_total` int(11) not null comment 'total:so nguoi(food)'
+  , `booked_id` int(11) not null comment 'booked id'
+  , `menu_id` int(11) not null comment 'menu id'
+  , `created_by` varchar(255) not null comment 'create user'
+  , `created_at` datetime comment 'create at date time'
+  , `updated_by` varchar(255) comment 'update user'
+  , `updated_at` datetime comment 'update at time'
+  , constraint `booked_drink_pkc` primary key (`booked_drink_id`)
+) comment 'booked menu drink:luu thong tin booking cua dich vu nha hang va qua cuoi' ;
+
+create index `booked_drinks_ix1`
+  on `booked_drinks`(`menu_id`);
+
+create index `booked_drinks_ix2`
+  on `booked_drinks`(`booked_id`);
+
 
 ##* backuptotemptable
 drop table if exists `bookings` cascade;
@@ -916,6 +941,13 @@ alter table `booked_foods`
 
 alter table `booked_foods`
   add constraint `booked_foods_fk2` foreign key (`booked_id`) references `bookings`(`booked_id`);
+
+alter table `booked_drinks`
+  add constraint `booked_drinks_fk1` foreign key (`menu_id`) references `menus`(`menu_id`);
+
+alter table `booked_drinks`
+  add constraint `booked_drinks_fk2` foreign key (`booked_id`) references `bookings`(`booked_id`);
+
 
 alter table `bookings`
   add constraint `bookings_fk2` foreign key (`plan_id`) references `plans`(`plan_id`);

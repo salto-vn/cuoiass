@@ -10,12 +10,12 @@ import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinear
 import CardBody from '../../common/Card/CardBody';
 import CustomSelect, { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
 import { BookingValidate } from '../../common/Validate/BookingValidate';
-import { isEmptyKeyInObject, showError, convertCurrency, isDateCorrectFormat, isEmpty } from '../../common/Utils';
+import { isEmptyKeyInObject, showError, convertCurrency, isDateCorrectFormat, isEmpty, objectToQueryString, parseDateFormat, delay } from '../../common/Utils';
 import { bookingStatusList, ResourceUtil, paymentMethods } from '../../common/Resources';
 import CustomDatePicker from '../../common/FormControls/CustomDatePicker/CustomDatePicker';
 import { ICustomizeFieldsItem } from '../../interface/ICustomizeFieldsItem';
 import Accordion from '../../common/Accordion/Accordion';
-import { IFoodDetail } from '../../interface/IBooking';
+import { IFoodDetail, IDrinkDetail } from '../../interface/IBooking';
 import CustomTable from '../../common/Table/CustomTable';
 import { IBookedOption } from '../../interface/IBookedOption';
 import Info from '../../common/Typography/Info';
@@ -35,15 +35,17 @@ import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 import Check from "@material-ui/icons/Check";
 import Remove from "@material-ui/icons/Remove";
 import Add from "@material-ui/icons/Add";
+import Save from "@material-ui/icons/SaveAlt";
 
 import customCheckboxRadioSwitch from "../../../styles/components/regularFormStyle";
 import buttonGroupStyle from "../../../styles/components/buttonGroupStyle";
-import { IMenu } from '../../interface/IMenu';
+import { infoColor } from "../../../styles/material-dashboard-pro-react"
 
 import MenuPopup from '../Menu/MenuPopup';
 
 
 const styles = (theme: Theme) => createStyles({
+
     ...customCheckboxRadioSwitch,
     ...buttonGroupStyle,
     cardCategoryWhite: {
@@ -128,10 +130,16 @@ const styles = (theme: Theme) => createStyles({
         left: "50%",
         transform: `translate(-50%, -50%)`,
     },
-    editlink:{
-        zIndex:1,
-        float: "right"
+    editlink: {
+        zIndex: 1,
+        position: "relative",
+        left: "85%",
+        top: "35px"
+    },
+    icon: {
+        color: infoColor
     }
+
 });
 
 
@@ -139,13 +147,16 @@ export interface IEditBookingState extends IFormState {
     anchorEl: any,
     anchorEl2: any,
     menus: any,
-    isShowMenuModal: boolean
+    isShowMenuModal: boolean,
+    menu_type: string,
+    services_mst:any,
 }
 
 class BookingEditScreen extends React.Component<{ classes: any, match: any }, IEditBookingState> {
 
     abortControler = new AbortController();
     public state = {
+        menu_type: 'food',
         anchorEl: null,
         anchorEl2: null,
         isLoading: true,
@@ -162,16 +173,26 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         modalImage: "",
         isShowImageModal: false,
         isShowMenuModal: false,
+        time: undefined,
+        services_mst:[],
     }
 
     async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
         const signal = this.abortControler.signal;
-        const response = await HandleRequest.findOne(API_URL.BOOKING_CRL, this.props.match.params.booked_cd, signal);
-        let model = Object.assign(new BookingModel(), response.result.data);
+        const response = await HandleRequest.findOne(API_URL.BOOKING_CRL_show, this.props.match.params.booked_cd, signal);
+        let model: BookingModel = Object.assign(new BookingModel(), response.result.data);
+        model.try_date_time = parseDateFormat(model.try_date, 'HH:mm');
+        model.activate_date_time = parseDateFormat(model.activate_date, 'HH:mm');
+        model.plan.org_date_time = parseDateFormat(model.plan.org_date, 'HH:mm');
+        debugger;
+        const cachedService:string = localStorage.getItem(CONSTANT.LOCAL_STORE.services);
+        const services_mst:IOption[] = JSON.parse(cachedService);
+
         this.setState({
             model,
-            isLoading: false
+            isLoading: false,
+            services_mst:services_mst
         })
     }
 
@@ -179,13 +200,19 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         this.abortControler.abort();
     }
 
-    public handleChange = (isRequired: boolean, name: string, event: any) => {
-        var value = event.target.value;
+    public hanleChangeTime = (isRequired: boolean, name: string, event: any) => {
         const { model } = this.state;
-
-
+        var value;
         //Change Booking infor with Date formate
-        if (name == "try_date" || name == "activate_date") {
+        if (name == "try_date_time" || name == "activate_date_time" || name == "org_date_time") {
+            if (event._isValid !== undefined) {
+                value = event.format('HH:mm');
+            } else if (isDateCorrectFormat(event.trim(), 'HH:mm')) {
+                value = event.trim();
+            } else {
+                value = "";
+            }
+        } else if (name == "try_date" || name == "activate_date") {
             if (event._isValid !== undefined) {
                 value = event.format('DD-MM-YYYY');
             } else if (isDateCorrectFormat(event.trim(), 'DD-MM-YYYY')) {
@@ -193,9 +220,22 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
             } else {
                 value = "";
             }
-
         }
 
+        const errMessage = BookingValidate(isRequired, name, value);
+        this.setState({
+            model: { ...model, [name]: value ? value : "" },
+            clientError: { ...this.state.clientError, [name]: errMessage },
+        }, () => {
+            this.canSubmit();
+        });
+    }
+
+
+    public handleChange = (isRequired: boolean, name: string, event: any) => {
+        debugger;
+        const { model } = this.state;
+        var value = event.target.value;
         // Change Customer info model.customer
         var customerInfo = ["first_name", "last_name", "address", "phone"];
         if (customerInfo.includes(name)) {
@@ -207,8 +247,21 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         if (planInfo.includes(name)) {
             model.plan[name] = value;
         }
+        const errMessage = BookingValidate(isRequired, name, value);
+        this.setState({
+            model: { ...model, [name]: value ? value : "" },
+            clientError: { ...this.state.clientError, [name]: errMessage },
+        }, () => {
+            this.canSubmit();
+        });
 
+    }
+
+    public handleChangeCustomizeFields = (isRequired: boolean, name: string, event: any) => {
         // Change Custom Fields
+        const { model } = this.state;
+        var value = event.target.value;
+
         var customizeFields = model.customize_fields.map((field: ICustomizeFieldsItem, index) => {
             var customize_field_answers = field.customize_field_answer.trim().split(",");
             if (field.customize_field_type.toLowerCase() == "checkbox") {
@@ -234,8 +287,6 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         });
         //build answer
         model.customize_fields = customizeFields;
-
-
         const errMessage = BookingValidate(isRequired, name, value);
         this.setState({
             model: { ...model, [name]: value ? value : "" },
@@ -243,6 +294,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         }, () => {
             this.canSubmit();
         });
+
     }
 
     /**
@@ -335,16 +387,22 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
      * Edit Menu Action
      * 
      */
-    private handleEditMenu = async (evt: any) => {
+    private handleEditMenu = async (name: string, evt: any) => {
         this.setState({ isLoading: true, isShowMenuModal: true })
         const signal = this.abortControler.signal;
-        var param = "service_code=" + this.state.model.product.service_code;
-        const response = await HandleRequest.Get(API_URL.getMenus, param, signal);
+        var param = { service_code: this.state.model.product.service_code };
+        const filter = objectToQueryString(param);
+        // Call api get Feedback
+        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL_getMenus, 1, 100000, "menu_name", "desc", filter, signal);
         this.setState({
             menus: response.result.data,
-            isLoading: false
+            isLoading: false,
+            menu_type: name
         })
+
     }
+
+
 
 
     public render() {
@@ -357,15 +415,15 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
 
         //Food info
         var totalFood = 0;
+        var totalDrink = 0;
         var qcName: any;
-        var foodList;
+        var foodList: any = [];
         if (model.foods.length > 0) {
             var foods: any = model.foods.map((object: IFoodDetail, key: number) => {
                 var price = Math.ceil(object.unit_price);
-                qcName = <div style={{ width: "100%" }}><span>{object.booked_menu}</span>
-                    <a className={classes.right + " " + classes.editlink} onClick={this.handleEditMenu} href="#">Thay đổi</a></div>;
+                qcName = <div style={{ width: "100%" }}><span>{object.booked_menu}</span></div>;
                 totalFood += price * object.booked_total;
-                return [object.food_id, object.food_name,
+                return [object.id, object.name,
                 <>
 
                     <div className={classes.buttonGroup}>
@@ -375,7 +433,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                             round
                             className={classes.firstButton}
                         >
-                            <Remove className={classes.icon} />
+                            <Remove />
                         </Button>
                         <Button
                             disabled
@@ -392,7 +450,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                             round
                             className={classes.lastButton}
                         >
-                            <Add className={classes.icon} />
+                            <Add />
                         </Button>
                     </div></>
                     , convertCurrency('vi-VN', price), convertCurrency('vi-VN', price * object.booked_total)
@@ -405,7 +463,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
 
             var quacuoi = <CustomTable
                 tableHeaderColor="primary"
-                tableHead={["ID", "Tên quả", "Số lượng", "Đơn giá", "Thành tiền"]}
+                tableHead={["ID", "Tên", "Số lượng", "Đơn giá", "Thành tiền"]}
                 tableData={foods}
                 coloredColls={[4]}
                 colorsColls={["primary"]}
@@ -423,30 +481,123 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                 ]}
                 customTotalClassForCell={classes.total}
             />;
-            foodList = <>
-                <GridContainer>
-                    <GridItem xs={12} sm={12} md={12}>
-                        <h6>{model.vendor_service.service_code == 'QUAC' ? "Mâm quả" : "Nhà hàng"}</h6>
-                    </GridItem>
-                </GridContainer>
-                <GridContainer>
-                    <GridItem xs={12} sm={12} md={3}>
-                        <FormLabel className={classes.labelHorizontal}>
-                            {model.vendor_service.service_code == 'QUAC' ? "Quả cưới" : "Thực đơn"}
-                        </FormLabel>
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={9}>
-                        <Accordion
-                            active={0}
-                            collapses={[
-                                {
-                                    title: qcName,
-                                    content: quacuoi
-                                },
-                            ]} />
-                    </GridItem>
-                </GridContainer>
-            </>;
+            foodList.push(<GridContainer key={0}>
+                <GridItem xs={12} sm={12} md={12}>
+                    <h6>{model.vendor_service.service_code == 'QUAC' ? "Mâm quả" : "Nhà hàng"}</h6>
+                </GridItem>
+            </GridContainer>);
+
+            foodList.push(<GridContainer key={2}>
+                <GridItem xs={12} sm={12} md={3}>
+                    <FormLabel className={classes.labelHorizontal}>
+                        Món ăn
+                    </FormLabel>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={9}>
+                    <IconButton aria-label="Edit" className={classes.right + " " + classes.editlink} onClick={this.handleEditMenu.bind(this, 'food')}>
+                        <EditIcon className={classes.icon} fontSize="small" />
+                    </IconButton>
+                    <Accordion
+                        active={0}
+                        collapses={[
+                            {
+                                title: qcName,
+                                content: quacuoi
+                            },
+                        ]} />
+                </GridItem>
+            </GridContainer>);
+
+            //Drink list
+
+            if (model.drinks.length > 0) {
+                var drinks: any = model.drinks.map((object: IDrinkDetail, key: number) => {
+                    var price = Math.ceil(object.unit_price);
+                    qcName = <div style={{ width: "100%" }}><span>{object.booked_menu}</span></div>;
+                    totalDrink += price * object.booked_total;
+                    return [object.id, object.name,
+                    <>
+
+                        <div className={classes.buttonGroup}>
+                            <Button
+                                color="info"
+                                size="sm"
+                                round
+                                className={classes.firstButton}
+                            >
+                                <Remove />
+                            </Button>
+                            <Button
+                                disabled
+                                color="info"
+                                size="sm"
+                                round
+                                className={classes.middleButton}
+                            >
+                                <span style={{ fontWeight: "bold" }}>{object.booked_total}</span>
+                            </Button>
+                            <Button
+                                color="info"
+                                size="sm"
+                                round
+                                className={classes.lastButton}
+                            >
+                                <Add />
+                            </Button>
+                        </div></>
+                        , convertCurrency('vi-VN', price), convertCurrency('vi-VN', price * object.booked_total)
+                    ]
+                });
+                var total = {
+                    total: true, colspan: "3", amount: convertCurrency('vi-VN', totalDrink)
+                };
+                drinks.push(total);
+
+                var drink = <CustomTable
+                    tableHeaderColor="primary"
+                    tableHead={["ID", "Tên", "Số lượng", "Đơn giá", "Thành tiền"]}
+                    tableData={drinks}
+                    coloredColls={[4]}
+                    colorsColls={["primary"]}
+                    customCellClasses={[
+                        classes.center,
+                        classes.right,
+                        classes.right
+                    ]}
+                    customHeadClassesForCells={[2, 3, 4]}
+                    customClassesForCells={[2, 3, 4]}
+                    customHeadCellClasses={[
+                        classes.center,
+                        classes.right,
+                        classes.right
+                    ]}
+                    customTotalClassForCell={classes.total}
+                />;
+
+
+                foodList.push(
+                    <GridContainer key={3}>
+                        <GridItem xs={12} sm={12} md={3}>
+                            <FormLabel className={classes.labelHorizontal}>
+                                Nước uống
+                            </FormLabel>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={9}>
+                            <IconButton aria-label="Edit" className={classes.right + " " + classes.editlink} onClick={this.handleEditMenu.bind(this, 'drink')}>
+                                <EditIcon className={classes.icon} fontSize="small" />
+                            </IconButton>
+                            <Accordion
+                                active={0}
+                                collapses={[
+                                    {
+                                        title: qcName,
+                                        content: drink
+                                    },
+                                ]} />
+                        </GridItem>
+                    </GridContainer>);
+
+            }
         }
 
         //Option info
@@ -494,7 +645,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                         <GridItem xs={12} sm={12} md={12}>
                             <Card>
                                 <CardMiniHeader color="primary">
-                                    <h4 className={classes.cardTitleWhite}>Đơn hàng: AAAAAA</h4>
+                                    <h4 className={classes.cardTitleWhite}>Đơn hàng: {model.booked_cd}</h4>
                                     <div className={classes.cardCategoryWhite}>
                                         Chi tiết thông tin đơn hàng
                                     </div>
@@ -547,7 +698,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 prop={
                                                     {
                                                         timeFormat: false,
-                                                        value: model.booked_date,
+                                                        dateFormat: 'DD-MM-YYYY HH:mm:ss',
+                                                        value: parseDateFormat(model.booked_date, 'DD-MM-YYYY HH:mm:ss'),
                                                     }
                                                 }
 
@@ -566,7 +718,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 Ngày xem
                                             </FormLabel>
                                         </GridItem>
-                                        <GridItem xs={12} sm={9} md={9}>
+                                        <GridItem xs={6} sm={3} md={3}>
                                             <CustomDatePicker
                                                 formControlProps={{
                                                     fullWidth: true,
@@ -574,14 +726,42 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 prop={
                                                     {
-                                                        timeFormat: true,
-                                                        value: model.try_date
+                                                        timeFormat: false,
+                                                        dateFormat: 'DD-MM-YYYY',
+                                                        defaultValue: parseDateFormat(model.try_date, 'DD-MM-YYYY'),
+                                                        onBlur: this.hanleChangeTime.bind(this, true, "try_date")
                                                     }
                                                 }
                                                 inputProps={
                                                     {
                                                         name: "try_date",
-                                                        onChange: this.handleChange.bind(this, true, "try_date")
+                                                    }
+                                                }
+                                            />
+                                        </GridItem>
+                                        <GridItem xs={6} sm={2} md={2}>
+                                            <CustomDatePicker
+                                                formControlProps={{
+                                                    className: classes.formControl
+                                                }}
+                                                prop={
+                                                    {
+                                                        dateFormat: false,
+                                                        timeFormat: 'HH:mm',
+                                                        defaultValue: parseDateFormat(model.try_date_time, 'HH:mm'),
+                                                        onBlur: this.hanleChangeTime.bind(this, true, "try_date_time"),
+                                                        timeConstraints: {
+                                                            minutes: {
+                                                                min: 0,
+                                                                max: 59,
+                                                                step: 5,
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                inputProps={
+                                                    {
+                                                        name: "try_date_time",
                                                     }
                                                 }
                                             />
@@ -593,7 +773,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 Ngày nhận
                                             </FormLabel>
                                         </GridItem>
-                                        <GridItem xs={12} sm={9} md={9}>
+                                        <GridItem xs={6} sm={3} md={3}>
                                             <CustomDatePicker
                                                 formControlProps={{
                                                     fullWidth: true,
@@ -601,14 +781,42 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 prop={
                                                     {
-                                                        timeFormat: true,
-                                                        value: model.activate_date
+                                                        timeFormat: false,
+                                                        dateFormat: 'DD-MM-YYYY',
+                                                        defaultValue: parseDateFormat(model.activate_date, 'DD-MM-YYYY'),
+                                                        onBlur: this.hanleChangeTime.bind(this, true, "activate_date")
                                                     }
                                                 }
                                                 inputProps={
                                                     {
                                                         name: "activate_date",
-                                                        onChange: this.handleChange.bind(this, true, "activate_date")
+                                                    }
+                                                }
+                                            />
+                                        </GridItem>
+                                        <GridItem xs={6} sm={2} md={2}>
+                                            <CustomDatePicker
+                                                formControlProps={{
+                                                    className: classes.formControl
+                                                }}
+                                                prop={
+                                                    {
+                                                        dateFormat: false,
+                                                        timeFormat: 'HH:mm',
+                                                        defaultValue: parseDateFormat(model.activate_date_time, 'HH:mm'),
+                                                        onBlur: this.hanleChangeTime.bind(this, true, "activate_date_time"),
+                                                        timeConstraints: {
+                                                            minutes: {
+                                                                min: 0,
+                                                                max: 59,
+                                                                step: 5,
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                inputProps={
+                                                    {
+                                                        name: "activate_date_time",
                                                     }
                                                 }
                                             />
@@ -629,8 +837,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.customer.first_name,
-                                                    onChange: this.handleChange.bind(this, true, "first_name")
+                                                    defaultValue: model.customer.first_name,
+                                                    onBlur: this.handleChange.bind(this, true, "first_name")
                                                 }}
                                             />
                                         </GridItem>
@@ -643,8 +851,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.customer.last_name,
-                                                    onChange: this.handleChange.bind(this, true, "last_name")
+                                                    defaultValue: model.customer.last_name,
+                                                    onBlur: this.handleChange.bind(this, true, "last_name")
                                                 }}
                                             />
                                         </GridItem>
@@ -664,8 +872,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.customer.phone,
-                                                    onChange: this.handleChange.bind(this, true, "phone")
+                                                    defaultValue: model.customer.phone,
+                                                    onBlur: this.handleChange.bind(this, true, "phone")
                                                 }}
                                             />
                                         </GridItem>
@@ -685,15 +893,15 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.customer.address,
-                                                    onChange: this.handleChange.bind(this, true, "address")
+                                                    defaultValue: model.customer.address,
+                                                    onBlur: this.handleChange.bind(this, true, "address")
                                                 }}
                                             />
                                         </GridItem>
                                     </GridContainer>
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={12}>
-                                            <h6>Thông tin chi tiết </h6>
+                                            <h6>Khách hàng </h6>
                                         </GridItem>
                                     </GridContainer>
 
@@ -712,8 +920,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.plan.br_name,
-                                                    onChange: this.handleChange.bind(this, true, "br_name")
+                                                    defaultValue: model.plan.br_name,
+                                                    onBlur: this.handleChange.bind(this, true, "br_name")
                                                 }}
                                             />
                                         </GridItem>
@@ -734,8 +942,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.plan.gr_name,
-                                                    onChange: this.handleChange.bind(this, true, "gr_name")
+                                                    defaultValue: model.plan.gr_name,
+                                                    onBlur: this.handleChange.bind(this, true, "gr_name")
                                                 }}
                                             />
                                         </GridItem>
@@ -755,8 +963,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.plan.org_address,
-                                                    onChange: this.handleChange.bind(this, true, "org_address")
+                                                    defaultValue: model.plan.org_address,
+                                                    onBlur: this.handleChange.bind(this, true, "org_address")
                                                 }}
                                             />
                                         </GridItem>
@@ -767,7 +975,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 Ngày tổ chức
                                             </FormLabel>
                                         </GridItem>
-                                        <GridItem xs={12} sm={12} md={9}>
+                                        <GridItem xs={12} sm={3} md={3}>
                                             <CustomDatePicker
                                                 formControlProps={{
                                                     fullWidth: true,
@@ -775,45 +983,82 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 prop={
                                                     {
-                                                        timeFormat: true,
-                                                        value: model.plan.org_date,
+                                                        timeFormat: false,
+                                                        dateFormat: 'DD-MM-YYYY',
+                                                        defaultValue: parseDateFormat(model.plan.org_date, 'DD-MM-YYYY'),
                                                     }
                                                 }
                                                 inputProps={
                                                     {
                                                         name: "org_date",
-                                                        onChange: this.handleChange.bind(this, true, "org_date")
+                                                        onBlur: this.handleChange.bind(this, true, "org_date")
                                                     }
                                                 }
                                             />
                                         </GridItem>
+                                        <GridItem xs={12} sm={3} md={3}>
+                                            <CustomDatePicker
+                                                formControlProps={{
+                                                    className: classes.formControl
+                                                }}
+                                                prop={
+                                                    {
+                                                        dateFormat: false,
+                                                        timeFormat: 'HH:mm',
+                                                        defaultValue: parseDateFormat(model.plan.org_date_time, 'HH:mm'),
+                                                        timeConstraints: {
+                                                            minutes: {
+                                                                min: 0,
+                                                                max: 59,
+                                                                step: 5,
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                inputProps={
+                                                    {
+                                                        name: "org_date_time",
+                                                        onBlur: this.handleChange.bind(this, true, "org_date_time")
+                                                    }
+                                                }
+                                            />
+                                        </GridItem>
+
                                     </GridContainer>
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={12}>
-                                            <h6>Thông tin chi tiết sản phẩm </h6>
+                                            <h6>Sản phẩm </h6>
                                         </GridItem>
                                     </GridContainer>
-                                    <GridContainer>
-                                        <GridItem xs={12} sm={12} md={3}>
-                                            <FormLabel className={classes.labelHorizontal}>
-                                                Kích cỡ
-                                            </FormLabel>
-                                        </GridItem>
-                                        <GridItem xs={12} sm={12} md={9}>
-                                            <CustomInput
-                                                id="booked_size"
-                                                formControlProps={{
-                                                    fullWidth: true,
-                                                    className: classes.formControl
-                                                }}
-                                                inputProps={{
-                                                    type: "text",
-                                                    value: model.booked_size,
-                                                    onChange: this.handleChange.bind(this, true, "booked_size")
-                                                }}
-                                            />
-                                        </GridItem>
-                                    </GridContainer>
+                                    {!isEmpty(model.booked_size) &&
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={3}>
+                                                <FormLabel className={classes.labelHorizontal}>
+                                                    {
+                                                        ['NC', 'PHT', 'STD', 'TC', 'DRSS', 'NC'].includes(model.vendor_service.service_code) ? 'Size'
+                                                            : ['QUAC', 'REST', 'TRTR', 'VN'].includes(model.vendor_service.service_code) ? 'Số lượng'
+                                                                : ['XC'].includes(model.vendor_service.service_code) ? 'Số chỗ' : 'Size'
+                                                    }
+                                                </FormLabel>
+                                            </GridItem>
+                                            <GridItem xs={12} sm={12} md={9}>
+                                                <CustomInput
+                                                    id="booked_size"
+                                                    formControlProps={{
+                                                        fullWidth: true,
+                                                        className: classes.formControl
+                                                    }}
+                                                    inputProps={{
+                                                        type: "number",
+                                                        defaultValue: model.booked_size,
+                                                        onBlur: this.handleChange.bind(this, true, "booked_size")
+                                                    }}
+                                                />
+                                            </GridItem>
+                                        </GridContainer>
+                                    }
+
+                                    {!isEmpty(model.booked_color) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
@@ -844,11 +1089,17 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                             </Button>
                                         </GridItem>
                                     </GridContainer>
+                                    }
 
+                                    {!isEmpty(model.booked_size_2) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                Kích cỡ 2
+                                                {
+                                                    ['NC', 'PHT', 'STD', 'TC', 'DRSS', 'NC'].includes(model.vendor_service.service_code) ? 'Size 2'
+                                                        : ['QUAC', 'REST', 'TRTR', 'VN'].includes(model.vendor_service.service_code) ? 'Số lượng 2'
+                                                            : ['XC'].includes(model.vendor_service.service_code) ? 'Số chỗ 2' : 'Size 2'
+                                                }
                                             </FormLabel>
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={9}>
@@ -860,13 +1111,16 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.booked_size_2,
-                                                    onChange: this.handleChange.bind(this, true, "booked_size_2")
+                                                    defaultValue: model.booked_size_2,
+                                                    onBlur: this.handleChange.bind(this, true, "booked_size_2")
                                                 }}
                                             />
 
                                         </GridItem>
                                     </GridContainer>
+                                    }
+
+                                    {!isEmpty(model.booked_color_2) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
@@ -897,7 +1151,9 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                             </Button>
                                         </GridItem>
                                     </GridContainer>
-
+                                    }
+                                    
+                                    {!isEmpty(model.booked_material) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
@@ -913,12 +1169,15 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.booked_material,
-                                                    onChange: this.handleChange.bind(this, true, "booked_material")
+                                                    defaultValue: model.booked_material,
+                                                    onBlur: this.handleChange.bind(this, true, "booked_material")
                                                 }}
                                             />
                                         </GridItem>
                                     </GridContainer>
+                                    }
+
+                                    {!isEmpty(model.booked_style) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
@@ -934,12 +1193,15 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.booked_style,
-                                                    onChange: this.handleChange.bind(this, true, "booked_style")
+                                                    defaultValue: model.booked_style,
+                                                    onBlur: this.handleChange.bind(this, true, "booked_style")
                                                 }}
                                             />
                                         </GridItem>
                                     </GridContainer>
+                                    }
+                                    
+                                    {!isEmpty(model.booked_album_page) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
@@ -954,13 +1216,16 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     className: classes.formControl
                                                 }}
                                                 inputProps={{
-                                                    type: "text",
-                                                    value: model.booked_album_page,
-                                                    onChange: this.handleChange.bind(this, true, "booked_album_page")
+                                                    type: "number",
+                                                    defaultValue: model.booked_album_page,
+                                                    onBlur: this.handleChange.bind(this, true, "booked_album_page")
                                                 }}
                                             />
                                         </GridItem>
                                     </GridContainer>
+                                    }
+                                    
+                                    {!isEmpty(model.booked_photo_size) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
@@ -976,33 +1241,52 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                 }}
                                                 inputProps={{
                                                     type: "text",
-                                                    value: model.booked_photo_size,
-                                                    onChange: this.handleChange.bind(this, true, "booked_photo_size")
+                                                    defaultValue: model.booked_photo_size,
+                                                    onBlur: this.handleChange.bind(this, true, "booked_photo_size")
                                                 }}
                                             />
                                         </GridItem>
                                     </GridContainer>
+                                    }
+
+                                    {!isEmpty(model.booked_time) &&
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={3}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                Ngày giờ
+                                                Giờ
                                             </FormLabel>
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={9}>
-                                            <CustomInput
-                                                id="booked_time"
+                                            <CustomDatePicker
                                                 formControlProps={{
-                                                    fullWidth: true,
                                                     className: classes.formControl
                                                 }}
-                                                inputProps={{
-                                                    type: "text",
-                                                    value: model.booked_time,
-                                                    onChange: this.handleChange.bind(this, true, "booked_time")
-                                                }}
+                                                prop={
+                                                    {
+                                                        dateFormat: false,
+                                                        timeFormat: 'HH:mm',
+                                                        defaultValue: parseDateFormat(model.booked_time, 'HH:mm'),
+                                                        onBlur: this.hanleChangeTime.bind(this, true, "booked_time"),
+                                                        timeConstraints: {
+                                                            minutes: {
+                                                                min: 0,
+                                                                max: 59,
+                                                                step: 5,
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                inputProps={
+                                                    {
+                                                        name: "booked_time",
+                                                    }
+                                                }
                                             />
+
                                         </GridItem>
                                     </GridContainer>
+                                    }
+
                                     {/** Customize Field */}
                                     {model.customize_fields.map((field: ICustomizeFieldsItem, k: number) => {
                                         var input: any;
@@ -1016,8 +1300,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     }}
                                                     inputProps={{
                                                         type: "text",
-                                                        value: field.customize_field_answer,
-                                                        onChange: this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id)
+                                                        defaultValue: field.customize_field_answer,
+                                                        onBlur: this.handleChangeCustomizeFields.bind(this, true, "customize_field_" + field.customize_field_id)
                                                     }}
                                                 />
                                                 break;
@@ -1031,8 +1315,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     }}
                                                     inputProps={{
                                                         type: "text",
-                                                        value: field.customize_field_answer,
-                                                        onChange: this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id),
+                                                        defaultValue: field.customize_field_answer,
+                                                        onBlur: this.handleChangeCustomizeFields.bind(this, true, "customize_field_" + field.customize_field_id),
                                                         rows: 3
                                                     }}
                                                 />
@@ -1045,7 +1329,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                         fullWidth: true,
                                                     }}
                                                     value={field.customize_field_answer}
-                                                    onChange={this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id)}
+                                                    onChange={this.handleChangeCustomizeFields.bind(this, true, "customize_field_" + field.customize_field_id)}
                                                     inputProps={{
                                                         name: "customize_field_" + field.customize_field_id,
                                                     }}
@@ -1064,7 +1348,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                             <Checkbox
                                                                 checked={checked}
                                                                 value={option.key}
-                                                                onChange={this.handleChange.bind(this, false, field.customize_field_id + ":" + option.key)}
+                                                                onChange={this.handleChangeCustomizeFields.bind(this, false, field.customize_field_id + ":" + option.key)}
                                                                 checkedIcon={
                                                                     <Check className={classes.checkedIcon} />
                                                                 }
@@ -1093,7 +1377,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                             <Radio
                                                                 checked={option.key == field.customize_field_answer}
                                                                 value={option.key}
-                                                                onChange={this.handleChange.bind(this, false, field.customize_field_id + ":" + option.key)}
+                                                                onChange={this.handleChangeCustomizeFields.bind(this, false, field.customize_field_id + ":" + option.key)}
                                                                 icon={
                                                                     <FiberManualRecord
                                                                         className={classes.radioUnchecked}
@@ -1127,8 +1411,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                     }}
                                                     inputProps={{
                                                         type: "text",
-                                                        value: field.customize_field_value,
-                                                        onChange: this.handleChange.bind(this, true, "customize_field_" + field.customize_field_id)
+                                                        defaultValue: field.customize_field_value,
+                                                        onBlur: this.handleChangeCustomizeFields.bind(this, true, "customize_field_" + field.customize_field_id)
                                                     }}
                                                 />
                                                 break;
@@ -1245,7 +1529,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                 <CardFooter>
                                     <div className={classes.footerRight}>
                                         <Button color="primary" onClick={this.handleEdit}>
-                                            <EditIcon />Lưu
+                                            <Save />Lưu
                                             </Button>
                                     </div>
                                 </CardFooter>
@@ -1289,6 +1573,18 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                     <GridContainer>
                                         <GridItem xs={12} sm={12} md={4}>
                                             <FormLabel className={classes.valueHorizontal}>
+                                                Mã Dịch vụ
+                                            </FormLabel>
+                                        </GridItem>
+                                        <GridItem xs={12} sm={12} md={8}>
+                                            <FormLabel className={classes.labelHorizontal}>
+                                                {new ResourceUtil(this.state.services_mst).getValue(model.vendor_service.service_code)}
+                                            </FormLabel>
+                                        </GridItem>
+                                    </GridContainer>
+                                    <GridContainer>
+                                        <GridItem xs={12} sm={12} md={4}>
+                                            <FormLabel className={classes.valueHorizontal}>
                                                 Dịch vụ
                                             </FormLabel>
                                         </GridItem>
@@ -1306,7 +1602,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={8}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                {model.customer.address}
+                                                {model.vendor_service.add_service}
                                             </FormLabel>
                                         </GridItem>
                                     </GridContainer>
@@ -1318,7 +1614,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                         </GridItem>
                                         <GridItem xs={12} sm={12} md={7}>
                                             <FormLabel className={classes.labelHorizontal}>
-                                                {model.customer.phone}
+                                                {model.vendor_service.phone_service}
                                             </FormLabel>
                                         </GridItem>
                                     </GridContainer>
@@ -1329,7 +1625,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                 </GridItem>
             </GridContainer>
             <div>
-                <MenuPopup title="Thực đơn" data={menus} isShowModal={this.state.isShowMenuModal} onToggleMenuModal={this.onToggleMenuModal} />
+                <MenuPopup type={this.state.menu_type} service_code={model.product.service_code} title="Thực đơn" data={menus} isShowModal={this.state.isShowMenuModal} onToggleMenuModal={this.onToggleMenuModal} isLoading={this.state.isLoading} />
                 <Modal
                     aria-labelledby="Hình ảnh"
                     aria-describedby="Chi tiết hình ảnh"

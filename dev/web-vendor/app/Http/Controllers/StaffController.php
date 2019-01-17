@@ -49,8 +49,8 @@ class StaffController extends ApiController
     {
 
         $input = array_filter($request->input());
-        $input['vendor_id'] = '3'; //TODO: hard data
-        $input['staff_id'] = $request->staff_id;
+        $input['vendor_id'] = $this->userAuth['vendor_id']; //TODO: hard data
+        $input['staff_id'] = $request->staff_id;//TODO: hard data
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "GET", $input);
         $rs = json_decode($response->getBody());
@@ -62,8 +62,8 @@ class StaffController extends ApiController
     {
 
         $input = array_filter($request->input());
-        $input['vendor_id'] = '3'; //TODO: hard data
-        $input['staff_id'] = $request->staff_id;
+        $input['vendor_id'] = $this->userAuth['vendor_id']; //TODO: hard data
+        $input['staff_id'] = $request->staff_id;//TODO: hard data
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "PUT", $input);
         $rs = json_decode($response->getBody());
@@ -73,8 +73,7 @@ class StaffController extends ApiController
     public function store(Request $request)
     {
         $input = array_filter($request->input());
-        $input['vendor_id'] = '3'; //TODO: hard data
-        $input['staff_id'] = $request->staff_id;
+        $input['vendor_id'] = $this->userAuth['vendor_id']; //TODO: hard data
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "POST", $input);
         $rs = json_decode($response->getBody());
@@ -84,7 +83,7 @@ class StaffController extends ApiController
     public function destroy(Request $request)
     {
         $input = array_filter($request->input());
-        $input['vendor_id'] = '3'; //TODO: hard data
+        $input['vendor_id'] = $this->userAuth['vendor_id']; //TODO: hard data
         $input['staff_id'] = $request->staff_id;
         $routeName = str_replace('controller' . '/', '', $request->path());
         $response = $this->api->requestNoCache($routeName, "DELETE", $input);

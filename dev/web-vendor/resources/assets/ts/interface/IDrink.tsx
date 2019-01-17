@@ -1,4 +1,4 @@
-export interface IFood {
+export interface IDrink {
     id: number;
     name: string;
     unit_price: number;

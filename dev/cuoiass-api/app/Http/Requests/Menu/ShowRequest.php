@@ -25,7 +25,7 @@ class ShowRequest extends RequestAbstract
     {
         return [
             'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
-            'service_code' => ['required','string'],
+            'search' => ['required','string'],
         ];
     }
 }

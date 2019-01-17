@@ -83,7 +83,6 @@ const styles = (theme: Theme) => createStyles({
  */
 class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
-    __isMounted = false;
     abortControler = new AbortController();
 
     // inital state varialble using in this Component, 
@@ -117,14 +116,12 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      */
     public async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
-        this.__isMounted = true;
         // this.getRoles();
         this.getListStaff();
 
     }
 
     public componentWillUnmount() {
-        this.__isMounted = false;
         this.abortControler.abort();
     }
 
@@ -279,16 +276,14 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         if (response.isError) {
             return this.setState({ isErrorList: response.isError, errorInfo: response.message });
         }
-        if (this.__isMounted) {
-            this.setState({
-                staffGrid: response.result.staffs.data,
-                totalItem: response.result.staffs.total,
-                roles: response.result.roles,
-                isLoading: false,
-            }), () => {
-            };
-            this.setTableHeader();
-        }
+        this.setState({
+            staffGrid: response.result.staffs.data,
+            totalItem: response.result.staffs.total,
+            roles: response.result.roles,
+            isLoading: false,
+        }), () => {
+        };
+        this.setTableHeader();
 
     }
 
@@ -303,8 +298,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
             return;
         }
         this.setState({ isHandleEvent: true, isLoading: true });
-
-        const response = await HandleRequest.Show(APP_URL.STAFF_CRL, id);
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Show(APP_URL.STAFF_CRL, id,signal);
 
         if (response.isError) {
             return this.setState(
@@ -351,7 +346,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         }
 
         this.setState({ isHandleEvent: true });
-        const response = await HandleRequest.Store(APP_URL.STAFF_CRL, model);
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Store(APP_URL.STAFF_CRL, model,signal);
         if (response.isError) {
             return this.setState({
                 isValidate: response.isValidate,
@@ -395,13 +391,14 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
      * @return List staff
      */
     public onUpdate = async (model: any) => {
+        debugger;
         if (this.state.isHandleEvent) {
             return;
         }
 
         this.setState({ isHandleEvent: true });
-
-        const response = await HandleRequest.Update(APP_URL.STAFF_CRL, model, model.staff_id);
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Update(APP_URL.STAFF_CRL, model, model.staff_id,signal);
 
         if (response.isError) {
             return this.setState({
@@ -447,8 +444,8 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
         }
 
         this.setState({ isHandleEvent: true });
-
-        const response = await HandleRequest.Destroy(APP_URL.STAFF_CRL, id);
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Destroy(APP_URL.STAFF_CRL, id,signal);
         debugger;
         if (response.isError) {
             return this.setState(
@@ -464,7 +461,7 @@ class StaffScreen extends React.Component<{ classes: any }, IStaffState> {
 
         this.setState({
             isHandleEvent: false,
-            isShowModal: false ,
+            isShowModal: false,
             isValidate: response.isValidate,
             validateMessage: response.validateMessage,
             isError: response.isError,

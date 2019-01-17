@@ -9,17 +9,17 @@
 namespace App\Repositories;
 
 
-use App\Models\BookedFood;
+use App\Models\BookedDrink;
 use App\Utils\TableName as TBL;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * Class BookingOptionRepo
+ * Class BookingDrinkRepo
  *
- * @property BookedFood $model
- * @method BookedFood create(array $attributes)
+ * @property BookedDrink $model
+ * @method BookedDrink create(array $attributes)
  */
-class BookingFoodRepo extends Repository
+class BookingDrinkRepo extends Repository
 {
     public $model;
 
@@ -29,7 +29,7 @@ class BookingFoodRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = BookedFood::class;
+        $this->model = BookedDrink::class;
         return $this->model;
     }
 
@@ -37,28 +37,28 @@ class BookingFoodRepo extends Repository
      * @param $bookedId
      * @return Collection|static[]
      */
-    public function getBookingFoodsByBookedId($bookedId)
+    public function getBookingDrinksByBookedId($bookedId)
     {
 
-        $tblBookedFood = TBL::TBL_BOOKED_FOODS;
-        $tblFood = TBL::TBL_FOODS;
+        $tblBookedDrink = TBL::TBL_BOOKED_DRINKS;
+        $tblDrink = TBL::TBL_DRINKS;
         $tblProduct = TBL::TBL_PRODUCTS;
         $tblMenu = TBL::TBL_MENUS;
         $tblBooking = TBL::TBL_BOOKINGS;
         $query = $this->model->newQuery()->select([
-            "$tblBookedFood.booked_menu", "$tblBookedFood.service_code", "$tblBookedFood.booked_total",
-            "$tblFood.food_id", "$tblFood.food_name",
-            "$tblFood.food_name", "$tblFood.unit_price"
+            "$tblBookedDrink.booked_menu", "$tblBookedDrink.service_code", "$tblBookedDrink.booked_total",
+            "$tblDrink.drink_id", "$tblDrink.drink_name", "$tblDrink.unit_price"
+            , "$tblDrink.image_ids"
         ])
-            ->join($tblMenu, "$tblBookedFood.menu_id", "=", "$tblMenu.menu_id")
+            ->join($tblMenu, "$tblBookedDrink.menu_id", "=", "$tblMenu.menu_id")
             ->join($tblProduct, "$tblMenu.prd_id", "=", "$tblProduct.prd_id")
-            ->join($tblFood, "$tblMenu.menu_id", "=", "$tblFood.menu_id")
-            ->join($tblBooking, function($join) use  ($tblBooking, $tblProduct, $tblBookedFood){
+            ->join($tblDrink, "$tblMenu.menu_id", "=", "$tblDrink.menu_id")
+            ->join($tblBooking, function($join) use  ($tblBooking, $tblProduct, $tblBookedDrink){
                 $join->on("$tblBooking.prd_id", '=', "$tblProduct.prd_id");
-                $join->on("$tblBooking.booked_id", '=', "$tblBookedFood.booked_id");
+                $join->on("$tblBooking.booked_id", '=', "$tblBookedDrink.booked_id");
                 $join->on("$tblBooking.vendor_service_id", '=', "$tblProduct.vendor_service_id");
             })
-            ->where("$tblBookedFood.booked_id", "=", $bookedId);
+            ->where("$tblBookedDrink.booked_id", "=", $bookedId);
         return $query->get();
     }
 

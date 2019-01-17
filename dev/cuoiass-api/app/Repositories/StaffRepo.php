@@ -37,10 +37,8 @@ class StaffRepo extends Repository
      * @param $sortBy
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getListStaffByVendor($search, $page, $limit, $orderBy, $order)
+    public function getListStaffByVendor($vendorId, $search, $page, $limit, $orderBy, $order)
     {
-        //TODO:$vendorId = auth()->user()->vendor_id;
-        $vendorId = 1;
 
         $fieldsSearchable = $this->model->fieldsSearchable();
         $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;

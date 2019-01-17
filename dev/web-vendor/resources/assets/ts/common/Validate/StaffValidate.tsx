@@ -52,26 +52,40 @@ export const ValidateStaff = (isRequired: boolean, name: string, value: string) 
         }
     }
 
-    return "";
+    return undefined;
 };
 
 export const ValidateAllStaff = (model: any, isCreate: boolean) => {
     const rules: any = {
-        staff_name: 'Vui lòng nhập tên',
-        email: 'vui lòng nhập email',
-        phone: 'Vui lòng nhập số điện thoại',
-        password: 'Vui lòng nhập password',
-        role_id: 'Vui lòng chọn quyền'
+        staff_name: [{
+            rule: "required",
+            message: 'Vui lòng nhập tên'
+        }],
+        email: [{
+            rule: "required",
+            message: 'vui lòng nhập email'
+        }],
+        phone: [{
+            rule: "required",
+            message: 'vui lòng nhập điện thoại'
+        }],
+        password: [{
+            rule: "required",
+            message: 'vui lòng nhập Mật khảu'
+        }],
+        role_id: [{
+            rule: "required",
+            message: 'Vui lòng chọn quyền'
+        }],
     }
 
     const keys = isCreate ? rules : delete rules.password;
 
     let errors: any = {};
 
-    Object.keys(keys).map(k => {
-        console.log(k);
+    Object.keys(keys).map((k,v) => {
         if (required(model[k])) {
-            errors[k] = rules[k]
+            errors[k] = rules[k][0].message;
         }
     });
 

@@ -47,10 +47,10 @@ export const searchQueryStringToArray = (query: string) => {
  */
 export const isEmptyKeyInObject = (params: object) => {
     if (Object.keys(JSON.parse(JSON.stringify(params))).length) {
-        return true;
+        return false;
     }
 
-    return false;
+    return true;
 };
 
 /**
@@ -92,6 +92,8 @@ export const isDateCorrectFormat = (dateString: string, format: string) => {
 
 export const parseDateFormat = (dateString: string, format: string) => {
     if (dateString === "")
+        return dateString;
+    if (isDateCorrectFormat(dateString, format))
         return dateString;
     return moment(dateString).format(format);
 }

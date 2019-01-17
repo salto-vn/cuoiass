@@ -9,6 +9,7 @@
 namespace App\Repositories;
 
 
+use App\Models\Drink;
 use App\Models\Image;
 use App\Models\Menu;
 use App\Utils\TableName;
@@ -40,14 +41,15 @@ class MenuRepo extends Repository
      * @param $search
      * @return array
      */
-    public function getMenuWithFoods($serviceCode, $vendorId, $search)
+    public function getMenuWithFoods($vendorId, $search)
     {
         $tblMenus = TableName::TBL_MENUS;
         $tblFoods = TableName::TBL_FOODS;
         $tblProducts = TableName::TBL_PRODUCTS;
         $tblVendorServices = TableName::TBL_VENDOR_SERVICES;
+        $imageRepo = new ImageRepo();
         $fieldsSearchable = [
-            'menu_name', 'menu_price',
+            'menu_name', 'menu_price', 'service_code'
         ];
         $selCols = ["$tblMenus.menu_id", "$tblMenus.menu_name", "$tblMenus.unit_price as menu_price"
             , "$tblFoods.food_id", "$tblFoods.food_name", "$tblFoods.unit_price", "$tblFoods.image_ids"];
@@ -57,6 +59,7 @@ class MenuRepo extends Repository
             ->join("$tblVendorServices", "$tblProducts.vendor_service_id", "=", "$tblVendorServices.vendor_service_id");
 
         //Custom search word
+        $serviceCode = '';
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
             if ($searchData) {
@@ -64,9 +67,15 @@ class MenuRepo extends Repository
                     if (!in_array($field, $fieldsSearchable)) {
                         continue;
                     }
+
                     $value = addslashes($value);
                     if (!empty($value)) {
-                        $query->where($field, 'like', "%{$value}%");
+                        if ($field == 'service_code') {
+                            $serviceCode = $value;
+                        } else {
+                            $query->where("$tblMenus.$field", 'like', "%{$value}%");
+                        }
+
                     }
 
                 }
@@ -74,32 +83,61 @@ class MenuRepo extends Repository
         }
         $query->where("$tblProducts.service_code", "=", "$serviceCode");
         $query->where("$tblVendorServices.vendor_id", "=", $vendorId);
+        $query->orderBy("$tblMenus.menu_id");
         $menus = $query->get();
         //Get Image Product
         $rs = [];
-        $newMenus = [];
         $foods = [];
-        foreach ($menus as $menu) {
+        $menu_ids = [];
+        for ($i = 0; $i < count($menus); $i++) {
+            $menu = $menus[$i];
             $images = explode(",", trim($menu['image_ids']));
-            $food_imgs = array_map(function ($imageId) {
-                $rs = Image::query()->find($imageId, ['img_url']);
-                return $rs['img_url'];
-            }, $images);
+            $food_imgs = $imageRepo->findByIds($images);
+            $foods[] = ["id" => $menu['food_id'], "name" => $menu['food_name'],
+                "unit_price" => $menu['unit_price'], "images" => $food_imgs];
+            if ($i == count($menus) - 1) {
+                $drinks = Drink::query()->select(['drink_id', 'drink_name', 'unit_price', 'image_ids'])
+                    ->where("menu_id", "=", $menu["menu_id"])
+                    ->get();
+                $drinks->map(function ($d) use ($imageRepo) {
+                    $images = explode(",", trim($d['image_ids']));
+                    $d['id'] = $d['drink_id'];
+                    $d['name'] = $d['drink_name'];
+                    $d['images'] = $imageRepo->findByIds($images);
+                    unset($d['image_ids']);
+                    unset($d['drink_id']);
+                    unset($d['drink_name']);
+                    return $d;
+                });
 
-            $foods[] = ["food_id" => $menu['food_id'], "food_name" => $menu['food_name'],
-                "unit_price" => $menu['unit_price'], "food_images" => $food_imgs];
-            if (in_array($menu["menu_id"], $newMenus)) {
-
-                $rs[] = ["id" => $menu["menu_id"], "name" => $menu["menu_name"], "foods" => $foods];
+                $rs[] = ["id" => $menu["menu_id"], "name" => $menu["menu_name"], "foods" => $foods, "drinks" => $drinks];
+                $menu_ids[] = $menu["menu_id"];
                 $foods = [];
-                $newMenus = [];
+            } else {
+                if ($menu['menu_id'] !== $menus[$i + 1]['menu_id']) {
+                    $drinks = Drink::query()->select(['drink_id', 'drink_name', 'unit_price', 'image_ids'])
+                            ->where("menu_id", "=", $menu["menu_id"])
+                            ->get();
+                    $drinks->map(function ($d) use ($imageRepo) {
+                        $images = explode(",", trim($d['image_ids']));
+                        $d['id'] = $d['drink_id'];
+                        $d['name'] = $d['drink_name'];
+                        $d['images'] = $imageRepo->findByIds($images);
+                        unset($d['image_ids']);
+                        unset($d['drink_id']);
+                        unset($d['drink_name']);
+                        return $d;
+                    });
+
+                    $rs[] = ["id" => $menu["menu_id"], "name" => $menu["menu_name"], "foods" => $foods, "drinks" => $drinks];
+                    $menu_ids[] = $menu["menu_id"];
+                    $foods = [];
+                }
             }
-            $newMenus[] = $menu["menu_id"];
 
         }
+
         return $rs;
 
     }
-
-
 }

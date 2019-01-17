@@ -1,4 +1,4 @@
-import { IBooking, IFoodDetail } from '../interface/IBooking';
+import { IBooking, IFoodDetail, IDrinkDetail } from '../interface/IBooking';
 import { IVendorService } from '../interface/IVendorService';
 import { ICustomizeFieldsItem } from '../interface/ICustomizeFieldsItem';
 import { IPlan } from '../interface/IPlan';
@@ -21,7 +21,9 @@ export class BookingModel implements IBooking {
     public booked_color_2: string = "";
     public booked_time: string = "";
     public try_date: string = "";
+    public try_date_time: string = "";
     public activate_date: string = "";
+    public activate_date_time: string = "";
     public memo: string = "";
     public booked_date: string = "";
     public payment_method: string = "";
@@ -42,6 +44,7 @@ export class BookingModel implements IBooking {
     public plan: IPlan = {
         plan_date: "",
         org_date: "",
+        org_date_time: "",
         gr_name: "",
         br_name: "",
         org_address: "",
@@ -51,7 +54,8 @@ export class BookingModel implements IBooking {
         prd_cd: "",
         prd_name: "",
         prd_desc: "",
-        prd_images: []
+        prd_images: [],
+        service_code:''
     };
     public customer: ICustomer = {
         customer_id: 0,
@@ -62,9 +66,10 @@ export class BookingModel implements IBooking {
     public options: IBookedOption[] = [];
     public customize_fields: ICustomizeFieldsItem[] = [];
     public foods:IFoodDetail[] = [];
+    public drinks:IDrinkDetail[] = [];
     public promotion:IPromotion = {
         end_date: "",
-        promotion_amount: "",
+        promotion_amount: 0,
         promotion_code: "",
         promotion_title: "",
         promotion_type: "",

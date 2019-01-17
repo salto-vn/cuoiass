@@ -31,12 +31,12 @@ class MasterServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-//        $vendor_id = 4;//TODO;
         $tblVendorSrvs = TableName::TBL_VENDOR_SERVICES;
         $tblMasterSrvs = TableName::TBL_MASTER_SERVICES;
+        $vendor_id = $request->get('vendor_id');
         $query = $this->serviceRepo->model->newQuery()
             ->select("$tblMasterSrvs.service_code","$tblMasterSrvs.service_name");
         if(isset($vendor_id)){

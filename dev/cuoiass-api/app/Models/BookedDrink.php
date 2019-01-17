@@ -10,14 +10,13 @@ namespace App\Models;
 use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class BookedFood
+ * Class BookedDrink
  *
- * @property int $booked_food_id
+ * @property int booked_drink_id
  * @property string $booked_menu
  * @property string $service_code
  * @property int $booked_total
  * @property float $unit_price
- * @property string $booked_drink
  * @property int $booked_id
  * @property int $menu_id
  * @property string $created_by
@@ -30,9 +29,9 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  *
  * @package App\Models
  */
-class BookedFood extends Eloquent
+class BookedDrink extends Eloquent
 {
-	protected $primaryKey = 'booked_food_id';
+	protected $primaryKey = 'booked_drink_id';
 
 	protected $casts = [
 		'booked_total' => 'int',

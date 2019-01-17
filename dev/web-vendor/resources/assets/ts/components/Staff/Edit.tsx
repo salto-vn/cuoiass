@@ -3,7 +3,7 @@ import * as React from 'react';
 // import * as HandleRequest from '../../api/HandleRequest';
 import { IValidateModel } from '../../interface/IStaff';
 import { isEmptyKeyInObject, showError } from '../../common/Utils';
-import { ValidateStaff } from '../../common/Validate/StaffValidate';
+import { ValidateStaff, ValidateAllStaff } from '../../common/Validate/StaffValidate';
 import { ValidateModel, StaffModel } from '../../model/StaffModel';
 import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
@@ -84,7 +84,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     public state = {
         // source: this.props.source,
         model: this.props.model,
-        isSubmitDisabled: false,
+        isSubmitDisabled: true,
         clientError: new ValidateModel(),
         isError: false,
         isValidate: this.props.isValidate,
@@ -94,16 +94,14 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
 
     componentDidMount() {
         this.setState({
-            isSubmitDisabled: this.props.isCreate ? true : false,
+            isSubmitDisabled: true,
             validateMessage: this.props.errorInfo
         });
     }
 
     public handleSubmit = (evt: any) => {
         evt.preventDefault();
-        this.setState({
-        });
-        if (isEmptyKeyInObject(this.state.clientError)) {
+        if (!isEmptyKeyInObject(this.state.clientError)) {
             return;
         }
 
@@ -115,7 +113,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
 
     public handleDelete = (evt: any) => {
         evt.preventDefault();
-        if (isEmptyKeyInObject(this.state.clientError)) {
+        if (!isEmptyKeyInObject(this.state.clientError)) {
             return;
         }
         const { model } = this.state;
@@ -126,6 +124,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     public handleChange = (isRequired: boolean, event: any) => {
         var value = event.target.value;
         var name = event.target.name;
+        debugger;
         const errMessage = ValidateStaff(isRequired, name, value);
         this.setState({
             model: { ...this.state.model, [name]: value ? value : "" },
@@ -136,8 +135,10 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
     }
 
     public canSubmit = () => {
-        const { clientError, model } = this.state;
-        if (!isEmptyKeyInObject(clientError) && model) {
+        const { clientError,model } = this.state;
+        debugger;
+        var error =  ValidateAllStaff(model,this.props.isCreate);
+        if (isEmptyKeyInObject(clientError) && isEmptyKeyInObject(error)) {
             return this.setState({ isSubmitDisabled: false });
         }
         return this.setState({ isSubmitDisabled: true });
@@ -251,7 +252,7 @@ class StaffModal extends React.Component<IStaffModalProp, IinitState> {
                                                 inputProps={{
                                                     value: model.phone ? model.phone : '',
                                                     name: "phone",
-                                                    onChange: this.handleChange.bind(this, false),
+                                                    onChange: this.handleChange.bind(this, true),
                                                 }}
                                             />
                                         </GridItem>

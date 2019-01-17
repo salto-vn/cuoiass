@@ -11,14 +11,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Image
- * 
+ *
  * @property int $img_id
  * @property string $img_url
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- *
+ * @property  string cacheKey
  * @package App\Models
  */
 class Image extends Eloquent
@@ -30,4 +30,18 @@ class Image extends Eloquent
 		'created_by',
 		'updated_by'
 	];
+
+    /**
+     * @return string
+     */
+    public function cacheKey()
+    {
+        return sprintf(
+            "%s/%s-%s",
+            $this->getTable(),
+            $this->getKey(),
+            $this->updated_at->timestamp
+        );
+    }
+
 }

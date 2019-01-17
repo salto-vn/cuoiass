@@ -70,30 +70,30 @@ services:
       - ./cuoiass-api/storage/logs:/var/www/storage/logs
 
 #  cuoi-admin:
-#   build:
-#     dockerfile: docker/admin/Dockerfile
-#     context: .
-#   container_name: cuoi_admin
-#   ports:
-#     - 1235:80
-#   environment:
-#     APP_NAME: ADMIN
-#     APP_ENV: local
-#     APP_KEY: base64:5IDClfWg31l/n0lcabxDu2RzVOi2TuzbV4otITTCwtg=
-#     APP_DEBUG: "true"
-#     APP_URL: http://localhost:1235
-#     API_URL: api
-#     LOG_CHANNEL: stack
+#    build:
+#      dockerfile: docker/admin/Dockerfile
+#      context: .
+#    container_name: cuoi_admin
+#    ports:
+#      - 1235:80
+#    environment:
+#      APP_NAME: ADMIN
+#      APP_ENV: local
+#      APP_KEY: base64:5IDClfWg31l/n0lcabxDu2RzVOi2TuzbV4otITTCwtg=
+#      APP_DEBUG: "true"
+#      APP_URL: http://localhost:1235
+#      API_URL: api
+#      LOG_CHANNEL: stack
 #
-#     BROADCAST_DRIVER: log
-#     CACHE_DRIVER: file
-#     QUEUE_CONNECTION: sync
-#     SESSION_DRIVER: file
-#     SESSION_LIFETIME: 120
+#      BROADCAST_DRIVER: log
+#      CACHE_DRIVER: file
+#      QUEUE_CONNECTION: sync
+#      SESSION_DRIVER: file
+#      SESSION_LIFETIME: 120
 #
-#   volumes:
-#     - ./web-admin:/var/www/web-admin
-#     - ./web-admin/storage/logs:/var/www/storage/logs
+#    volumes:
+#      - ./web-admin:/var/www/web-admin
+#      - ./web-admin/storage/logs:/var/www/storage/logs
 
   # cuoi-front:
   #   build:

@@ -63,6 +63,9 @@ export class ResourceUtil {
     }
 
     public getValue = (key: string) => {
+        if(this.array === undefined) {
+            return;
+        }
         return this.array.map((value: IOption) => {
             if (value.key == key) {
                 return value.value + "";

@@ -36,7 +36,6 @@ class BookingController extends ApiController
         $params = array_filter($request->input());
         $params['vendor_id'] = $this->userAuth['vendor_id']; //TODO;
         $params['booked_cd'] = $request->booked_cd; //TODO;
-        $routeName = str_replace('controller' . '/', '', $request->path());
 
         //bookings
         $bookingCols = ['status', 'booked_id', 'booked_cd', 'booked_pro_name', 'booked_size', 'booked_color'
@@ -58,7 +57,7 @@ class BookingController extends ApiController
         $params['columns']['plans'] = $planCols;
         $params['columns']['vendor_services'] = $serviceCols;
         $params['columns']['promotions'] = $promotionCols;
-        $response = $this->api->requestNoCache($routeName, "POST", $params);
+        $response = $this->api->requestNoCache($this->apiName."/".$params['booked_cd'], "POST", $params);
         $body = json_decode($response->getBody());
         return response()->json(
             $body,
@@ -97,6 +96,7 @@ class BookingController extends ApiController
     /**
      * get Menus
      * @param Request $request (service_code)
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getMenus(Request $request) {
         //Call Update Review API
@@ -108,4 +108,7 @@ class BookingController extends ApiController
             $menus->getStatusCode()
         );
     }
+
+
+
 }
