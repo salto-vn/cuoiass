@@ -37,7 +37,6 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
   }
 
   public handleChange = (evt: any) => {
-
     this.setState({ selectedValue: evt.target.value })
     if (this.props.onChange === undefined) return;
     this.props.onChange(evt);

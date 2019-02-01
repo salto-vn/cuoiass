@@ -9,8 +9,16 @@
 namespace App\Repositories;
 
 
+use App\Models\BookedCustomizeField;
+use App\Models\BookedDrink;
+use App\Models\BookedFood;
+use App\Models\BookedOption;
 use App\Models\Booking;
+use App\Models\Customer;
+use App\Models\Plan;
 use App\Utils\TableName as TBL;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class BookingRepo
@@ -111,6 +119,7 @@ class BookingRepo extends Repository
 
     /**
      * Get Booking info(Product, Customer, Booking, Plan info)
+     * @param $vendor_id
      * @param $booked_cd
      * @param $tableCols :json {table1:"col1,col2,col3", table2:"col1,col2,col3"}
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
@@ -175,7 +184,7 @@ class BookingRepo extends Repository
 
 
         //Default col
-        $defaultCols = ["$tblProduct.service_code","$tblBooking.promotion_code","$tblBooking.booked_id","$tblProduct.prd_images"];
+        $defaultCols = ["$tblProduct.service_code", "$tblBooking.promotion_code", "$tblBooking.booked_id", "$tblProduct.prd_images"];
 
         //Merge all Columns
         $selectCols = array_merge($defaultCols, $planCols, $bookingCols, $customerCols, $productCols, $vendorServiceCols);
@@ -208,4 +217,114 @@ class BookingRepo extends Repository
     }
 
 
+    public function updateByBookCd($booked_cd, $input)
+    {
+        DB::transaction(function () use ($booked_cd, $input) {
+            //Update table Booking
+            $updateBkCol = ["booked_size", "booked_color", "booked_material", "booked_style", "booked_album_page"
+                , "booked_photo_size", "booked_size_2", "booked_color_2", "booked_time", "try_date", "activate_date"
+                , "status", "memo", "promotion_code", "payment_method", "payment_name", "payment_phone", "payment_email"
+                , "net_price", "gross_price", "invoice_url"];
+            $updt_params = $this->createUpdateColByName($updateBkCol, $input);
+            $this->model->newQuery()
+                ->where('booked_cd', "=", $booked_cd)
+                ->update($updt_params);
+
+            //update table Plan
+            $updatePlnCols = ["gr_name", "br_name", "org_address", "org_date"];
+            $plan_id = $input['plan']['plan_id'];
+            $updt_params = $this->createUpdateColByName($updatePlnCols, $input['plan']);
+            Plan::query()->where("plan_id", "=", $plan_id)
+                ->update($updt_params);
+
+            //Update booked_customize_fields
+            if (isset($input['customize_fields'])) {
+                array_map(function ($cus_field) {
+                    $booked_cus_field_id = $cus_field['booked_cus_field_id'];
+                    $updt_params = $this->createUpdateColByName(["customize_field_answer"], $cus_field);
+                    BookedCustomizeField::query()->where("booked_cus_field_id", "=", $booked_cus_field_id)
+                        ->update($updt_params);
+                }, $input['customize_fields']);
+
+            }
+
+            //Update booked_options
+            if (isset($input['options'])) {
+                Log::debug(print_r($input['options'],true));
+                if (!empty($input['options']['deletes'])) {
+                    BookedOption::withTrashed()
+                        ->whereIn("booked_opt_id", $input['options']['deletes'])
+                        ->delete();
+                }
+
+                if (!empty($input['options']['news'])) {
+                    foreach ($input['options']['news'] as $option) {
+                        $restored = BookedOption::withTrashed()
+                            ->where("booked_id","=", $option['booked_id'])
+                            ->where("option_id","=", $option['option_id'])
+                            ->where("prd_id","=", $option['prd_id'])
+                            ->where("vendor_service_id","=", $option['vendor_service_id'])
+                            ->restore();
+                        if ($restored) {
+                            $updt_params = $this->createUpdateColByName(["option_quality"], $option);
+                            BookedOption::query()
+                                ->where("booked_id","=", $option['booked_id'])
+                                ->where("option_id","=", $option['option_id'])
+                                ->where("prd_id","=", $option['prd_id'])
+                                ->where("vendor_service_id","=", $option['vendor_service_id'])
+                                ->update($updt_params);
+                        } else {
+                            BookedOption::query()->insert($option);
+                        }
+                    }
+                }
+
+                if (!empty($input['options']['updates'])) {
+                    foreach ($input['options']['updates'] as $option) {
+                        $updt_params = $this->createUpdateColByName(["option_quality"], $option);
+                        BookedOption::query()
+                            ->where("booked_opt_id","=",$option['booked_opt_id'])
+                            ->update($updt_params);
+                    }
+                }
+            }
+
+            //Update booked_foods
+            if (isset($input['foods'])) {
+                $updateBkFoods = ["booked_menu", "menu_id", "food_id", "booked_total"];
+                array_map(function ($food) use ($updateBkFoods) {
+                    $updt_params = $this->createUpdateColByName($updateBkFoods, $food);
+                    BookedFood::query()->where("booked_food_id", "=", $food['booked_food_id'])
+                        ->update($updt_params);
+                }, $input['foods']);
+
+            }
+
+            //Update booked_drinks
+            if (isset($input['drinks'])) {
+                $updateBkDrinks = ["booked_menu", "menu_id", "drink_id", "booked_total"];
+                array_map(function ($drink) use ($updateBkDrinks) {
+                    $updt_params = $this->createUpdateColByName($updateBkDrinks, $drink);
+                    BookedDrink::query()->where("booked_drink_id", "=", $drink['booked_drink_id'])
+                        ->update($updt_params);
+                }, $input['drinks']);
+            }
+        });
+    }
+
+    /**
+     * @param $cols Column name
+     * @param $datas request input
+     * @return array
+     */
+    private function createUpdateColByName($cols, $datas)
+    {
+        $rs = [];
+        foreach ($cols as $col) {
+            if (isset($datas[$col])) {
+                $rs[$col] = $datas[$col];
+            }
+        }
+        return $rs;
+    }
 }

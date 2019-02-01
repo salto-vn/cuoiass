@@ -22,8 +22,9 @@ class BookingOptionsTableSeeder extends Seeder
                     [
                         'booked_id' => $booking['booked_id'],
                         'option_id' => $field['option_id'],
-                        'prd_id' => $booking['prd_id'],
-                        'vendor_service_id' => $booking['vendor_service_id'],
+                        'option_name' => $field['option_name'],
+                        'prd_id' => $field['prd_id'],
+                        'vendor_service_id' => $field['vendor_service_id']
                     ]
                 );
             }

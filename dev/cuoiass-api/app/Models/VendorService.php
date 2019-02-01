@@ -40,6 +40,7 @@ class VendorService extends Model
 	];
 
 	protected $fillable = [
+	    'vendor_service_id',
 		'vendor_id',
 		'service_code',
 		'ven_serv_name',

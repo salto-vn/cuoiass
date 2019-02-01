@@ -1,5 +1,5 @@
 import HandleResponse from './HandleResponse';
-import { objectToQueryString } from '../common/Utils';
+import { objectToQueryString, isEmpty } from '../common/Utils';
 
 const headerOptions = {
     "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const findOne = async (url: string, id: string, signal: any, columns?: st
  * @return HandleResponse
  */
 
-export const Get = async (url: string, queryString?: string, signal?: any, columns?: string[], ) => {
+export const Get = async (url: string, queryString?: string, signal?: any, columns?: string[]) => {
     const result = await fetch(`${url}?${queryString}`, {
         method: "GET",
         signal: signal,
@@ -66,9 +66,10 @@ export const Get = async (url: string, queryString?: string, signal?: any, colum
  * @return HandleResponse
  */
 
-export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, signal?: any, columns?: string[], ) => {
-    const params: any = { page, limit, orderBy, order, search };
+export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, exParams?:any, signal?: any, columns?: string[], ) => {
+    const params: any = { ...exParams, page, limit, orderBy, order, search };
     const queryString = objectToQueryString(params, '=', '&');
+    
     const result = await fetch(`${url}?${queryString}`, {
         method: "GET",
         signal: signal,

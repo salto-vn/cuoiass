@@ -38,7 +38,8 @@ class BookingCustomizeRepo extends Repository
         $tblBookingCusFld = TBL::TBL_BOOKED_CUSTOMIZE_FIELDS;
 
         $query = $this->model->newQuery()->select([
-                "$tblCustomizeField.customize_field_id"
+                "$tblBookingCusFld.booked_cus_field_id"
+                ,"$tblCustomizeField.customize_field_id"
                 ,"$tblCustomizeField.customize_field_name"
                 ,"$tblCustomizeField.customize_field_type"
                 ,"$tblCustomizeField.customize_field_key"

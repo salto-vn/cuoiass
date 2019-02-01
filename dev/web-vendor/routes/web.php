@@ -27,6 +27,7 @@ $router->group(['prefix' => 'controller'], function () use ($router) {
     $router->get('/bookings/getServices', 'BookingController@getServices');
     $router->get('/bookings/getMenus', 'BookingController@getMenus');
     $router->get('/bookings/getDrinks', 'BookingController@getDrinks');
+    $router->get('/bookings/getOptions', 'BookingController@getOptions');
     $router->get('/bookings/initial', 'BookingController@initial');
 });
 

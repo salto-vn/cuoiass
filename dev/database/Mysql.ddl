@@ -234,6 +234,7 @@ drirect: giam gia truc tiep %'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `promotions_pkc` primary key (`promotion_id`)
 ) comment 'promotion' ;
 
@@ -257,6 +258,7 @@ create table `reviews` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `reviews_pkc` primary key (`review_id`)
 ) comment 'review' ;
 
@@ -283,6 +285,7 @@ create table `drinks` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `drinks_pkc` primary key (`drink_id`)
 ) comment 'drink' ;
 
@@ -303,6 +306,7 @@ create table `booked_customize_fields` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `booked_customize_fields_pkc` primary key (`booked_cus_field_id`,`booked_id`)
 ) comment 'booked customize field' ;
 
@@ -329,6 +333,7 @@ create table `booked_options` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `booked_options_pkc` primary key (`booked_opt_id`,`booked_id`)
 ) comment 'booked option' ;
 
@@ -363,6 +368,7 @@ finished: da hoan thanh, to chuc.'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `booked_honey_moons_pkc` primary key (`honey_id`)
 ) comment 'honey moon' ;
 
@@ -380,10 +386,12 @@ create table `booked_foods` (
   , `booked_total` int(11) not null comment 'total:so nguoi(food)'
   , `booked_id` int(11) not null comment 'booked id'
   , `menu_id` int(11) not null comment 'menu id'
+  , `food_id` int(11) not null comment 'food id'
   , `created_by` varchar(255) not null comment 'create user'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `booked_foods_pkc` primary key (`booked_food_id`)
 ) comment 'booked menu food:luu thong tin booking cua dich vu nha hang va qua cuoi' ;
 
@@ -392,6 +400,9 @@ create index `booked_foods_ix1`
 
 create index `booked_foods_ix2`
   on `booked_foods`(`booked_id`);
+
+create index `booked_foods_ix3`
+  on `booked_foods`(`food_id`);
 
 
 ##* backuptotemptable
@@ -405,10 +416,12 @@ create table `booked_drinks` (
   , `booked_total` int(11) not null comment 'total:so nguoi(food)'
   , `booked_id` int(11) not null comment 'booked id'
   , `menu_id` int(11) not null comment 'menu id'
+  , `drink_id` int(11) not null comment 'drink id'
   , `created_by` varchar(255) not null comment 'create user'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `booked_drink_pkc` primary key (`booked_drink_id`)
 ) comment 'booked menu drink:luu thong tin booking cua dich vu nha hang va qua cuoi' ;
 
@@ -417,6 +430,9 @@ create index `booked_drinks_ix1`
 
 create index `booked_drinks_ix2`
   on `booked_drinks`(`booked_id`);
+
+create index `booked_drinks_ix3`
+  on `booked_drinks`(`drink_id`);
 
 
 ##* backuptotemptable
@@ -461,6 +477,7 @@ finished: da hoan thanh, to chuc.'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `bookings_pkc` primary key (`booked_id`)
 ) comment 'booking:luu ke hoach cuoi cua user' ;
 
@@ -484,6 +501,7 @@ create table `package_products` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `package_products_pkc` primary key (`id`)
 ) comment 'package product' ;
 
@@ -506,6 +524,7 @@ create table `packages` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `packages_pkc` primary key (`package_id`)
 ) comment 'package' ;
 
@@ -527,6 +546,7 @@ create table `plans` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `plans_pkc` primary key (`plan_id`)
 ) comment 'wedding plan:luu tat ca cac ke hoach cua khach hang' ;
 
@@ -562,6 +582,7 @@ create table `travel_products` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `travel_products_pkc` primary key (`honey_id`)
 ) comment 'honey moon' ;
 
@@ -663,6 +684,7 @@ create table `schedule_photos` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `schedule_photos_pkc` primary key (`sche_id`)
 ) comment 'schedule photo:lich trinh chup hinh, khi service code la photo thi bang nay co du lieu' ;
 
@@ -705,6 +727,7 @@ vn: van nghe,'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `products_pkc` primary key (`prd_id`,`vendor_service_id`)
 ) comment 'product:tat ca san pham cua vendor theo tung dich vu' ;
 
@@ -756,6 +779,7 @@ create table `staffs` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , `role_id` int(11)  not null comment 'role id'
   , constraint `staffs_pkc` primary key (`staff_id`,`vendor_id`)
 ) comment 'vendor staff' ;
@@ -782,6 +806,7 @@ create table `vendors` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `vendors_pkc` primary key (`vendor_id`)
 ) comment 'vendor' ;
 
@@ -812,6 +837,7 @@ vn: van nghe,'
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `vendor_services_pkc` primary key (`vendor_service_id`)
 ) comment 'vendor services' ;
 
@@ -839,6 +865,7 @@ create table `customers` (
   , `created_at` datetime comment 'create at date time'
   , `updated_by` varchar(255) comment 'update user'
   , `updated_at` datetime comment 'update at time'
+  , `deleted_at` datetime comment 'delete at time'
   , constraint `customers_pkc` primary key (`customer_id`)
 ) comment 'customer' ;
 
@@ -942,11 +969,17 @@ alter table `booked_foods`
 alter table `booked_foods`
   add constraint `booked_foods_fk2` foreign key (`booked_id`) references `bookings`(`booked_id`);
 
+alter table `booked_foods`
+  add constraint `booked_foods_fk3` foreign key (`food_id`) references `foods`(`food_id`);
+
 alter table `booked_drinks`
   add constraint `booked_drinks_fk1` foreign key (`menu_id`) references `menus`(`menu_id`);
 
 alter table `booked_drinks`
   add constraint `booked_drinks_fk2` foreign key (`booked_id`) references `bookings`(`booked_id`);
+
+alter table `booked_drinks`
+  add constraint `booked_drinks_fk3` foreign key (`drink_id`) references `drinks`(`drink_id`);
 
 
 alter table `bookings`

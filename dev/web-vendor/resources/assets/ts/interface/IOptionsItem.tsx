@@ -1,6 +1,8 @@
 export interface IOptionsItem {
-    option_id: number;
-    option_name: string;
+    booked_opt_id: number;
+    id: number;
+    name: string;
     option_quality: number;
-    option_price: number;
+    unit_price: number;
+    images: string[];
 }

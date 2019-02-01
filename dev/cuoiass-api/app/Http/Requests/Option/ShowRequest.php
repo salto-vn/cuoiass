@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Menu;
+namespace App\Http\Requests\Option;
 
 use App\Http\Requests\RequestAbstract;
+use App\Utils\TableName;
 
 class ShowRequest extends RequestAbstract
 {
@@ -23,10 +24,11 @@ class ShowRequest extends RequestAbstract
      */
     public function rules()
     {
+        $tblVendor = TableName::TBL_VENDORS;
+        $tblProduct = TableName::TBL_PRODUCTS;
         return [
-            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
-            'menu_type' => ['required','string', 'in:food,drink'],
-            'search' => ['required','string'],
+            'vendor_id' => ['required','integer', "exists:$tblVendor,vendor_id"],
+            'prd_id' => ['required','integer', "exists:$tblProduct,prd_id"],
         ];
     }
 }

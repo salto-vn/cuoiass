@@ -153,7 +153,8 @@ class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: an
         const { model } = this.state;
         // model.review_response_vendor_id = 1; //Logon User TODO
         this.setState({ isHandleEvent: true });
-        const response = await HandleRequest.Update(API_URL.REVIEW_CRL, model, this.props.match.params.id);
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Update(API_URL.REVIEW_CRL, model, this.props.match.params.id,signal);
         if (response.isError) { //Server Error 500 not 422 validtion
 
             return this.setState({

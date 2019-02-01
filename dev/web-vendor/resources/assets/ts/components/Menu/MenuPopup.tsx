@@ -6,7 +6,7 @@ import * as HandleRequest from '../../api/HandleRequest';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { IFood } from '../../interface/IFood';
-import { convertCurrency, objectToQueryString, delay } from '../../common/Utils';
+import { convertCurrency, objectToQueryString } from '../../common/Utils';
 import Danger from '../../common/Typography/Danger';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
@@ -15,6 +15,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
 import API_URL from '../../bootstrap/Url';
 import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
+import { IDrink } from '../../interface/IDrink';
+import { IOptionsItem } from '../../interface/IOptionsItem';
 
 const styles = (theme: Theme) => createStyles({
     modal: {
@@ -73,8 +75,14 @@ const styles = (theme: Theme) => createStyles({
     },
 
     flag: {
-        zIndex:999
+        zIndex: 999
+    },
+
+    nptb: {
+        paddingTop: 0,
+        paddingBottom: 0
     }
+
 });
 
 class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, onToggleMenuModal: any, data: any, classes?: any, service_code: string, type: string, isLoading: boolean },
@@ -113,6 +121,7 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
 
     public onToggleModal = (evt: any) => {
         this.props.onToggleMenuModal(evt);
+        this.abortControler.abort();
     }
 
     public handleClick = (index: number, evt: any) => {
@@ -149,13 +158,13 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
 
         this.setState({ isLoading: true });
         const { menu_name } = this.state;
-        var param = { service_code: this.props.service_code, menu_name: menu_name }
-        const filters = objectToQueryString(param);
+        var search = { menu_name: menu_name }
+        var exParams = { menu_type: this.props.type, service_code: this.props.service_code }
+        const filters = objectToQueryString(search);
         const signal = this.abortControler.signal;
         //TODO set request api page, limit
         // Call api get Feedback
-        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL_getMenus, 1, 100000, "menu_name", "desc", filters, signal);
-
+        const response = await HandleRequest.GetList(API_URL.BOOKING_CRL_getMenus, 1, 100000, "menu_name", "desc", filters, exParams, signal);
         if (response.isError) {
             return this.setState({ errorInfo: response.message });
         }
@@ -168,8 +177,60 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
 
     }
 
+    /**
+     * 
+     */
+    private handleSelect = (index: number, type: string, evt: any) => {
+        this.props.onToggleMenuModal(evt);
+        const { isFilter, searchRs } = this.state;
+        const { data } = this.props;
+        var menus: any = isFilter ? searchRs : data;
+        let selectedMenu = menus[index];
+        if (type === 'food') {
+            var foods = selectedMenu.foods.map((food: IFood, index: number) => {
+                return {
+                    booked_menu: selectedMenu.name,
+                    menu_price: selectedMenu.menu_price,
+                    id: food.id,
+                    name: food.name,
+                    unit_price: food.unit_price,
+                    booked_total: 0
+                };
+            });
+
+            localStorage.setItem('SELECTED_MENU_TMP', JSON.stringify({ foods: foods }));
+        } else {
+            var drinks = selectedMenu.drinks.map((drink: IDrink, index: number) => {
+                return {
+                    booked_menu: selectedMenu.name,
+                    menu_price: selectedMenu.menu_price,
+                    id: drink.id,
+                    name: drink.name,
+                    unit_price: drink.unit_price,
+                    booked_total: 0
+                };
+            });
+
+            localStorage.setItem('SELECTED_MENU_TMP', JSON.stringify({ drinks: drinks }));
+        }
+
+        //clean form
+        this.setState(
+            {
+                open: [],
+                openAll: false,
+                menu_name: "",
+                isLoading: this.props.isLoading,
+                searchRs: this.props.data,
+                errorInfo: '',
+                time: undefined,
+                isFilter: false
+            });
+
+    }
+
     public render() {
-        const { classes, title, data } = this.props;
+        const { classes, title, data, type } = this.props;
         const { open, openAll, searchRs, isLoading, isFilter } = this.state;
         var menus = isFilter ? searchRs : data;
         let filterHeader = <CustomInput
@@ -187,21 +248,21 @@ class MenuPopup extends React.Component<{ title: string, isShowModal: boolean, o
                 autoFocus: true,
                 endAdornment: (
                     <InputAdornment
-                        position="end"
-                        className={classes.inputAdornment}
+                        position="start"
                     >
                         <SearchIcon />
                     </InputAdornment>
                 )
             }}
         />
+
         var listItemsMain = menus.map((menu: IMenu, index: number) => {
-            var m: any = this.props.type === 'food' ? menu.foods : menu.drinks;
+            var m: any = type === 'food' ? menu.foods : type === 'drink' ? menu.drinks : menus;
             var item = <div key={index + 1}>
-                <ListItem button>
+                <ListItem button className={classes.nptb}>
                     <span className={classes.id}>{menu.id}</span>
-                    <ListItemText primary={menu.name} />
-                    <IconButton aria-label="Select" onClick={this.handleClick.bind(this, index)}> 
+                    <ListItemText primary={menu.name} onClick={this.handleSelect.bind(this, index, type)} />
+                    <IconButton aria-label="Select" onClick={this.handleClick.bind(this, index)}>
                         {open[index] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                 </ListItem>

@@ -78,6 +78,9 @@ const customInputStyle = createStyles({
       color: "#AAAAAA"
     }
   },
+  center :{
+    textAlign : "center"
+  }
   whiteInput: {
     "&,&::placeholder": {
       color: "#FFFFFF",

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Menu;
 
+use App\Enums\ServiceCodeEnum;
 use App\Http\Requests\RequestAbstract;
 
 class ShowRequest extends RequestAbstract
@@ -23,9 +24,12 @@ class ShowRequest extends RequestAbstract
      */
     public function rules()
     {
+        $res = ServiceCodeEnum::REST;
+        $qc = ServiceCodeEnum::QUAC;
         return [
             'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
-            'search' => ['required','string'],
+            'menu_type' => ['required','string', 'in:food,drink'],
+            'service_code' => ['required','string', "in:$res,$qc"],
         ];
     }
 }

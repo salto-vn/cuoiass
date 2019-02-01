@@ -71,7 +71,7 @@ class BookingService
         if ($booking) {
             //Get Booking options
             $options = $this->bookingOptionRepo->findByField("booked_id", $booking['booked_id'],
-                ['option_id', 'option_name', 'option_quality', 'option_price']);
+                ['booked_opt_id','option_id', 'option_name', 'option_quality', 'option_price']);
 
             //Get Customize Fields
             $customFields = $this->bookingCustomizeRepo->getBookedCusFldsByBookedId($booking['booked_id']);
@@ -127,32 +127,29 @@ class BookingService
                 foreach ($cols[$tlbCustomer] as $col) {
                     $rs['customer'][$col] = $booking[$col];
                 }
-
+            //options
             $rs['options'] = $options;
-            $rs['customize_fields'] = $customFields;
+
+            //Customize Fields
+            $rs['customize_fields'] = $customFields->map(function(&$field){
+                $customize_field_keys = explode(",",$field['customize_field_key']);
+                $customize_field_values = explode(",",$field['customize_field_value']);
+                foreach($customize_field_keys as $index=>$key) {
+                    $options[] = ['key'=>$key, 'value'=>$customize_field_values[$index]];
+                }
+                $field['customize_field_questions'] = $options;
+                unset($field['customize_field_key']);
+                unset($field['customize_field_value']);
+                return $field;
+            });
+
             //Get Booked Foods
             $foods = [];
 
             if (isset($booking['service_code']) &&
                 (in_array($booking['service_code'], [ServiceCodeEnum::REST, ServiceCodeEnum::QUAC]))) {
-                $foods = $this->bookingFoodRepo->getBookingFoodsByBookedId($booking['booked_id'])
-                    ->map(function($food){
-                        $food['id'] = $food['food_id'];
-                        $food['name'] = $food['food_name'];
-                        unset($food['food_id']);
-                        unset($food['food_name']);
-                        return $food;
-
-                    });
-                $drinks = $this->bookingDrinkRepo->getBookingDrinksByBookedId($booking['booked_id'])
-                    ->map(function($drink){
-                        $drink['id'] = $drink['drink_id'];
-                        $drink['name'] = $drink['drink_name'];
-                        unset($drink['drink_id']);
-                        unset($drink['drink_name']);
-                        return $drink;
-
-                    });;
+                $foods = $this->bookingFoodRepo->getBookingFoodsByBookedId($booking['booked_id']);
+                $drinks = $this->bookingDrinkRepo->getBookingDrinksByBookedId($booking['booked_id']);
                 $rs['drinks'] = $drinks;
                 $rs['foods'] = $foods;
             }

@@ -3,89 +3,77 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Menu\ShowRequest;
-use App\Models\Menu;
-use App\Repositories\MenuRepo;
+use App\Http\Requests\Option\ShowRequest;
+use App\Repositories\OptionRepo;
 use Illuminate\Http\Request;
 
-class MenuController extends Controller
+class OptionController extends Controller
 {
     /**
-     * @var MenuRepo
+     * @var OptionRepo
      */
-    private $menuRepo;
+    private $optionRepo;
 
     /**
      * StaffController constructor.
-     * @param MenuRepo $menuRepo
+     * @param OptionRepo $optionRepo
      */
-    public function __construct(MenuRepo $menuRepo)
+    public function __construct(OptionRepo $optionRepo)
     {
-        $this->menuRepo = $menuRepo;
+        $this->optionRepo = $optionRepo;
     }
 
     /**
-     * @param ShowRequest $request(service_code, vendor_id, search)
+     * @param ShowRequest $request(vendor_id, search)
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function index(ShowRequest $request)
     {
 
         $vendor_id = $request->get('vendor_id');
-        $menu_type = $request->get('menu_type');
+        $prd_id = $request->get('prd_id');
         $search = $request->get('search');
-        $menus = $this->menuRepo->getMenuWithFoods($vendor_id,$menu_type,$search);
-        return response()->success($menus);
+        $options = $this->optionRepo->getOptionsByPrdID($vendor_id,$prd_id,$search);
+        return response()->success($options);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  Menu $menu
      * @return \Illuminate\Http\Response
      */
-    public function show(Menu $menu){
+    public function show(Option $option){
 
-        return $menu;
+        return $option;
     }
 
     /**
      * Create Account and return model
      *
-     * @param StoreStaff $request
-     * @return Staff
+     * @return Option
      */
     public function store(Request $request)
     {
     }
 
     /**
-     * @param Menu $menu
-     * @return void
-     */
-    public function edit(Menu $menu)
-    {
-        return $menu;
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param Menu $staff
+     * @param Option $option
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Menu $menu)
+    public function update(Request $request, Option $option)
     {
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Staff $staff
+     * @param Option $option
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Menu $menu)
+    public function destroy(Option $option)
     {
     }
 }

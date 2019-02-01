@@ -82,7 +82,7 @@ export const showError = (clientError: any, errorInfo: any, key: string) => {
  * @return boolean
  */
 export const isEmpty = (value: any) => {
-    return (value === undefined || value === null || value === '');
+    return (value === undefined || value === null || value === '' || value.length == 0);
 }
 
 
@@ -156,4 +156,35 @@ export const getStatus = (key: string) => {
  */
 export const convertCurrency = (local: string, value: number) => {
     return new Intl.NumberFormat(local, { style: 'currency', currency: 'VND' }).format(value);
+}
+
+export const filterEmpty = (items: []) => {
+    return items.filter(function (item) {
+        return !isEmpty(item);
+    });
+
+}
+
+export const mergeArray = (items: [], items2: [], prop?: string) => {
+    if (isEmpty(items)) {
+        return items2;
+    } else if (isEmpty(items2)) {
+        return items;
+    } else {
+        items2.map(function (item2, i2) {
+            items.map(function (item, i) {
+                if (prop !== undefined) {
+                    if (item[prop] === item2[prop]) {
+                        items.splice(i,1);
+                    }
+                } else {
+                    if (item !== item2) {
+                        items.splice(i,1);
+                    }
+                }
+            });
+        });
+        return [...items2, ...items];
+
+    }
 }

@@ -37,5 +37,6 @@ use Illuminate\Http\Request;
     $router->get('/reviews/{review_id}', 'Api\ReviewController@show');
     $router->put('/reviews', 'Api\ReviewController@update');
 
+    $router->get('/options', 'Api\OptionController@index');
 
 //});

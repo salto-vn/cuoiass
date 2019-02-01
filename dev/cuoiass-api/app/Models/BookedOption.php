@@ -7,11 +7,11 @@
 
 namespace App\Models;
 
-use Reliese\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class BookedOption
- * 
+ *
  * @property int $booked_opt_id
  * @property int $booked_id
  * @property string $option_name
@@ -24,15 +24,22 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Option $option
  * @property \App\Models\Booking $booking
  *
  * @package App\Models
  */
-class BookedOption extends Eloquent
+class BookedOption extends Model
 {
-	protected $casts = [
+    use SoftDeletes;
+
+    public static function boot()
+    {
+        parent::boot();
+    }
+
+    protected $casts = [
 		'booked_id' => 'int',
 		'option_quality' => 'int',
 		'option_price' => 'float',
@@ -40,7 +47,7 @@ class BookedOption extends Eloquent
 		'prd_id' => 'int',
 		'vendor_service_id' => 'int'
 	];
-
+    protected $dates = ['deleted_at'];
 	protected $fillable = [
 		'option_name',
 		'option_quality',

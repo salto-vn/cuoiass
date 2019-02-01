@@ -47,6 +47,7 @@ class Plan extends Model
 	];
 
 	protected $fillable = [
+	    'plan_id',
 		'plan_date',
 		'org_date',
 		'gr_name',
