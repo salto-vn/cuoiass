@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Api\Contracts\Factory;
+use App\Api\Wedding;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,6 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(Factory::class, function ($app) {
+            return new Wedding($app['cache.store'], $app['config']['wedding']);
+        });
     }
 }

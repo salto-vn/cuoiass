@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Review\GetRequest;
+use App\Http\Requests\Review\ShowRequest;
 use App\Http\Requests\Review\UpdateReview;
 use App\Models\Image;
 use App\Models\Review;
@@ -37,10 +38,10 @@ class ReviewController extends Controller
     {
         $page = (int)$request->get('page', \Constant::MIN_PAGE);
         $limit = (int)$request->get('limit', \Constant::MIN_LIMiT);
-        $orderBy = $request->get('sortbyc', null);
-        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('orderBy', null);
+        $order = $request->get('order', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-        $model = $this->reviewRepo->getListAllData($search, $page, $limit, $orderBy, $sortBy);
+        $model = $this->reviewRepo->getListAllData($search, $page, $limit, $orderBy, $order);
 
         return $this->toJsonPaginate($model);
     }
@@ -69,18 +70,19 @@ class ReviewController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param ShowRequest $request
      * @param  Review $review
      * @return \Illuminate\Http\Response
      */
-    public function show(Review $review)
+    public function show(ShowRequest $request,Review $review)
     {
 
-        $review['product'] = $review->product()->get(["prd_id","prd_cd","prd_name","prd_desc", "prd_images"]);
+        $review['product'] = $review->product()->get(["prd_id", "prd_cd", "prd_name", "prd_desc", "prd_images"]);
         if (isset($review['product'][0])) {
-            $images = explode(",",$review['product'][0]["prd_images"]);
+            $images = explode(",", $review['product'][0]["prd_images"]);
             $imgs = array();
             foreach ($images as $img) {
-                $img_url = Image::query()->find($img,["img_url"]);
+                $img_url = Image::query()->find($img, ["img_url"]);
                 if (isset($img_url)) {
                     $imgs[] = $img_url->value("img_url");
                 }
@@ -89,10 +91,10 @@ class ReviewController extends Controller
             $review['product'][0]["prd_images"] = $imgs;
         }
         if (isset($review['review_imgs'])) {
-            $images = explode(",",$review['review_imgs']);
+            $images = explode(",", $review['review_imgs']);
             $imgs = array();
             foreach ($images as $img) {
-                $img_url = Image::query()->find($img,["img_url"]);
+                $img_url = Image::query()->find($img, ["img_url"]);
                 if (isset($img_url)) {
                     $imgs[] = $img_url->value("img_url");
                 }
@@ -100,9 +102,9 @@ class ReviewController extends Controller
             }
             $review['review_imgs'] = $imgs;
         }
-        $review['customer'] = $review->customer()->get(["customer_id","first_name","last_name","email"]);
-        $review['booking'] = $review->booking()->get(["try_date", "activate_date","booked_date", "booked_cd","booked_pro_name"]);
-        return response()->json($review);
+        $review['customer'] = $review->customer()->get(["customer_id", "first_name", "last_name", "email"]);
+        $review['booking'] = $review->booking()->get(["try_date", "activate_date", "booked_date", "booked_cd", "booked_pro_name"]);
+        return response()->success($review);
     }
 
     /**
@@ -123,15 +125,15 @@ class ReviewController extends Controller
      * @param  Review $review
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateReview $request, Review $review)
+    public function update(UpdateReview $request)
     {
         //
         $input = array_filter($request->validated());
 
         $input['updated_by'] = 'test@gmail.com';
+        $rs = $this->reviewRepo->update($input, $input['review_id']);
 
-
-        return tap($review)->update($input);
+        return response()->success($rs);
 
     }
 

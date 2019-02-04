@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Product
- * 
+ *
  * @property int $prd_id
  * @property string $prd_cd
  * @property string $prd_name
@@ -33,7 +33,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\MasterService $master_service
  * @property \App\Models\VendorService $vendor_service
  * @property \Illuminate\Database\Eloquent\Collection $bookings
@@ -48,7 +48,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  *
  * @package App\Models
  */
-class Product extends Eloquent
+class Product extends Model
 {
 	protected $casts = [
 		'price' => 'float',
@@ -64,6 +64,7 @@ class Product extends Eloquent
     protected $primaryKey = 'prd_id';
 
 	protected $fillable = [
+        'prd_id',
 		'prd_cd',
 		'prd_name',
 		'prd_desc',
@@ -141,4 +142,5 @@ class Product extends Eloquent
 	{
 		return $this->hasMany(\App\Models\SchedulePhoto::class, 'prd_id');
 	}
+
 }

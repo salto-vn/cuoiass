@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -35,6 +35,7 @@ class Drink extends Eloquent
 
 	protected $fillable = [
 		'drink_name',
+        'unit_price',
 		'image_ids',
 		'menu_id',
 		'created_by',

@@ -15,12 +15,12 @@ class StaffsTableSeeder extends Seeder
     public function run()
     {
         $vendors = Vendor::query()->get();
-        $roles = Role::query()->get();
+        $roles = Role::query()->where('system_code','BACKYARD')->get();
 
 
         foreach ($vendors as $item) {
             $role = $roles->random();
-            factory(Staff::class)->create([
+            factory(Staff::class,20)->create([
                 'vendor_id' => $item->vendor_id,
                 'role_id' => $role->role_id
             ]);

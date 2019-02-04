@@ -25,11 +25,10 @@ class GetRequest extends FormRequest
     public function rules()
     {
         return [
+            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
             'page' => 'required|integer',
             'limit' => 'integer|min:1',
-            //'sortbyc' => Rule::in(['review_id', 'review_content', 'review_date'
-            //    , 'booked_cd', 'booked_pro_name', 'prd_cd', 'first_name', 'last_name']),
-            //'sortby' => Rule::in(['asc', 'desc']),
+            'order' => Rule::in(['asc', 'desc']),
         ];
     }
 }

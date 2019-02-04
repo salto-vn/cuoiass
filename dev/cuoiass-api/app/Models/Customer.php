@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Customer
- * 
+ *
  * @property int $customer_id
  * @property string $first_name
  * @property string $last_name
@@ -25,14 +25,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \Illuminate\Database\Eloquent\Collection $analysis
  * @property \Illuminate\Database\Eloquent\Collection $plans
  * @property \Illuminate\Database\Eloquent\Collection $reviews
  *
  * @package App\Models
  */
-class Customer extends Eloquent
+class Customer extends Model
 {
 	protected $primaryKey = 'customer_id';
 
@@ -45,6 +45,7 @@ class Customer extends Eloquent
 	];
 
 	protected $fillable = [
+	    'customer_id',
 		'first_name',
 		'last_name',
 		'email',
@@ -71,4 +72,5 @@ class Customer extends Eloquent
 	{
 		return $this->hasMany(\App\Models\Review::class);
 	}
+
 }

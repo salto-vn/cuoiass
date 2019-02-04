@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -11,14 +11,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class MasterService
- * 
+ *
  * @property string $service_code
  * @property string $service_name
  * @property string $created_by
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \Illuminate\Database\Eloquent\Collection $products
  * @property \Illuminate\Database\Eloquent\Collection $vendor_services
  *
@@ -30,6 +30,7 @@ class MasterService extends Eloquent
 	public $incrementing = false;
 
 	protected $fillable = [
+	    'service_code',
 		'service_name',
 		'created_by',
 		'updated_by'

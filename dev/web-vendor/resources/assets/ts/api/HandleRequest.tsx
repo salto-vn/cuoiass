@@ -1,5 +1,5 @@
 import HandleResponse from './HandleResponse';
-import { objectToQueryString } from '../common/Utils';
+import { objectToQueryString, isEmpty } from '../common/Utils';
 
 const headerOptions = {
     "Content-Type": "application/json",
@@ -15,7 +15,7 @@ const headerOptions = {
  * 
  * @return HandleResponse
  */
-export const findOne = async (url: string, id: string, columns?: string[]) => {
+export const findOne = async (url: string, id: string, signal: any, columns?: string[]) => {
     var fullUrl: string = "";
     if (columns == undefined) {
         fullUrl = `${url}/${id}`;
@@ -25,11 +25,32 @@ export const findOne = async (url: string, id: string, columns?: string[]) => {
 
     const result = await fetch(fullUrl, {
         method: "GET",
+        signal: signal,
         headers: headerOptions,
     });
 
     return HandleResponse(result);
 };
+
+/**
+ * Make request with method get
+ * @method GET
+ * @param url 
+ * @param columns 
+ * 
+ * @return HandleResponse
+ */
+
+export const Get = async (url: string, queryString?: string, signal?: any, columns?: string[]) => {
+    const result = await fetch(`${url}?${queryString}`, {
+        method: "GET",
+        signal: signal,
+        headers: headerOptions,
+    });
+
+    return HandleResponse(result);
+};
+
 
 /**
  * Make request with method get
@@ -45,11 +66,13 @@ export const findOne = async (url: string, id: string, columns?: string[]) => {
  * @return HandleResponse
  */
 
-export const GetList = async (url: string, page: number = 1, limit: number = 10, sortbyc?: string, sortby?: string, search?: string, columns?: string[]) => {
-    const params: any = { page, limit, sortbyc, sortby, search };
+export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, exParams?:any, signal?: any, columns?: string[], ) => {
+    const params: any = { ...exParams, page, limit, orderBy, order, search };
     const queryString = objectToQueryString(params, '=', '&');
+    
     const result = await fetch(`${url}?${queryString}`, {
         method: "GET",
+        signal: signal,
         headers: headerOptions,
     });
 
@@ -63,9 +86,10 @@ export const GetList = async (url: string, page: number = 1, limit: number = 10,
  * @param model 
  * @return HandleResponse
  */
-export const Store = async (url: string, model: object) => {
+export const Store = async (url: string, model: object, signal: any) => {
     const result = await fetch(`${url}`, {
         method: "POST",
+        signal: signal,
         headers: headerOptions,
         body: JSON.stringify(model)
     });
@@ -86,9 +110,28 @@ export const Store = async (url: string, model: object) => {
 * 
 * @return HandleResponse
 */
-export const Edit = async (url: string, id: number | string) => {
+export const Edit = async (url: string, id: number | string, signal: any) => {
     const result = await fetch(`${url}/${id}/edit`, {
         method: "GET",
+        signal: signal,
+        headers: headerOptions,
+    });
+
+    return HandleResponse(result);
+};
+
+
+/**
+* Function edit
+* @method GET
+* @param url 
+* 
+* @return HandleResponse
+*/
+export const Show = async (url: string, id: number | string, signal: any) => {
+    const result = await fetch(`${url}/${id}`, {
+        method: "GET",
+        signal: signal,
         headers: headerOptions,
     });
 
@@ -104,9 +147,10 @@ export const Edit = async (url: string, id: number | string) => {
  * 
  * @return HandleResponse
  */
-export const Update = async (url: string, model: object, id: string | number) => {
+export const Update = async (url: string, model: object, id: string | number, signal: any) => {
     const result = await fetch(`${url}/${id}`, {
         method: "PUT",
+        signal: signal,
         headers: headerOptions,
         body: JSON.stringify(model)
     });
@@ -121,9 +165,10 @@ export const Update = async (url: string, model: object, id: string | number) =>
  * 
  * @return HandleResponse
  */
-export const Destroy = async (url: string, id: string) => {
+export const Destroy = async (url: string, id: string, signal: any) => {
     const result = await fetch(`${url}/${id}`, {
         method: "DELETE",
+        signal: signal,
         headers: headerOptions
     });
 

@@ -1,3 +1,5 @@
+import moment = require('moment');
+
 /**
  * 
  * @param value 
@@ -87,4 +89,21 @@ export const between = (value: string, min: number, max: number) => {
  */
 export const digitsBetween = (value: number, min: number, max: number) => {
     return (value >= min && value <= max);
+}
+
+export const isDateCorrectFormat = (dateString: string, format: string) => {
+    return moment(dateString, format, true).isValid()
+}
+
+/**
+ * 
+ * @param phone 
+ * @return null | string
+ */
+export const phone = (phone: string) => {
+    return phone.match(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g);
+}
+
+export const isNumber = (val:string) => {
+    return val.match(/^[0-9]+$/g);
 }

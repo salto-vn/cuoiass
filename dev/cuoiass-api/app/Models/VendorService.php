@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class VendorService
- * 
+ *
  * @property int $vendor_service_id
  * @property int $vendor_id
  * @property string $service_code
@@ -24,14 +24,14 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\MasterService $master_service
  * @property \App\Models\Vendor $vendor
  * @property \Illuminate\Database\Eloquent\Collection $products
  *
  * @package App\Models
  */
-class VendorService extends Eloquent
+class VendorService extends Model
 {
 	protected $primaryKey = 'vendor_service_id';
 
@@ -40,6 +40,7 @@ class VendorService extends Eloquent
 	];
 
 	protected $fillable = [
+	    'vendor_service_id',
 		'vendor_id',
 		'service_code',
 		'ven_serv_name',

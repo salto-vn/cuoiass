@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\staff\GetRequest;
+use App\Http\Requests\Staff\ShowRequest;
 use App\Http\Requests\Staff\StoreStaff;
 use App\Http\Requests\Staff\UpdateStaff;
 use App\Models\Staff;
 use App\Repositories\StaffRepo;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class StaffController extends Controller
 {
@@ -29,15 +32,15 @@ class StaffController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(GetRequest $request)
     {
         $page = (int)$request->get('page');
         $limit = (int)$request->get('limit');
-        $orderBy = $request->get('sortbyc', null);
-        $sortBy = $request->get('sortby', \Constant::ORDER_BY_DESC);
+        $orderBy = $request->get('orderBy', null);
+        $sortBy = $request->get('order', \Constant::ORDER_BY_DESC);
         $search = $request->get('search');
-
-        $data = $this->staffRepo->getListStaffByVendor($search, $page, $limit, $orderBy, $sortBy);
+        $vendor_id = $request->get('vendor_id');
+        $data = $this->staffRepo->getListStaffByVendor($vendor_id, $search, $page, $limit, $orderBy, $sortBy);
 
         return $this->toJsonPaginate($data);
     }
@@ -61,8 +64,12 @@ class StaffController extends Controller
      * @param Staff $staff
      * @return Staff
      */
-    public function edit(Staff $staff)
+    public function show(ShowRequest $request, Staff $staff)
     {
+        $role = $staff->role()->get(["role_name","role_code"]);
+        if (isset($role[0])) {
+            $staff['role_name'] = $role[0]['role_name'];
+        }
         return $staff;
     }
 
@@ -71,31 +78,32 @@ class StaffController extends Controller
      *
      * @param UpdateStaff $request
      * @param Staff $staff
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(UpdateStaff $request, Staff $staff)
     {
         $input = array_filter($request->validated());
 
-        $input['updated_by'] = 'test@gmail.com';
+        $input['updated_by'] = 'test@gmail.com';//TODO:
 
         if (isset($input['password'])) {
             $input['password'] = bcrypt($input['password']);
         }
 
-        return tap($staff)->update($input);
+        return response()->success(tap($staff)->update($input));
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param Staff $staff
-     * @return \Illuminate\Http\Response
+     * @return Response
+     * @throws \Exception
      */
     public function destroy(Staff $staff)
     {
         $staff->delete();
 
-        return response()->json(['status' => 'OK']);
+        return response()->success(['status' => 'OK']);
     }
 }

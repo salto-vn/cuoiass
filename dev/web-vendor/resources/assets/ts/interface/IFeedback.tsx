@@ -1,8 +1,8 @@
-import { ITh } from '../common/Grid/Table';
 import { IProduct } from './IProduct';
 import { ICustomer } from './ICustomer';
 import { IBooking } from './IBooking';
 import { ValidateModel } from '../model/FeedbackModel';
+import { IFormState } from './IForm';
 
 
 export interface Feedbacks {
@@ -64,34 +64,20 @@ export interface IFeedbackList {
 export interface IFeedbackState {
     feedbackGrid: IFeedbackList[],
     isLoading: boolean,
-    isCLickPaginate: boolean,
     limit: number,
     isShowModal: boolean,
+    isErrorList: boolean,
     totalItem: number,
-    isError: boolean,
     errorInfo: null | string,
     activePage: number,
-    feedbacHeader: ITh[],
-    sortbyc: string,
-    sortby: string,
-    search?: string,
-    sortedIndex: number,
-    pageRange: number,
+    feedbacHeader: any,
+    orderBy: string,
+    order: string,
+    filters?: string,
 }
 
-export interface IVFeedbackState {
-    model: any,
+export interface IVFeedbackState extends IFormState {
     isShowImageModal: boolean,
     image: string,
-    id: string,
-    isSubmitDisabled: boolean,
     clientError: ValidateModel,
-    isHandleEvent: boolean,
-    isValidate: boolean,
-    isLoading:boolean,
-    showMessage: boolean,
-    messages: any,
-    messageTitle: string,
-    validateMessage: any,
-    errorInfo:string
 }

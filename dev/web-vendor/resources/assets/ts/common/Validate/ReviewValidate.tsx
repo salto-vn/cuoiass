@@ -1,28 +1,26 @@
-import { required , max } from './Rules';
+import { required, min } from './Rules';
 
 export const ReviewValidate = (isRequired: boolean, name: string, value: string) => {
-    if (isRequired && name === "review_id") {
+    if (isRequired) {
         if (required(value)) {
-            return "Vui lòng nhập Review ID";
+            switch (name) {
+                case "review_id":
+                    return "Vui lòng nhập Review ID";
+                case "review_response_vendor_id":
+                    return "Vui lòng nhập Vendor ID";
+                case "review_response_content":
+                    return "Vui lòng nhập nội dung trả lời";
+                default:
+                    break;
+            }
         }
+    } 
+    if (name == "review_response_content" && min(value, 20)) {
+        return "Nội dung trả lời phải nhiều hơn 20 ký tự";
     }
+    
+    return "";
 
-    if (isRequired && name === "review_response_vendor_id") {
-        if (required(value)) {
-            return "Vui lòng nhập Vendor ID";
-        }
+}
 
-    }
-
-    if (isRequired && name === "review_response_content") {
-        if (required(value)) {
-            return "Vui lòng nhập nội dung trả lời";
-        }
-        if (max(value, 255)) {
-            return "Mật khẩu quá dài";
-        }
-    }
-
-    return undefined;
-};
 

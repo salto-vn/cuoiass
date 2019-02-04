@@ -14,10 +14,10 @@ class MasterServicesTableSeeder extends Seeder
     {
         $serviceCodes = [
             "PHT" => 'Photo',
-            "DRSS" => 'dress',
-            "STD" => 'studio',
-            "NC" => 'Nhan cưới',
-            "QUAC" => 'Quà cưới',
+            "DRSS" => 'Dress',
+            "STD" => 'Studio',
+            "NC" => 'Nhẫn cưới',
+            "QUAC" => 'Quả cưới',
             "TC" => 'Thiệp cưới',
             "TRTR" => 'Trang trí',
             "REST" => 'Nhà hàng',

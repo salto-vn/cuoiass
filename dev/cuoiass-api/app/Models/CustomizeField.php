@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Wed, 07 Nov 2018 07:39:35 +0000.
+ * Date: Tue, 04 Dec 2018 03:17:32 +0000.
  */
 
 namespace App\Models;
@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class CustomizeField
- * 
+ *
  * @property int $customize_field_id
  * @property int $prd_id
  * @property int $vendor_service_id
@@ -22,7 +22,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Product $product
  * @property \Illuminate\Database\Eloquent\Collection $booked_customize_fields
  *
@@ -38,6 +38,7 @@ class CustomizeField extends Eloquent
 	protected $fillable = [
 		'customize_field_name',
 		'customize_field_type',
+        'customize_field_key',
 		'customize_field_value',
 		'created_by',
 		'updated_by'

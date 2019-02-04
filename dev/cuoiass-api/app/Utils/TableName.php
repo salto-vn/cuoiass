@@ -10,6 +10,7 @@ class TableName
     const TBL_ANALYSIS = 'analysis';
     const TBL_BOOKED_CUSTOMIZE_FIELDS = 'booked_customize_fields';
     const TBL_BOOKED_FOODS = 'booked_foods';
+    const TBL_BOOKED_DRINKS = 'booked_drinks';
     const TBL_BOOKED_HONEY_MOONS = 'booked_honey_moons';
     const TBL_BOOKED_OPTIONS = 'booked_options';
     const TBL_BOOKINGS = 'bookings';

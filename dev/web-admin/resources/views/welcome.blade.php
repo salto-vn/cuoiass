@@ -9,6 +9,16 @@
 </head>
 <body>
 <div id="root"></div>
-<script src="{{asset('js/index.js')}}" ></script>
+{{--<script src="{{asset('js/index.js')}}" ></script>--}}
+TEST SESSION
+<?php
+session_start();
+if (!isset($_SESSION['count'])) {
+    $_SESSION['count'] = 0;
+} else {
+    $_SESSION['count']++;
+}
+echo session_id();
+?>
 </body>
 </html>

@@ -17,9 +17,26 @@ use Illuminate\Http\Request;
 //    return $request->user();
 //});
 
-//Route::group(['middleware' => ['api']], function(){
+//Route::group(['middleware' => ['api']], function($router){
     //Review Route
     Route::resource('reviews', 'Api\ReviewController');
-    Route::resource('staffs','Api\StaffController')->except(['create', 'show']);
-//});
+    Route::resource('roles', 'Api\RoleController')->except(['create', 'destroy']);
+    Route::resource('staffs','Api\StaffController')->except(['create', 'edit']);
 
+
+    $router->get('/menus', 'Api\MenuController@index');
+    $router->get('/services', 'Api\MasterServiceController@index');
+
+
+    $router->get('/bookings', 'Api\BookingController@index');
+    $router->put('/bookings', 'Api\BookingController@update');
+    $router->post('/bookings/{booked_cd}', 'Api\BookingController@show');
+    $router->put('/bookings', 'Api\BookingController@update');
+
+    $router->get('/reviews', 'Api\ReviewController@index');
+    $router->get('/reviews/{review_id}', 'Api\ReviewController@show');
+    $router->put('/reviews', 'Api\ReviewController@update');
+
+    $router->get('/options', 'Api\OptionController@index');
+
+//});

@@ -1,10 +1,39 @@
 import React from 'react';
+import Icon from '@material-ui/core/Icon';
+import { Theme, createStyles, withStyles } from '@material-ui/core';
+import { warningColor } from '../../../styles/material-dashboard-pro-react';
+
+
+const styles = (theme: Theme) => createStyles({
+    root: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
+    icon: {
+        color: warningColor
+    },
+    iconHoverSelect: {
+        '&:hover': {
+            color: warningColor,
+            cursor: "pointer"
+        },
+        color: warningColor,
+    },
+    iconHover: {
+        '&:hover': {
+            color: warningColor,
+            cursor: "pointer"
+        },
+    },
+});
+
 
 export interface StartRateState {
     value: number
 }
 
-export class StartRate extends React.Component<{ disabled: boolean, value: number }, StartRateState>{
+class StarRate extends React.Component<{ disabled: boolean, value: number, classes?: any, size?: any }, StartRateState>{
 
     public state = {
         value: this.props.value
@@ -12,7 +41,8 @@ export class StartRate extends React.Component<{ disabled: boolean, value: numbe
 
 
     private handleClick = (e: any) => {
-        const star = e.currentTarget.getAttribute('data-index');
+        const star = e.target.getAttribute('data-index');
+        debugger;
         this.setState({
             value: star
         })
@@ -21,27 +51,26 @@ export class StartRate extends React.Component<{ disabled: boolean, value: numbe
 
     render() {
         const stars = [];
-        const value = (this.props.value === undefined) ? this.state.value : this.props.value;
-        const { disabled } = this.props;
+        const value = this.state.value;
+        const { disabled, classes, size } = this.props;
         for (let index = 1; index <= 5; index++) {
             if (value >= index) {
                 if (disabled) {
-                    const element = <span key={index} data-index={index} className="fa fa-star rate-star rate-checked"></span>;
+                    const element = <Icon key={index} fontSize={size !== undefined ? size : "default"} className={classes.icon}>star_rate</Icon>;
                     stars.push(element);
                 } else {
-                    const element = <span key={index} data-index={index} className="fa fa-star rate-star-hover rate-checked" onClick={this.handleClick}></span>;
+                    const element = <Icon key={index} fontSize={size !== undefined ? size : "default"} data-index={index} className={classes.iconHoverSelect} onClick={this.handleClick}>star_rate</Icon>;
                     stars.push(element);
                 }
 
             } else {
                 if (disabled) {
-                    const element = <span key={index} data-index={index} className="fa fa-star-o rate-star"></span>;
+                    const element = <Icon key={index} fontSize={size !== undefined ? size : "default"} color="disabled">star_rate</Icon>;
                     stars.push(element);
                 } else {
-                    const element = <span key={index} data-index={index} className="fa fa-star-o rate-star-hover" onClick={this.handleClick}></span>;
+                    const element = <Icon key={index} fontSize={size !== undefined ? size : "default"} data-index={index} className={classes.iconHover} color="disabled" onClick={this.handleClick}>star_rate</Icon>;
                     stars.push(element);
                 }
-
             }
         }
         return <>{stars}</>;
@@ -49,3 +78,5 @@ export class StartRate extends React.Component<{ disabled: boolean, value: numbe
     }
 
 }
+
+export default withStyles(styles)(StarRate)

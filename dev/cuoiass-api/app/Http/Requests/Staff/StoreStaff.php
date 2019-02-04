@@ -25,7 +25,7 @@ class StoreStaff extends FormRequest
     public function rules()
     {
         return [
-            'vendor_id' => 'required|integer',
+            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
             'staff_name' => 'required|string|min:6|max:255',
             'phone' => 'nullable|string|max:14',
             'address' => 'nullable|string|max:255',

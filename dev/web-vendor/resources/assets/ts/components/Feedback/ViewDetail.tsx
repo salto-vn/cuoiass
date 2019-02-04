@@ -2,117 +2,186 @@ import * as React from 'react';
 import { IVFeedbackState } from '../../interface/IFeedback';
 import { FeedbackModel, ValidateModel } from '../../model/FeedbackModel';
 import { Carousel } from 'react-responsive-carousel';
-import { StartRate } from '../../common/FormControls/StarRate';
+import StarRate from '../../common/FormControls/StarRate';
 import { Link } from 'react-router-dom';
 import * as HandleRequest from '../../api/HandleRequest';
 import API_URL from '../../bootstrap/Url';
-import { isEmptyKeyInObject, showError } from '../../common/Utils';
-import { MessageModal } from '../../common/Modals/MessageModal';
+import { isEmptyKeyInObject, showError, createSnackBarMess, parseDateFormat } from '../../common/Utils';
 import { ReviewValidate } from '../../common/Validate/ReviewValidate';
-import LoadingForm from '../../common/Loading/LoadingForm';
-import { BackButton } from '../../common/FormControls/BackButton';
+import GridContainer from '../../common/Grid/GridContainer';
+import GridItem from '../../common/Grid/GridItem';
+import Card from '../../common/Card/Card';
+import CardHeader from '../../common/Card/CardHeader';
+import CardBody from '../../common/Card/CardBody';
+import Button from '../../common/FormControls/CustomButtons/Button';
+import CardFooter from '../../common/Card/CardFooter';
+import { infoColor } from '../../../styles/material-dashboard-pro-react';
+import { createStyles, Theme, withStyles, Typography, Modal } from '@material-ui/core';
+import CustomInput from '../../common/FormControls/CustomInput/CustomInput';
+import CONSTANT from '../../bootstrap/Constant';
+import CustomLinearProgress from '../../common/CustomLinearProgress/CustomLinearProgress';
+import SweetAlert from "react-bootstrap-sweetalert";
 
-export class ViewImageModal extends React.Component<{ image: string, onToggle: any }, {}>{
 
-    public handleTogglle = (event: any) => {
-        this.props.onToggle(event);
+const styles = (theme: Theme) => createStyles({
+    cardCategoryWhite: {
+        "&,& a,& a:hover,& a:focus": {
+            color: "rgba(255,255,255,.62)",
+            margin: "0",
+            fontSize: "14px",
+            marginTop: "0",
+            marginBottom: "0",
+        },
+        "& a,& a:hover,& a:focus": {
+            color: "#FFFFFF"
+        }
+    },
+    cardTitleWhite: {
+        color: "#FFFFFF",
+        marginTop: "0px",
+        minHeight: "auto",
+        fontWeight: 300,
+        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+        marginBottom: "3px",
+        textDecoration: "none",
+        "& small": {
+            color: "#777",
+            fontSize: "65%",
+            fontWeight: 400,
+            lineHeight: "1"
+        }
+    },
+    headerButton: {
+        position: "absolute",
+        right: "10px",
+        bottom: "20px"
+    },
+    progress: {
+        color: infoColor
+    },
+    linearColorPrimary: {
+        backgroundColor: '#FFFFFF',
+    },
+    linearBarColorPrimary: {
+        backgroundColor: infoColor,
+    },
+    pos: {
+        marginBottom: 12
+    },
+    modal: {
+        position: 'absolute',
+        width: theme.spacing.unit * 100,
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 1,
+        top: "50%",
+        left: "50%",
+        transform: `translate(-50%, -50%)`,
     }
+});
 
-    render() {
-        const { image } = this.props;
-        return <>
-            <div className="modal fade in" style={{ display: "block" }}>
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <button type="button" className="close" onClick={this.handleTogglle}><span aria-hidden="true">&times;</span></button>
-                            <h4 className="modal-title">Hình ảnh</h4>
-                        </div>
-                        <div className="modal-body">
-                            <img src={image} width="100%" />
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" onClick={this.handleTogglle} className="btn btn-default" >Huỷ</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+class ViewDetailFeedbackScreen extends React.Component<{ match: any, history: any, classes: any }, IVFeedbackState> {
+    abortControler = new AbortController();
 
-            <div className="modal-backdrop fade in" style={{ display: "block" }} />
-        </>;
-    }
-}
-
-export class ViewDetailFeedback extends React.Component<{ match: any, history: any }, IVFeedbackState> {
     public state = {
         model: new FeedbackModel(),
         isShowImageModal: false,
         image: '',
-        id: this.props.match.params.id,
-        clientError: new ValidateModel,
+        clientError: new ValidateModel(),
         isSubmitDisabled: false,
         isHandleEvent: false,
         isError: false,
-        isErrorList: false,
-        isValidate: false,
+        isValidate: undefined,
         showMessage: false,
-        messages: [],
-        messageTitle: '',
         isLoading: true,
         validateMessage: { errors: "" },
-        errorInfo: '',
+        alert: ""
     }
 
     async componentDidMount() {
-        const { id } = this.state;
-        const response = await HandleRequest.findOne(API_URL.REVIEW, id);
-        let model = Object.assign(new FeedbackModel(), response.result);
-        this.setState({
-            model,
-            isLoading: false
-        })
+        document.title = CONSTANT.PAGE_TITLE;
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.findOne(API_URL.REVIEW_CRL, this.props.match.params.id, signal);
+        if (response.isError) {
+            const alert = <SweetAlert
+                style={{ display: "block", marginTop: "-100px" }}
+                title={response.message}
+                onConfirm={() => this.hideAlert()}
+                showConfirm={false}
+            >
+                Đang gặp lỗi, chuyển sang trang chính sau 3giây!
+            </SweetAlert>
+            setTimeout(this.hideAlert, 3000);
+
+            this.setState({
+                isLoading: false,
+                alert: alert
+            })
+        } else {
+            let model = Object.assign(new FeedbackModel(), response.result.data);
+            this.setState({
+                model,
+                isLoading: false
+            })
+        }
     }
 
+
+    public componentWillUnmount() {
+        this.abortControler.abort();
+    }
+
+    private hideAlert = () => {
+        this.setState({
+            alert: null
+        });
+        this.props.history.push("/");
+    }
 
     /**
      * Submit Answer Feedback of User
      */
     public handleSubmit = async () => {
 
+        this.setState({
+            isLoading: true
+        })
         if (this.state.isHandleEvent) {
             return;
         }
 
-        const { id, model } = this.state;
-        model.review_response_vendor_id = 1; //Logon User TODO
+        const { model } = this.state;
+        // model.review_response_vendor_id = 1; //Logon User TODO
         this.setState({ isHandleEvent: true });
-        const response = await HandleRequest.Update(API_URL.REVIEW, model, id);
-        debugger;
-        if (response.isError) {
+        const signal = this.abortControler.signal;
+        const response = await HandleRequest.Update(API_URL.REVIEW_CRL, model, this.props.match.params.id,signal);
+        if (response.isError) { //Server Error 500 not 422 validtion
+
             return this.setState({
-                isValidate: response.isError,
+                isValidate: response.isValidate,
+                isError: response.isError,
                 showMessage: response.isError,
-                messages: [response.message],
                 isHandleEvent: false,
-                messageTitle: 'Lỗi'
+                isLoading: false,
             });
         }
 
         if (response.isValidate) {
             return this.setState({
                 isValidate: response.isValidate,
+                isError: response.isError,
                 showMessage: response.isValidate,
                 validateMessage: response.validateMessage,
                 isHandleEvent: false,
-                messageTitle: 'Lỗi'
+                isLoading: false,
             });
         } else {
-
             return this.setState({
-                showMessage: !response.isValidate,
-                messages: ['Đã lưu thành công'],
+                showMessage: true,
+                isValidate: response.isValidate,
+                isError: response.isError,
                 isHandleEvent: false,
-                messageTitle: 'Thông báo'
+                isLoading: false,
             });
         }
 
@@ -123,14 +192,13 @@ export class ViewDetailFeedback extends React.Component<{ match: any, history: a
         this.setState({ isShowImageModal: true, image: model.review_imgs[index] });
     }
 
-    public onToggle = (event: any) => {
+    public onToggleModal = (event: any) => {
         const { isShowImageModal } = this.state;
-        this.setState({ isShowImageModal: isShowImageModal ? false : true });
+        this.setState({ isShowImageModal: !isShowImageModal });
     }
 
-    public onShowError = (event: any) => {
-        const { showMessage } = this.state;
-        this.setState({ showMessage: showMessage ? false : true });
+    public handleCloseMessage = (event: any) => {
+        this.setState({ showMessage: false });
     }
 
     public handleRate = (even: any) => {
@@ -157,47 +225,32 @@ export class ViewDetailFeedback extends React.Component<{ match: any, history: a
         return this.setState({ isSubmitDisabled: true });
     }
 
+
     render() {
 
-        const { model, image, isShowImageModal, validateMessage, clientError, showMessage, isLoading, messages, messageTitle } = this.state;
-        var product_info;
-        if (validateMessage.errors.hasOwnProperty("review_response_vendor_id")) {
-            messages.push(validateMessage.errors.review_response_vendor_id)
-        }
+        const { model, isSubmitDisabled, image, isShowImageModal, validateMessage, clientError, isValidate, isError, showMessage, isLoading } = this.state;
+        const { classes } = this.props;
+        const inputStRvwCtnt = showError(clientError, validateMessage, 'review_response_content');
 
-        product_info = <div className="row">
-            <div className="col-md-2 text-center no-p">
-                <div className="p-h-xxl">
-                    {isLoading ? <LoadingForm key="prd_images" width={160} height={100} /> :
-                        <img width="100" alt="100x100" title="100x100" src={model.product[0].prd_images[0]} />}
-                </div>
-            </div>
-            <div className="col-md-10 p-h-xxl" >
-                <h5 className="mt-0">{isLoading ? <LoadingForm key="prd_name" width={200} height={20} /> : model.product[0].prd_name}</h5>
-                {isLoading ? <LoadingForm width={200} height={20} /> : <p> {model.product[0].prd_desc}</p>}
-            </div>
-        </div>;
-        return <>
-            <div className="page-title" >
-                <span className="breadcrumb-header">Mã số đánh giá: {model.review_id}</span>
-                <BackButton history={this.props.history}/>
-            </div>
-            <div id="main-wrapper">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="panel panel-white">
-                            <div className="panel-heading flex justify-content-between align-items-center">
-                                <h4 className="panel-title">Sản phẩm</h4>
+        return (<>
+            {this.state.alert}
+            <GridContainer>
+                <GridItem xs={12} sm={12} md={8}>
+                    <Card>
+                        <CardHeader color="primary">
+                            <h4 className={classes.cardTitleWhite}>Nội dung đánh giá</h4>
+                            <p className={classes.cardCategoryWhite}>Chỉnh sửa thông tin tài khoản</p>
+                            <div>
+                                {isLoading &&
+                                    <CustomLinearProgress
+                                        color="info" />
+                                }
                             </div>
-                            {product_info}
-                        </div>
-                        <div className="panel panel-white">
-                            <div className="panel-heading flex justify-content-between align-items-center">
-                                <h4 className="panel-title">Chi tiết</h4>
-                            </div>
-                            <div className="panel-body " >
-                                <div className="row">
-                                    <div className="col-md-4">
+                        </CardHeader>
+                        <CardBody>
+                            {model.product[0] !== undefined && <>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={6}>
                                         {model.review_imgs !== undefined ?
                                             <Carousel onClickItem={this.handleClickPhoto}>
                                                 {model.review_imgs.map((image, key) =>
@@ -207,87 +260,105 @@ export class ViewDetailFeedback extends React.Component<{ match: any, history: a
                                                 )}
                                             </Carousel>
                                             : ''}
-                                    </div>
-                                    <div className="col-md-8 no-p">
-                                        <div>
-                                            <h4 className="mt-0">
-                                                {model.booking[0] !== undefined ? <Link to={"/booking/" + model.booking[0].booked_id}> {model.booking[0].booked_id}</Link> : ''}
-                                            </h4>
-                                            <div className="row">
-                                                <label className="col-md-2">Ngày đặt </label>
-                                                <div className="col-md-10">
-                                                    {isLoading && <LoadingForm width={200} height={20} />}
-                                                    {model.booking[0] !== undefined ? model.booking[0].booked_date : ''}
-                                                </div>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={6}>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={12}>
+                                                <StarRate size="large" disabled={true} value={model.review_rate} />
+                                            </GridItem>
+                                        </GridContainer>
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={12}>
+                                                <Typography variant="h5" component="h5">
+                                                    {model.review_title}
+                                                </Typography>
+                                                <Typography color="textSecondary" className={classes.pos} >
+                                                    {model.review_date}<br />
+                                                    {model.customer[0].email}
+                                                </Typography>
+                                                <Typography component="p">
+                                                    {model.review_content}
+                                                </Typography>
+                                            </GridItem>
+                                        </GridContainer>
+                                    </GridItem>
+                                </GridContainer>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                        <CustomInput
+                                            multiline={true}
+                                            labelText="Trả lời"
+                                            id="review_response_content"
+                                            formControlProps={{
+                                                fullWidth: true
+                                            }}
+                                            helpText={inputStRvwCtnt !== "init" ? inputStRvwCtnt : ''}
+                                            error={inputStRvwCtnt !== 'init' && inputStRvwCtnt !== ''}
+                                            success={inputStRvwCtnt === ''}
+                                            inputProps={{
+                                                value: model.review_response_content === null ? '' : model.review_response_content,
+                                                name: "review_response_content",
+                                                onChange: this.onChangeInput.bind(this, true),
+                                                rows: 5
+                                            }}
+                                        />
+                                    </GridItem>
+                                </GridContainer></>}
+                        </CardBody>
+                        <CardFooter>
+                            {!isSubmitDisabled ?
+                                <Button color="primary" onClick={this.handleSubmit} disabled>
+                                    Lưu
+                                </Button>
+                                :
+                                <Button color="primary" onClick={this.handleSubmit} >
+                                    Lưu
+                                </Button>
+                            }
+                        </CardFooter>
+                    </Card>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={4}>
+                    <Card>
+                        <CardHeader color="info">
+                            <h4 className={classes.cardTitleWhite}>Sản phẩm</h4>
+                            <p className={classes.cardCategoryWhite}>Sản phẩm dịch vụ đã sử dụng</p>
+                        </CardHeader>
+                        <CardBody >
+                            {model.product[0] !== undefined && <>
+                                <a href="#pablo" onClick={e => e.preventDefault()}>
+                                    {model.review_imgs !== undefined ?
+                                        <img width="100%" src={model.product[0].prd_images[0]} />
+                                        : ''}
+                                </a>
+                                <h6 className={classes.cardCategory}>{model.product[0].prd_name}</h6>
+                                <p className={classes.cardTitle}>{model.product[0].prd_desc}</p>
+                                <div className={classes.description}>
+                                    <b>Mã đặt: <Link to={"/booking/" + model.booking[0].booked_cd}> {model.booking[0].booked_cd}</Link><br /></b>
 
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Ngày tổ chức</label>
-                                                <div className="col-md-10">
-                                                    {isLoading && <LoadingForm width={200} height={20} />}
-                                                    {model.booking[0] !== undefined ? model.booking[0].activate_date : ''}</div>
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Đánh giá</label>
-                                                <div className="col-md-10 f-size-40">
-                                                    {isLoading ? <LoadingForm width={200} height={30} /> :
-                                                        <StartRate disabled={true} value={model.review_rate} />}</div>
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Tên</label>
-                                                <div className="col-md-10">
-                                                    {isLoading && <LoadingForm width={200} height={20} />}
-                                                    {model.customer[0] !== undefined ? model.customer[0].first_name + " " + model.customer[0].last_name : ''}</div>
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Email</label>
-                                                <div className="col-md-10">
-                                                    {isLoading && <LoadingForm width={200} height={20} />}
-                                                    {model.customer[0] !== undefined ? model.customer[0].email : ''}</div>
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Ngày</label>
-                                                <div className="col-md-10">
-                                                    {isLoading && <LoadingForm width={200} height={20} />}{model.review_date}</div>
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Tiêu đề</label>
-                                                <div className="col-md-10">{isLoading && <LoadingForm width={200} height={20} />}{model.review_title}</div>
-                                            </div>
-                                            <div className="row">
-                                                <label className="col-md-2">Nội dung</label>
-                                                <div className="col-md-10">{isLoading && <LoadingForm width={200} height={20} />}{model.review_content}</div>
-                                            </div>
-                                        </div>
-                                        <div className="m-t-md">
-                                            <form className="form-inline">
-                                                <div className="row">
-                                                    <div className="form-group col-md-11">
-                                                        <label className="no-m">Trả lời:</label><br></br>
-                                                        <textarea required name="review_response_content" style={{ width: "100%" }} rows={5} onChange={this.onChangeInput.bind(this, true)} value={(model.review_response_content) ? model.review_response_content : ""}>
-                                                        </textarea>
-                                                        {<span className={'required'}>{showError(clientError, validateMessage, 'review_response_content')}</span>}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <button type="button" id="add-row" onClick={this.handleSubmit} className={`btn btn-success ${!this.state.isSubmitDisabled ? 'disabled' : ''}`}>Lưu</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    Ngày mua: {parseDateFormat(model.booking[0].booked_date, "DD-MM-YYYY")}<br />
+                                    Ngày xem(trải nghiệm): {parseDateFormat(model.booking[0].try_date, "DD-MM-YYYY")}<br />
+                                    Ngày nhận(tổ chức): {parseDateFormat(model.booking[0].activate_date, "DD-MM-YYYY")}<br />
+                                </div></>}
+                        </CardBody>
+                    </Card>
+                </GridItem>
+            </GridContainer>
+            <div>
+                <Modal
+                    aria-labelledby="Hình ảnh đánh giá"
+                    aria-describedby="Chi tiết hình ảnh đánh giá"
+                    open={isShowImageModal}
+                    onClose={this.onToggleModal}
+                >
+                    <div className={classes.modal}>
+                        <img src={image} width="100%" />
                     </div>
-                </div>
-                <div className="row">
-                    {isShowImageModal && <ViewImageModal image={image} onToggle={this.onToggle} />}
-                </div>
-                <div className="row">
-                    {(messages.length !== 0 && showMessage) && <MessageModal onShowError={this.onShowError} title={messageTitle} message={messages} />}
-
-                </div>
+                </Modal>
             </div>
-        </>;
+            {createSnackBarMess(isValidate, isError, showMessage, this.handleCloseMessage)}
+        </>);
     }
 }
+
+export default withStyles(styles)(ViewDetailFeedbackScreen)

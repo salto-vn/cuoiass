@@ -19,8 +19,20 @@ class RolesTableSeeder extends Seeder
         ]);
 
         factory(Role::class)->create([
+            'role_name' => 'Staff',
+            'role_code' => 'STF',
+            'system_code' => 'ADMIN'
+        ]);
+
+        factory(Role::class)->create([
             'role_name' => 'Vendor',
             'role_code' => 'VDN_MNG',
+            'system_code' => 'BACKYARD'
+        ]);
+
+        factory(Role::class)->create([
+            'role_name' => 'Vendor Staff',
+            'role_code' => 'VDN_STF',
             'system_code' => 'BACKYARD'
         ]);
 

@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { Select } from '../../common/FormControls/Select';
-import Input from '../../common/FormControls/Input';
 import * as TransportApi from '../../api/Transport';
 import { IWeddingModal } from './IWedding';
 const urlGetListTransport = 'api/transports';
@@ -82,26 +80,26 @@ export default class WeddingDressModal extends React.Component<IWeddingDressModa
                                 <form className="form-inline">
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Tên'} name={'title'} required={true} value={model.title || ''} handleInput={this.handleChange} />
+                                            {/* <Input label={'Tên'} name={'title'} required={true} value={model.title || ''} handleInput={this.handleChange} /> */}
                                         </div>
                                         <div className="form-group col-md-6">
-                                            <Select
+                                            {/* <Select
                                                 name={'album_id'}
                                                 options={this.state.source}
                                                 value={model.album_id}
                                                 placeholder={false}
                                                 getValue={this.handleSelect}
                                                 label='Transport'
-                                                addClass='form-control' />
+                                                addClass='form-control' /> */}
                                         </div>
 
                                     </div>
                                     <div className="row">
                                         <div className="form-group col-md-6">
-                                            <Input label={'Type'} name={'type'} required={true} value={model.type || ''} handleInput={this.handleChange} />
+                                            {/* <Input label={'Type'} name={'type'} required={true} value={model.type || ''} handleInput={this.handleChange} /> */}
                                         </div>
                                         <div className="form-group col-md-6">
-                                            <Input label={'Style'} name={'style'} required={true} value={model.style || ''} handleInput={this.handleChange} />
+                                            {/* <Input label={'Style'} name={'style'} required={true} value={model.style || ''} handleInput={this.handleChange} /> */}
                                         </div>
                                     </div>
                                 </form>

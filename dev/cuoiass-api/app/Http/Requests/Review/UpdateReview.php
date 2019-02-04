@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Review;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\RequestAbstract;
 
-class UpdateReview extends FormRequest
+class UpdateReview extends RequestAbstract
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,9 @@ class UpdateReview extends FormRequest
     public function rules()
     {
         return [
-            'review_id' => 'required',
-            'review_response_vendor_id' => 'required|integer',
+            'review_id' => ['required', 'exists:reviews,review_id'],
+            'review_response_vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
+            'vendor_id' => ['required','integer', 'exists:vendors,vendor_id'],
             'review_response_content' => 'required|string|max:255|min:10',
         ];
     }

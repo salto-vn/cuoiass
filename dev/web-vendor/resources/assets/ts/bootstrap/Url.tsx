@@ -1,6 +1,14 @@
 const API_URL = {
-    'STAFF': '/api/staffs',
-    'REVIEW': '/api/reviews'
+    'STAFF_CRL': '/controller/staffs',
+    'REVIEW_CRL': '/controller/reviews',
+    'BOOKING_CRL_show': '/controller/bookings/show',
+    'BOOKING_CRL_update': '/controller/bookings/update',
+    'BOOKING_CRL_getServices': '/controller/bookings/getServices',
+    'BOOKING_CRL_getMenus': '/controller/bookings/getMenus',
+    'BOOKING_CRL_getDrinks': '/controller/bookings/getDrinks',
+    'BOOKING_CRL_getOptions': '/controller/bookings/getOptions',
+    'BOOKING_CRL_initial': '/controller/bookings/initial',
+    'BOOKING_CRL_update': '/controller/bookings/update',
 };
 
 export default API_URL;

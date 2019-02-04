@@ -37,19 +37,18 @@ class StaffRepo extends Repository
      * @param $sortBy
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getListStaffByVendor($search, $page, $limit, $orderBy, $sortBy)
+    public function getListStaffByVendor($vendorId, $search, $page, $limit, $orderBy, $order)
     {
-        //$vendorId = auth()->user()->vendor_id;
-        $vendorId = 1;
 
         $fieldsSearchable = $this->model->fieldsSearchable();
         $limit = (int)$limit > 0 ? $limit : \Constant::MIN_LIMiT;
-        $sortBy = ($sortBy === \Constant::ORDER_BY_DESC) ? $sortBy : \Constant::ORDER_BY_ASC;
+        $order = ($order === \Constant::ORDER_BY_DESC) ? $order : \Constant::ORDER_BY_ASC;
 
         $tblStaff = $this->getTable();
-
+        $tblRole = TBL::TBL_ROLES;
         $model = $this->model->newQuery();
-        $model->where('vendor_id', $vendorId);
+        $model->where('vendor_id', $vendorId)
+                ->join("$tblRole","$tblRole.role_id","=","$tblStaff.role_id");
 
         if ($search && is_array($fieldsSearchable) && count($fieldsSearchable)) {
             $searchData = $this->parserSearchData($search);
@@ -59,7 +58,12 @@ class StaffRepo extends Repository
                         continue;
                     }
                     $value = addslashes($value);
-                    $model->where($field, 'like', "%{$value}%");
+                    if($field == 'role_id') {
+                        $model->where("$tblRole.$field", '=', $value);
+                    } else {
+                        $model->where($field, 'like', "%{$value}%");
+                    }
+
                 }
             }
         }
@@ -68,13 +72,14 @@ class StaffRepo extends Repository
             "$tblStaff.staff_id",
             "$tblStaff.staff_name",
             "$tblStaff.phone",
+            "$tblRole.role_name",
             "$tblStaff.email",
             "$tblStaff.address",
         ]);
 
 
         if (!empty($orderBy)) {
-            $model->orderBy($orderBy, $sortBy);
+            $model->orderBy($orderBy=='role_id'?"$tblRole.role_name":$orderBy, $order);
         } else {
             $model->orderByDesc('staff_id');
         }
