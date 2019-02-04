@@ -42,22 +42,11 @@ class BookingDrinkRepo extends Repository
 
         $tblBookedDrink = TBL::TBL_BOOKED_DRINKS;
         $tblDrink = TBL::TBL_DRINKS;
-        $tblProduct = TBL::TBL_PRODUCTS;
-        $tblMenu = TBL::TBL_MENUS;
-        $tblBooking = TBL::TBL_BOOKINGS;
         $query = $this->model->newQuery()->select([
-            "$tblBookedDrink.booked_menu", "$tblBookedDrink.service_code", "$tblBookedDrink.booked_total",
-            "$tblDrink.drink_id", "$tblDrink.drink_name", "$tblDrink.unit_price"
-            , "$tblDrink.image_ids"
+            "$tblBookedDrink.booked_drink_id",  "$tblBookedDrink.booked_menu", "$tblBookedDrink.service_code", "$tblBookedDrink.booked_total",
+            "$tblDrink.drink_id as id", "$tblDrink.drink_name as name", "$tblDrink.unit_price", "$tblDrink.image_ids"
         ])
-            ->join($tblMenu, "$tblBookedDrink.menu_id", "=", "$tblMenu.menu_id")
-            ->join($tblProduct, "$tblMenu.prd_id", "=", "$tblProduct.prd_id")
-            ->join($tblDrink, "$tblMenu.menu_id", "=", "$tblDrink.menu_id")
-            ->join($tblBooking, function($join) use  ($tblBooking, $tblProduct, $tblBookedDrink){
-                $join->on("$tblBooking.prd_id", '=', "$tblProduct.prd_id");
-                $join->on("$tblBooking.booked_id", '=', "$tblBookedDrink.booked_id");
-                $join->on("$tblBooking.vendor_service_id", '=', "$tblProduct.vendor_service_id");
-            })
+            ->join($tblDrink, "$tblBookedDrink.drink_id", "=", "$tblDrink.drink_id")
             ->where("$tblBookedDrink.booked_id", "=", $bookedId);
         return $query->get();
     }

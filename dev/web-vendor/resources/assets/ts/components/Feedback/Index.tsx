@@ -8,7 +8,6 @@ import GridContainer from '../../common/Grid/GridContainer';
 import GridItem from '../../common/Grid/GridItem';
 import Card from '../../common/Card/Card';
 import CardHeader from '../../common/Card/CardHeader';
-import { infoColor } from '../../../styles/material-dashboard-pro-react';
 import { Theme, createStyles, withStyles, TablePagination } from '@material-ui/core';
 import CardBody from '../../common/Card/CardBody';
 import Table from '../../common/Table/Table';
@@ -43,20 +42,6 @@ const styles = (theme: Theme) => createStyles({
             fontWeight: 400,
             lineHeight: "1"
         }
-    },
-    headerButton: {
-        position: "absolute",
-        right: "10px",
-        bottom: "20px"
-    },
-    progress: {
-        color: infoColor
-    },
-    linearColorPrimary: {
-        backgroundColor: '#FFFFFF',
-    },
-    linearBarColorPrimary: {
-        backgroundColor: infoColor,
     },
 });
 

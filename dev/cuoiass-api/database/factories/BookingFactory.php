@@ -5,7 +5,7 @@ use Faker\Generator as Faker;
 $factory->define(\App\Models\Booking::class, function (Faker $faker) {
 
     $statues = ['IN-PROGRESS','ACCEPTED','PAID','CANCELLED','DENIED','FINISHED'];
-
+    $payment_method = [0,1,2,3,4];
 
     return [
         'booked_cd' => "CASS-" . $faker->unique()->numerify('########'),
@@ -24,6 +24,7 @@ $factory->define(\App\Models\Booking::class, function (Faker $faker) {
         'status' => $faker->randomElement($statues),
         'memo' => $faker->text(20),
         'payment_name' => $faker->name,
+        'payment_method' => $faker->randomElement($payment_method),
         'payment_phone' => $faker->phoneNumber,
         'payment_email' => $faker->email,
         'net_price' => $faker->randomFloat(10,200000,99999999),

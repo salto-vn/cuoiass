@@ -64,6 +64,7 @@ class Product extends Model
     protected $primaryKey = 'prd_id';
 
 	protected $fillable = [
+        'prd_id',
 		'prd_cd',
 		'prd_name',
 		'prd_desc',

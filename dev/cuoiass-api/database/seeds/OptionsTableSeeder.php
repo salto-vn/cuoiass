@@ -15,12 +15,13 @@ class OptionsTableSeeder extends Seeder
         //
         $product = \App\Models\Product::query()->get();
         $i = 0;
-        while ($i <= 20) {
-            $i ++;
+        foreach ($product as $product) {
+
+            $i++;
             factory(\App\Models\Option::class, 3)->create(
                 [
-                    'prd_id'=>$product[$i]['prd_id'],
-                    'vendor_service_id'=>$product[$i]['vendor_service_id'],
+                    'prd_id' => $product['prd_id'],
+                    'vendor_service_id' => $product['vendor_service_id'],
                 ]
             );
         }

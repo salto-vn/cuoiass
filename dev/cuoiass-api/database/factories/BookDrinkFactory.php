@@ -9,6 +9,7 @@ $factory->define(\App\Models\BookedDrink::class, function (Faker $faker) {
         'booked_total' => $faker->randomNumber(1), //quantity
         'booked_id' => '',
         'menu_id' => '',
+        'drink_id' => '',
         'created_by' => 'admin@test.com'
     ];
 });

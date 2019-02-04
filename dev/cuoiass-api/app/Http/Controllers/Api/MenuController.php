@@ -32,8 +32,10 @@ class MenuController extends Controller
     {
 
         $vendor_id = $request->get('vendor_id');
+        $menu_type = $request->get('menu_type');
+        $service_code = $request->get('service_code');
         $search = $request->get('search');
-        $menus = $this->menuRepo->getMenuWithFoods($vendor_id,$search);
+        $menus = $this->menuRepo->getMenuWithFoods($vendor_id,$menu_type,$service_code,$search);
         return response()->success($menus);
     }
 

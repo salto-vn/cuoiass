@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 // import Check from "@material-ui/icons/Check";
 // core components
 import customInputStyle from "../../../../styles/components/customInputStyle";
-import { FormHelperText } from '@material-ui/core';
+import { FormHelperText, TextField } from '@material-ui/core';
 import { isEmpty } from '../../Utils';
 
 export interface ICustomInput {
@@ -20,6 +20,7 @@ export interface ICustomInput {
   labelProps?: Object,
   id?: string,
   inputProps?: any,
+  InputProps?: any,
   formControlProps?: any,
   error?: boolean,
   success?: boolean,
@@ -41,7 +42,9 @@ function CustomInput({ ...props }) {
     inputRootCustomClasses,
     success,
     helpText,
-    multiline
+    multiline,
+    center,
+    InputProps
   } = props;
 
   const labelClasses = classNames({
@@ -59,6 +62,7 @@ function CustomInput({ ...props }) {
   });
   const inputClasses = classNames({
     [classes.input]: true,
+    [classes.center]: center,
     [classes.whiteInput]: white
   });
   var helpTextClasses = classNames({
@@ -100,6 +104,7 @@ function CustomInput({ ...props }) {
         multiline={multiline}
         id={id}
         {...inputProps}
+        inputProps={InputProps}
       />
       {!isEmpty(helpText) ? (
         <FormHelperText id={id + "-text"} className={helpTextClasses + " " + classes.error}>
@@ -116,12 +121,13 @@ CustomInput.propTypes = {
   labelProps: PropTypes.object,
   id: PropTypes.string,
   inputProps: PropTypes.object,
+  InputProps: PropTypes.object,
   formControlProps: PropTypes.object,
   inputRootCustomClasses: PropTypes.string,
   error: PropTypes.bool,
   success: PropTypes.bool,
   white: PropTypes.bool,
-  helpText: PropTypes.node
+  helpText: PropTypes.node,
 };
 
 export default withStyles(customInputStyle)(CustomInput);

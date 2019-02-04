@@ -64,6 +64,7 @@ export class BookingModel implements IBooking {
         email: ""
     };
     public options: IBookedOption[] = [];
+    public old_options: IBookedOption[] = [];
     public customize_fields: ICustomizeFieldsItem[] = [];
     public foods:IFoodDetail[] = [];
     public drinks:IDrinkDetail[] = [];

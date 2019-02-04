@@ -87,7 +87,7 @@ class BookingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param UpdateRequest $request
      * @param Booking $booking
      * @return void
      */
@@ -95,11 +95,10 @@ class BookingController extends Controller
     {
         //
         $input = array_filter($request->validated());
-        $input['updated_by'] = 'test@gmail.com';
-        $bookingBb = $this->bookingRepo->findByField('booked_cd',$input['booked_cd']);
-        if (!empty($bookingBb)) {
-            $rs = $this->bookingRepo->update($input, $bookingBb[0]['booked_id']);
-        }
+        $input['updated_by'] = "test@gmail.com";
+        $book_cd = $input['booked_cd'];
+
+        $rs = $this->bookingRepo->updateByBookCd($book_cd,$input);
 
         return response()->success($rs);
     }
