@@ -56,13 +56,28 @@ class StoreProduct extends FormRequest
             'options.*.images' => ['required_with:options.*.option_name','array'],
             'options.*.images.*' => 'image|mimes:jpg,jpeg,png',
 
+            // schedule_photos required if service_code is PHT
+            'schedule_photos' => ['required_if:service_code,PHT','array'],
+            'schedule_photos.*.sche_start_time' => ['required_with:schedule_photos','date_format'],
+
+            // 1 Product(Restaurant, Qua Cuoi) -> N Menu(Foods, Drinks)
             'menus' => 'nullable|array',
-            'menus.foods' => ['required_with:menus','array'],
-            'menus.foods.*.menu_id' => ['required_with:menus','integer'],
-            'menus.foods.*.menu_name' => ['required_with:menus','string'],
-            'menus.foods.*.unit_price' => ['required_with:menus','numeric'],
-            'foods.*.images' => ['required_with:foods.*.food_name','array'],
-            'foods.*.images.*' => 'image|mimes:jpg,jpeg,png',
+            'menus.*.menu_name' => ['required_with:menus','string','max:255'],
+            'menus.*.unit_price' => ['required_with:menus','array'],
+
+            // 1 Menu -> N Foods
+            'menus.*.foods' => ['required_with:menus','array'],
+            'menus.*.foods.*.food_name' => ['required_with:menus.*.foods','string','max:255'],
+            'menus.*.foods.*.unit_price' => ['required_with:menus.*.foods','numeric'],
+            'menus.*.foods.*.images' => ['required_with:menus.*.foods','array'],
+            'menus.*.foods.*.images.*' => 'image|mimes:jpg,jpeg,png',
+
+            // 1 Menu -> N Drinks
+            'menus.*.drinks' => ['nullable','array'],
+            'menus.*.drinks.*.food_name' => ['required_with:menus.*.drinks','string','max:255'],
+            'menus.*.drinks.*.unit_price' => ['required_with:menus.*.drinks','numeric'],
+            'menus.*.drinks.*.images' => ['required_with:menus.*.drinks','array'],
+            'menus.*.drinks.*.images.*' => 'image|mimes:jpg,jpeg,png',
         ];
     }
 }

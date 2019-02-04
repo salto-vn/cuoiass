@@ -594,7 +594,7 @@ create table `customize_fields` (
     `customize_field_id` int(11) auto_increment not null comment 'customize field id'
   , `prd_id` int(11) not null comment 'product id'
   , `vendor_service_id` int(11) not null comment 'vendor services id'
-  , `customize_field_name` char(20) not null comment 'customize field name'
+  , `customize_field_name` text not null comment 'customize field name'
   , `customize_field_type` enum('textbox','combobox','textarea','file','radio','checkbox') not null comment 'customize field type:textbox, combobox, textarea, file, radio, checkbox'
   , `customize_field_key` varchar(255) comment 'customize field value'
   , `customize_field_value` varchar(255) comment 'customize field value'
