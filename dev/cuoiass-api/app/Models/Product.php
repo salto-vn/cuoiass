@@ -90,7 +90,7 @@ class Product extends Model
 
 	public function vendor_service()
 	{
-		return $this->belongsTo(\App\Models\VendorService::class);
+		return $this->belongsTo(\App\Models\VendorService::class,'vendor_service_id');
 	}
 
 	public function bookings()
