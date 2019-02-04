@@ -1,4 +1,4 @@
-import { required, isDateCorrectFormat, max, phone, isNumber  } from '../Validate/Rules';
+import { required, isDateCorrectFormat, max, phone, isNumber, digitsBetween  } from '../Validate/Rules';
 import { IOption } from '../FormControls/CustomSelect/CustomSelect';
 import { ResourceUtil } from '../Resources';
 
@@ -41,7 +41,7 @@ export const BookingValidate = (isRequired: boolean, name: string, value: any, r
     if (name === "booked_size" || name === "booked_size_2") {
         let value1 = parseInt(value);
         if (!isNumber(value) || value1 < 1 || value1 > 1000000000) {
-            return "Vui lòng nhập số trên 1 dưới 1.000.000.000";
+            return "Vui lòng nhập số trên 1 dưới 1000000000";
         }
     }
 
@@ -58,6 +58,17 @@ export const BookingValidate = (isRequired: boolean, name: string, value: any, r
             if ('max' in rule) {
                 if (max(value,rule.max)) {
                     return "Vui lòng nhập dưới 255 ký tự";
+                }
+            }
+
+        }
+    }
+
+    if (name.search('booked_total_') >= 0 ) {
+        if (rule !== undefined) {
+            if ('digitsBetween' in rule) {
+                if (!digitsBetween(value,rule.digitsBetween.min,rule.digitsBetween.max)) {
+                    return "Vui lòng nhập số trên "+rule.digitsBetween.min+" dưới " + rule.digitsBetween.max;
                 }
             }
 

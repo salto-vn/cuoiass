@@ -620,16 +620,16 @@ class DetailBookingScreen extends React.Component<{ match: any, classes: any, hi
                                                     anwser = field.customize_field_answer;
                                                     break;
                                                 case "combobox":
-                                                    const customize_field_value: IOption[] = field.customize_field_value
-                                                    anwser = new ResourceUtil(customize_field_value).getValue(field.customize_field_answer)
+                                                    var question: IOption[] = field.customize_field_questions;
+                                                    anwser = new ResourceUtil(question).getValue(field.customize_field_answer)
                                                     break;
                                                 case "radio":
-                                                    const customize_field_value: IOption[] = field.customize_field_value
-                                                    anwser = new ResourceUtil(customize_field_value).getValue(field.customize_field_answer)
+                                                    var question: IOption[] = field.customize_field_questions;
+                                                    anwser = new ResourceUtil(question).getValue(field.customize_field_answer)
                                                     break;
                                                 case "checkbox":
-                                                    const customize_field_value: IOption[] = field.customize_field_value
-                                                    anwser = new ResourceUtil(customize_field_value).getValue(field.customize_field_answer)
+                                                    var question: IOption[] = field.customize_field_questions;
+                                                    anwser = new ResourceUtil(question).getValue(field.customize_field_answer)
                                                     break;
                                                 default:
                                                     anwser = field.customize_field_answer;

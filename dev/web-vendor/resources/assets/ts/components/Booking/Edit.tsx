@@ -52,7 +52,6 @@ export interface IEditBookingState extends IFormState {
     menu_type: string,
     services_mst: any,
     isEditMenu: boolean,
-    form: any,
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -193,12 +192,10 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         var customizeFields = model.customize_fields.map((field: ICustomizeFieldsItem, index) => {
             var customize_field_answers = field.customize_field_answer.trim().split(",");
             if (field.customize_field_type.toLowerCase() == "checkbox") {
-                debugger;
                 customFieldQuestion = field.customize_field_questions;
                 var checked = event.target.checked;
                 field.customize_field_questions.map((option: IOption, index: number) => {
                     if (name == "customize_field_" + field.customize_field_id) {
-                        debugger;
                         var buildedAws: any = this.buildAnswerCustomField(customize_field_answers, value, checked);
                         field.customize_field_answer = filterEmpty(buildedAws).join(',');
                          errMessage = BookingValidate(isRequired, name, field.customize_field_answer, rule);
@@ -416,15 +413,23 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
      */
     private changeQuantity = (index: number, type: string, action: string, ev: any) => {
         const { model } = this.state;
+        var rule: any = {digitsBetween: { min: 1, max: 1000000000 }};
+        let errMessage = "";
+        var name = "";
+        debugger;
         if (type === "food") {
-            var value = this.refs["booked_total_food:" + index].props.inputProps.value;
+            name = "booked_total_food:" + index;
+            var value = this.refs[name].props.inputProps.value;
             if (action === "up") {
                 model.foods[index].booked_total = value + 1;
             } else {
                 model.foods[index].booked_total = value <= 0 ? 0 : value - 1;
             }
+            errMessage = BookingValidate(true, name, model.foods[index].booked_total, rule);
+
         } else if (type === 'option') {
-            var value = this.refs["booked_total_option:" + index].props.inputProps.value;
+            name = "booked_total_option:" + index;
+            var value = this.refs[name].props.inputProps.value;
             if (action === "up") {
                 model.options[index].option_quality = value + 1;
             } else {
@@ -435,15 +440,22 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
             } else {
                 model.options[index].action = 'NEW';
             }
+            errMessage = BookingValidate(true, name, model.options[index].option_quality, rule);
         } else {
-            var value = this.refs["booked_total_drink:" + index].props.inputProps.value;
+            name = "booked_total_drink:" + index;
+            var value = this.refs[name].props.inputProps.value;
             if (action === "up") {
                 model.drinks[index].booked_total = value + 1;
             } else {
                 model.drinks[index].booked_total = value <= 0 ? 0 : value - 1;
             }
+            errMessage = BookingValidate(true, name, model.drinks[index].booked_total, rule);
         }
-        this.setState({ model, isEditMenu: false });
+        this.setState({ 
+            model, 
+            isEditMenu: false ,
+            clientError: { ...this.state.clientError, [name]: errMessage }
+        });
     }
 
     /**
@@ -452,10 +464,13 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
     private changeQuantityByInput = (index: number, type: string, ev: any) => {
         const { model } = this.state;
         var value = ev.target.value;
+        var rule: any = {digitsBetween: { min: 1, max: 1000000000 }};
+        var name = "";
         if (value < 0) {
             return;
         }
         if (type === "food") {
+            name = "booked_total_food:" + index;
             model.foods[index].booked_total = isEmpty(value) ? '' : parseInt(value);
         } else if (type === "option") {
             model.options[index].option_quality = isEmpty(value) ? '' : parseInt(value);
@@ -464,10 +479,17 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
             } else {
                 model.options[index].action = 'NEW';
             }
+            name = "booked_total_option:" + index;
         } else {
             model.drinks[index].booked_total = isEmpty(value) ? '' : parseInt(value);;
+            name = "booked_total_drink:" + index;
+            
         }
-        this.setState({ model, isEditMenu: false });
+        var errMessage = BookingValidate(true, name, value, rule);
+        this.setState({ 
+            model, 
+            isEditMenu: false,
+            clientError: { ...this.state.clientError, [name]: errMessage } });
     }
 
     private checkExistOption(option_id: number, old_options: IBookedOption[]) {
@@ -552,7 +574,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
         model.customize_fields.map((field: ICustomizeFieldsItem, k: number) => {
             customizeFieldStatus.push(showError(clientError, validateMessage, "customize_field_" + field.customize_field_id));
         });
-
+        
 
         var totalFood = 0;
         var totalDrink = 0;
@@ -791,6 +813,8 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
             model.options.map((object: IBookedOption, key: number) => {
                 if (object.action != 'DEL') {
                     var price = Math.ceil(object.option_price);
+                    debugger;
+                    var errorStatus = showError(clientError, validateMessage, "booked_total_option:" + key);
                     qcName = <div style={{ width: "100%" }}>Chi tiết</div>;
                     totalOption += price * object.option_quality;
                     options.push([object.option_id, object.option_name,
@@ -821,6 +845,9 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                     InputProps={{
                                         min: 0
                                     }}
+                                    helpText={errorStatus !== "init" ? errorStatus : ''}
+                                    error={errorStatus !== 'init' && errorStatus !== ''}
+                                    success={errorStatus === ''}
                                 />
                             </div>
                             <Button
@@ -1727,6 +1754,10 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                             case "radio":
                                                 var radio: any;
                                                 input = [];
+                                                var iconColor: any;
+                                                if (customizeFieldStatus[k] !== 'init' && customizeFieldStatus[k] !== ''){
+                                                    iconColor = {borderColor:"#f44336"}
+                                                }
                                                 field.customize_field_questions.map((option: IOption, index: number) => {
                                                     radio = <FormControlLabel key={index}
                                                         control={
@@ -1737,6 +1768,7 @@ class BookingEditScreen extends React.Component<{ classes: any, match: any }, IE
                                                                 icon={
                                                                     <FiberManualRecord
                                                                         className={classes.radioUnchecked}
+                                                                        style={iconColor} 
                                                                     />
                                                                 }
                                                                 checkedIcon={

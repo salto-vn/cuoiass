@@ -4,7 +4,8 @@ import { createStyles,Theme } from '@material-ui/core';
 const accordionStyle = (theme:Theme) => createStyles({
   root: {
     flexGrow: 1,
-    marginBottom: "20px"
+    marginTop: "10px",
+    marginBottom: "10px"
   },
   expansionPanel: {
     boxShadow: "none",
