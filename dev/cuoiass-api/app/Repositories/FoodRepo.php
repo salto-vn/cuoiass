@@ -7,15 +7,15 @@
  */
 
 namespace App\Repositories;
-use App\Models\Drink;
+use App\Models\Food;
 
 /**
- * Class DrinkRepo
+ * Class FoodRepo
  *
- * @property Drink $model
- * @method Drink create(array $attributes)
+ * @property Food $model
+ * @method Food create(array $attributes)
  */
-class DrinkRepo extends Repository
+class FoodRepo extends Repository
 {
     public $model;
 
@@ -25,7 +25,7 @@ class DrinkRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = Drink::class;
+        $this->model = Food::class;
         return $this->model;
     }
 }

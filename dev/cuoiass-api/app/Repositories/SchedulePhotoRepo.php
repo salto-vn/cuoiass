@@ -7,14 +7,13 @@
  */
 
 namespace App\Repositories;
-use App\Models\CustomizeField;
+use App\Models\SchedulePhoto;
 
 /**
- * Class CustomizeFieldRepo
- *
- * @property CustomizeField $model
+ * Class SchedulePhotoRepo
+ * @package App\Repositories
  */
-class CustomizeFieldRepo extends Repository
+class SchedulePhotoRepo extends Repository
 {
     public $model;
 
@@ -24,7 +23,7 @@ class CustomizeFieldRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = CustomizeField::class;
+        $this->model = SchedulePhoto::class;
         return $this->model;
     }
 

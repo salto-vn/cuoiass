@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Class ImageRepo.
  * @property Image $model
- * @method Image create(array $attributes)
  */
 class ImageRepo extends Repository
 {
@@ -35,6 +34,10 @@ class ImageRepo extends Repository
         );
     }
 
+    /**
+     * @param array $columns
+     * @return array|mixed
+     */
     public function all($columns = ['*'])
     {
         $rs = parent::all($columns);
@@ -45,6 +48,11 @@ class ImageRepo extends Repository
         },$rs);
     }
 
+    /**
+     * @param $id
+     * @param array $columns
+     * @return mixed
+     */
     public function find($id, $columns = ['*'])
     {
         return Cache::remember($this->cacheKey($id), 1440, function () use ($id) {
@@ -60,4 +68,5 @@ class ImageRepo extends Repository
         },$ids);
 
     }
+
 }

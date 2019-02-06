@@ -1,5 +1,5 @@
 import HandleResponse from './HandleResponse';
-import { objectToQueryString, isEmpty } from '../common/Utils';
+import { objectToQueryString } from '../common/Utils';
 
 const headerOptions = {
     "Content-Type": "application/json",

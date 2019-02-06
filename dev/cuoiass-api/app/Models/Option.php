@@ -11,7 +11,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Option
- * 
+ *
  * @property int $option_id
  * @property int $prd_id
  * @property int $vendor_service_id
@@ -22,7 +22,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property string $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
+ *
  * @property \App\Models\Product $product
  * @property \Illuminate\Database\Eloquent\Collection $booked_options
  *
@@ -37,6 +37,8 @@ class Option extends Eloquent
 	];
 
 	protected $fillable = [
+	    'prd_id',
+        'vendor_service_id',
 		'option_name',
 		'image_ids',
 		'option_price',

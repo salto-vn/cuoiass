@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a3bea7cc490ffb0df3973b4d3aadd90",
+    "content-hash": "476ab9b6820cb9b6bf4117122fafecf0",
     "packages": [
         {
             "name": "bensampo/laravel-enum",
@@ -67,6 +67,57 @@
                 "validation"
             ],
             "time": "2018-10-19T17:07:29+00:00"
+        },
+        {
+            "name": "crazybooot/base64-validation",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/crazybooot/base64-validation.git",
+                "reference": "5b704b03276c711eb1d102250f215347c0eca679"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/crazybooot/base64-validation/zipball/5b704b03276c711eb1d102250f215347c0eca679",
+                "reference": "5b704b03276c711eb1d102250f215347c0eca679",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^5.5",
+                "php": "^7.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Crazybooot\\Base64Validation\\Providers\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\": "app/",
+                    "Crazybooot\\Base64Validation\\": "/src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "crazybooot",
+                    "email": "crazybooot@gmail.com"
+                }
+            ],
+            "description": "Laravel validators for base64 encoded files",
+            "keywords": [
+                "base64",
+                "download",
+                "encoded",
+                "files",
+                "images",
+                "laravel",
+                "validation"
+            ],
+            "time": "2018-05-15T09:14:42+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",

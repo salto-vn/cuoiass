@@ -8,153 +8,207 @@
 
 namespace App\Services;
 
-use App\Enums\ServiceCodeEnum;
-use App\Models\Image;
-use App\Repositories\BookingCustomizeRepo;
-use App\Repositories\BookingDrinkRepo;
-use App\Repositories\BookingFoodRepo;
-use App\Repositories\BookingOptionRepo;
-use App\Repositories\BookingRepo;
-use App\Repositories\PromotionRepo;
+use App\Models\CustomizeField;
+use App\Models\Menu;
+use App\Models\Option;
+use App\Models\SchedulePhoto;
+use App\Repositories\CustomizeFieldRepo;
+use App\Repositories\DrinkRepo;
+use App\Repositories\FoodRepo;
+use App\Repositories\ImageRepo;
+use App\Repositories\MenuRepo;
+use App\Repositories\OptionRepo;
+use App\Repositories\ProductRepo;
+use App\Repositories\SchedulePhotoRepo;
 use App\Utils\TableName as TBL;
+use Illuminate\Support\Facades\DB;
 
-class BookingService
+class ProductService
 {
 
-    private $bookingRepo;
-    private $bookingOptionRepo;
-    private $bookingCustomizeRepo;
-    private $bookingFoodRepo;
-    private $bookingDrinkRepo;
-    private $promotionRepo;
+    private $productRepo;
+    private $imageRepo;
+    private $customizeFieldRepo;
+    private $optionRepo;
+    private $schedulePhotoRepo;
+    private $menuRepo;
+    private $foodRepo;
+    private $drinkRepo;
 
     /**
-     * BookingService constructor.
-     * @param BookingRepo $bookingRepo
-     * @param BookingOptionRepo $bookingOptionRepo
-     * @param BookingCustomizeRepo $bookingCustomizeRepo
-     * @param BookingFoodRepo $bookingFoodRepo
-     * @param BookingDrinkRepo $bookingDrinkRepo
-     * @param PromotionRepo $promotionRepo
+     * ProductService constructor.
+     * @param ProductRepo $productRepo
+     * @param ImageRepo $imageRepo
+     * @param CustomizeFieldRepo $customizeFieldRepo
+     * @param OptionRepo $optionRepo
+     * @param SchedulePhotoRepo $schedulePhotoRepo
+     * @param MenuRepo $menuRepo
+     * @param FoodRepo $foodRepo
+     * @param DrinkRepo $drinkRepo
      */
-    public function __construct(BookingRepo $bookingRepo, BookingOptionRepo $bookingOptionRepo
-        , BookingCustomizeRepo $bookingCustomizeRepo
-        , BookingFoodRepo $bookingFoodRepo
-        , BookingDrinkRepo $bookingDrinkRepo
-        , PromotionRepo $promotionRepo)
+    public function __construct(ProductRepo $productRepo,
+                                ImageRepo $imageRepo,
+                                CustomizeFieldRepo $customizeFieldRepo,
+                                OptionRepo $optionRepo,
+                                SchedulePhotoRepo $schedulePhotoRepo,
+                                MenuRepo $menuRepo,
+                                FoodRepo $foodRepo,
+                                DrinkRepo $drinkRepo)
     {
-        $this->bookingRepo = $bookingRepo;
-        $this->bookingOptionRepo = $bookingOptionRepo;
-        $this->bookingCustomizeRepo = $bookingCustomizeRepo;
-        $this->bookingFoodRepo = $bookingFoodRepo;
-        $this->bookingDrinkRepo = $bookingDrinkRepo;
-        $this->promotionRepo = $promotionRepo;
+        $this->productRepo = $productRepo;
+        $this->imageRepo = $imageRepo;
+        $this->customizeFieldRepo = $customizeFieldRepo;
+        $this->optionRepo = $optionRepo;
+        $this->schedulePhotoRepo = $schedulePhotoRepo;
+        $this->menuRepo = $menuRepo;
+        $this->foodRepo = $foodRepo;
+        $this->drinkRepo = $drinkRepo;
+
     }
 
     /**
-     * @param $vendor_id
-     * @param $booked_cd
-     * @param $cols
-     * @return mixed
+     * @param $product
+     * @param string $customizeFields
+     * @param string $options
+     * @param string $schedulePhotos
+     * @param string $menu_foods
+     * @param string $menu_drinks
      */
-    public function getBookingByCd($vendor_id, $booked_cd, $cols)
+    public function create($product, $customizeFields = "", $options = ""
+        , $schedulePhotos = "", $menu_foods = "", $menu_drinks = "")
     {
-        $tblBooking = TBL::TBL_BOOKINGS;
-        $tblProduct = TBL::TBL_PRODUCTS;
-        $tblPlan = TBL::TBL_PLANS;
-        $tlbCustomer = TBL::TBL_CUSTOMERS;
-        $tblVendorService = TBL::TBL_VENDOR_SERVICES;
-        $tblPromotion = TBL::TBL_PROMOTIONS;
+        return DB::transaction(function () use ($product, $customizeFields, $options, $schedulePhotos, $menu_foods, $menu_drinks) {
+            $prd_images = "";
+            $created_by = 'admin@gmail.com';//TODO:
+            if (isset($product['images'])) {
+                $keys = array_map(function ($image) use ($created_by) {
+                    return $this->imageRepo->create(["img_url" => addslashes($image), "created_by" => addslashes($created_by)])->getKey();
+                }, $product['images']);
+                $prd_images = join(",", $keys);
+            }
+            unset($product['images']);
+            $product['prd_images'] = $prd_images;
+            $product['created_by'] = $created_by;
+            $product['publish_flag'] = '0'; //Unpublished
+            $inserted = $this->productRepo->create($product);
+            $return_value = $inserted;
+            //Customize Field insert
 
-        $booking = $this->bookingRepo->getBookingByCd($vendor_id, $booked_cd, $cols);
-        $rs = [];
-        if ($booking) {
-            //Get Booking options
-            $options = $this->bookingOptionRepo->findByField("booked_id", $booking['booked_id'],
-                ['booked_opt_id','option_id', 'option_name', 'option_quality', 'option_price']);
+            if ($inserted && !empty($customizeFields)) {
+                $return_cusfields = array_map(function ($field) use ($inserted) {
+                    $field['prd_id'] = $inserted->getKey();
+                    $field['vendor_service_id'] = $inserted['vendor_service_id'];
+                    $field['created_by'] = $inserted['created_by'];
+                    return $this->customizeFieldRepo->create($field);
+                }, $customizeFields);
+                $return_value['customize_fields'] = $return_cusfields;
 
-            //Get Customize Fields
-            $customFields = $this->bookingCustomizeRepo->getBookedCusFldsByBookedId($booking['booked_id']);
-
-            //Repair data
-            //Booking info
-            if (isset($cols[$tblBooking]))
-                foreach ($cols[$tblBooking] as $col) {
-                    $rs[$col] = $booking[$col];
-                }
-
-            //Promotion info
-            if (isset($cols[$tblPromotion])){
-                //Promotion code
-                $promotion = $this->promotionRepo->findByField('promotion_code',$booking['promotion_code'],
-                    $cols[$tblPromotion]);
-                if (isset($promotion)) {
-                    foreach ($cols[$tblPromotion] as $col) {
-                        $rs['promotion'][$col] = $promotion[0][$col];
+            }
+            // Option Insert
+            if ($inserted && !empty($options)) {
+                $return_options = array_map(function ($option) use ($inserted, $created_by) {
+                    $option_images = "";
+                    if (isset($option['images'])) {
+                        $keys = array_map(function ($image) use ($created_by) {
+                            return $this->imageRepo->create(["img_url" => addslashes($image), "created_by" => addslashes($created_by)])->getKey();
+                        }, $option['images']);
+                        $option_images = join(",", $keys);
                     }
-                }
 
+                    $option['prd_id'] = $inserted->getKey();
+                    $option['image_ids'] = $option_images;
+                    $option['vendor_service_id'] = $inserted['vendor_service_id'];
+                    $option['created_by'] = $inserted['created_by'];
+                    return $this->optionRepo->create($option);
+                }, $options);
+
+                $return_value['options'] = $return_options;
             }
 
+            //Schedule Photo
+            if ($inserted && !empty($schedulePhotos)) {
+                $return_schedule = array_map(function ($schedulePhoto) use ($inserted, $created_by) {
+                    $schedule_images = "";
+                    if (isset($schedulePhoto['images'])) {
+                        $keys = array_map(function ($image) use ($created_by) {
+                            return $this->imageRepo->create(["img_url" => addslashes($image), "created_by" => addslashes($created_by)])->getKey();
+                        }, $schedulePhoto['images']);
+                        $schedule_images = join(",", $keys);
+                    }
+                    $option['image_ids'] = $schedule_images;
+                    $schedulePhoto['prd_id'] = $inserted->getKey();
+                    $schedulePhoto['created_by'] = $inserted['created_by'];
+                    return $this->schedulePhotoRepo->create($schedulePhoto);
+                }, $schedulePhotos);
 
-            //Vendor Service info
-            if (isset($cols[$tblVendorService]))
-                foreach ($cols[$tblVendorService] as $col) {
-                    $rs['vendor_service'][$col] = $booking[$col];
-                }
-            //Plan info
-            if (isset($cols[$tblPlan]))
-                foreach ($cols[$tblPlan] as $col) {
-                    $rs['plan'][$col] = $booking[$col];
-                }
-            //Product info
-            if (isset($cols[$tblProduct])) {
-                foreach ($cols[$tblProduct] as $col) {
-                    $rs['product'][$col] = $booking[$col];
-                }
-                //Get Image Product
-                $images = explode(",", trim($booking['prd_images']));
-                $images = array_map(function ($imageId) {
-                    $rs = Image::query()->find($imageId, ['img_url']);
-                    return $rs['img_url'];
-                }, $images);
-                $rs['product']['prd_images'] = $images;
+                $return_value['schedule_photos'] = $return_schedule;
             }
 
-
-            //Customer info
-            if (isset($cols[$tlbCustomer]))
-                foreach ($cols[$tlbCustomer] as $col) {
-                    $rs['customer'][$col] = $booking[$col];
-                }
-            //options
-            $rs['options'] = $options;
-
-            //Customize Fields
-            $rs['customize_fields'] = $customFields->map(function(&$field){
-                $customize_field_keys = explode(",",$field['customize_field_key']);
-                $customize_field_values = explode(",",$field['customize_field_value']);
-                foreach($customize_field_keys as $index=>$key) {
-                    $options[] = ['key'=>$key, 'value'=>$customize_field_values[$index]];
-                }
-                $field['customize_field_questions'] = $options;
-                unset($field['customize_field_key']);
-                unset($field['customize_field_value']);
-                return $field;
-            });
-
-            //Get Booked Foods
-            $foods = [];
-
-            if (isset($booking['service_code']) &&
-                (in_array($booking['service_code'], [ServiceCodeEnum::REST, ServiceCodeEnum::QUAC]))) {
-                $foods = $this->bookingFoodRepo->getBookingFoodsByBookedId($booking['booked_id']);
-                $drinks = $this->bookingDrinkRepo->getBookingDrinksByBookedId($booking['booked_id']);
-                $rs['drinks'] = $drinks;
-                $rs['foods'] = $foods;
+            //Menu Foods
+            if ($inserted && !empty($menu_foods)) {
+               $return_menu_food = array_map(function ($menu_food) use ($inserted, $created_by) {
+                    //insert menu
+                    $menu = [
+                        'menu_name' => $menu_food['menu_name'],
+                        'unit_price' => $menu_food['unit_price'],
+                        'prd_id' => $inserted->getKey(),
+                        'created_by' => $created_by
+                    ];
+                    $inserted_menu = $this->menuRepo->create($menu);
+                    if (isset($menu_food['foods'])) {
+                        $return_foods = array_map(function ($food) use ($inserted, $inserted_menu, $created_by) {
+                            $food_images = "";
+                            if (isset($food['images'])) {
+                                $keys = array_map(function ($image) use ($created_by) {
+                                    return $this->imageRepo->create(["img_url" => addslashes($image), "created_by" => addslashes($created_by)])->getKey();
+                                }, $food['images']);
+                                $food_images = join(",", $keys);
+                            }
+                            $food['menu_id'] = $inserted_menu->getKey();
+                            $food['created_by'] = $created_by;
+                            $food['image_ids'] = $food_images;
+                            return $this->foodRepo->create($food);
+                        }, $menu_food['foods']);
+                        $inserted_menu['foods'] = $return_foods;
+                    }
+                   return $inserted_menu;
+                }, $menu_foods);
+                $return_value['menu_food'] = $return_menu_food;
             }
-        }
 
-        return $rs;
+            //Menu Drink
+            if ($inserted && !empty($menu_drinks)) {
+                $return_menu_drink = array_map(function ($menu_drink) use ($inserted, $created_by) {
+                    //insert menu
+                    $menu = [
+                        'menu_name' => $menu_drink['menu_name'],
+                        'unit_price' => $menu_drink['unit_price'],
+                        'prd_id' => $inserted->getKey(),
+                        'created_by' => $created_by
+                    ];
+                    $inserted_menu = $this->menuRepo->create($menu);
+                    if (isset($menu_drink['drinks'])) {
+                        $return_drinks = array_map(function ($drink) use ($inserted, $inserted_menu, $created_by) {
+                            $drink_images = "";
+                            if (isset($drink['images'])) {
+                                $keys = array_map(function ($image) use ($created_by) {
+                                    return $this->imageRepo->create(["img_url" => addslashes($image), "created_by" => addslashes($created_by)])->getKey();
+                                }, $drink['images']);
+                                $drink_images = join(",", $keys);
+                            }
+                            $drink['menu_id'] = $inserted_menu->getKey();
+                            $drink['created_by'] = $created_by;
+                            $drink['image_ids'] = $drink_images;
+                            return $this->drinkRepo->create($drink);
+                        }, $menu_drink['drinks']);
+                        $inserted_menu['drinks'] = $return_drinks;
+                    }
+                    return $inserted_menu;
+                }, $menu_drinks);
+                $return_value['menu_drink'] = $return_menu_drink;
+            }
+
+            return $return_value;
+        });
     }
 }

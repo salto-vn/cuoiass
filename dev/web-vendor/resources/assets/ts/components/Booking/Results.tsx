@@ -142,7 +142,6 @@ class BookingSearchResultScreen extends React.Component<{ history: any, classes:
         const { datas, totalItem, limit, orderBy, order, activePage, isLoading, headers } = this.state;
         const cachedService:string = localStorage.getItem(CONSTANT.LOCAL_STORE.services);
         const services_mst:IOption[] = JSON.parse(cachedService);
-        debugger;
         const { classes } = this.props;
         const listdata: Array<string[]> = new Array();
         //Convert Datajson to Array with last index id PK key.

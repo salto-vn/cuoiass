@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 // import Check from "@material-ui/icons/Check";
 // core components
 import customInputStyle from "../../../../styles/components/customInputStyle";
-import { FormHelperText, TextField } from '@material-ui/core';
+import { FormHelperText } from '@material-ui/core';
 import { isEmpty } from '../../Utils';
 
 export interface ICustomInput {

@@ -7,15 +7,14 @@
  */
 
 namespace App\Repositories;
-use App\Models\Product;
+use App\Models\CustomizeField;
 
 /**
- * Class ProductRepo
+ * Class CustomizeFieldRepo
  *
- * @property Product $model
- * @method Product create(array $attributes)
+ * @property CustomizeField $model
  */
-class ProductRepo extends Repository
+class CustomizeFieldRepo extends Repository
 {
     public $model;
 
@@ -25,7 +24,7 @@ class ProductRepo extends Repository
      */
     public function getModel()
     {
-        $this->model = Product::class;
+        $this->model = CustomizeField::class;
         return $this->model;
     }
 

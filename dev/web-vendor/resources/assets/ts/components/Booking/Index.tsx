@@ -87,16 +87,9 @@ class BookingSearchScreen extends React.Component<{ match: any, history: any, cl
      */
     async componentDidMount() {
         document.title = CONSTANT.PAGE_TITLE;
-        const signal = this.abortControler.signal;
-        const response = await HandleRequest.Get(API_URL.BOOKING_CRL_getServices, '', signal);
-        var services = response.result.data;
-        var serviceList = services.map((service:any,index:number)=>{
-            var rs:IOption = {key:service.service_code, value:service.service_name};
-            return rs;
-        });
+        const cachedService:string = localStorage.getItem(CONSTANT.LOCAL_STORE.services);
+        const serviceList:IOption[] = JSON.parse(cachedService);
 
-        //Set Service master data to cache
-        localStorage.setItem(CONSTANT.LOCAL_STORE.services, JSON.stringify(serviceList));
         this.setState({
             services: serviceList,
         })

@@ -24,6 +24,8 @@ use Illuminate\Http\Request;
     Route::resource('staffs','Api\StaffController')->except(['create', 'edit']);
 
 
+    $router->post('/products', 'Api\ProductController@store');
+
     $router->get('/menus', 'Api\MenuController@index');
     $router->get('/services', 'Api\MasterServiceController@index');
 
@@ -38,5 +40,7 @@ use Illuminate\Http\Request;
     $router->put('/reviews', 'Api\ReviewController@update');
 
     $router->get('/options', 'Api\OptionController@index');
+
+
 
 //});

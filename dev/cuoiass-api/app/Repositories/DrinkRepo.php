@@ -10,7 +10,7 @@ namespace App\Repositories;
 use App\Models\Drink;
 
 /**
- * Class MenuRepo
+ * Class DrinkRepo
  *
  * @property Drink $model
  * @method Drink create(array $attributes)

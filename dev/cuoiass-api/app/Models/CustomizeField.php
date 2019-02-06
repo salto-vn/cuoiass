@@ -36,6 +36,8 @@ class CustomizeField extends Eloquent
 	];
 
 	protected $fillable = [
+	    'prd_id',
+        'vendor_service_id',
 		'customize_field_name',
 		'customize_field_type',
         'customize_field_key',
