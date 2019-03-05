@@ -21,10 +21,10 @@ import appStyle from "../../../styles/layouts/dashboardStyle";
 import image from "../../../img/sidebar-1.jpg";
 import logo from "../../../img/reactlogo.png";
 
-// import API_URL from '../../bootstrap/Url';
-// import * as HandleRequest from '../../api/HandleRequest';
-// import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
-// import CONSTANT from '../../bootstrap/Constant';
+import API_URL from '../../bootstrap/Url';
+import * as HandleRequest from '../../api/HandleRequest';
+import { IOption } from '../../common/FormControls/CustomSelect/CustomSelect';
+import CONSTANT from '../../bootstrap/Constant';
 
 
 const switchRoutes = (
@@ -54,7 +54,7 @@ class Dashboard extends React.Component<{ location: any, classes: any, rest: any
     miniActive: false
   };
 
-   componentDidMount() {
+  async componentDidMount() {
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel, {
         suppressScrollX: true,
@@ -64,15 +64,15 @@ class Dashboard extends React.Component<{ location: any, classes: any, rest: any
     }
     window.addEventListener("resize", this.resizeFunction);
 
-    // const response =  HandleRequest.Get(API_URL.BOOKING_CRL_getServices, '');
-    // var services = response.result.data;
-    // var serviceList = services.map((service:any,index:number)=>{
-    //     var rs:IOption = {key:service.service_code, value:service.service_name};
-    //     return rs;
-    // });
+    const response = await HandleRequest.Get(API_URL.BOOKING_CRL_getServices, '');
+    var services = response.result.data;
+    var serviceList = services.map((service:any,index:number)=>{
+        var rs:IOption = {key:service.service_code, value:service.service_name};
+        return rs;
+    });
 
-    // //Set Service master data to cache
-    // localStorage.setItem(CONSTANT.LOCAL_STORE.services, JSON.stringify(serviceList));
+    //Set Service master data to cache
+    localStorage.setItem(CONSTANT.LOCAL_STORE.services, JSON.stringify(serviceList));
 
   }
 

@@ -23,6 +23,7 @@ export interface ICustomSelect {
   items: IOption[],
   onChange?: any,
   value?: string,
+  ref?:string
 }
 
 export interface IOption {
@@ -71,6 +72,7 @@ class CustomSelect extends React.Component<ICustomSelect, {}> {
           ) : null}
           <Select
             onChange={this.handleChange}
+            ref={this.props.ref}
             value={this.state.selectedValue === undefined ? '' : this.state.selectedValue}
             MenuProps={{
               className: classes.selectMenu

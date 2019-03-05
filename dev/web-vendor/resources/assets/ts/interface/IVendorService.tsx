@@ -5,4 +5,5 @@ export interface IVendorService {
     add_service: string;
     city: string;
     phone_service: string;
+    fax_service:string;
 }

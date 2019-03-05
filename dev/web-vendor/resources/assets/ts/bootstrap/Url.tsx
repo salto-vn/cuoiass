@@ -8,6 +8,7 @@ const API_URL = {
     'BOOKING_CRL_getDrinks': '/controller/bookings/getDrinks',
     'BOOKING_CRL_getOptions': '/controller/bookings/getOptions',
     'BOOKING_CRL_initial': '/controller/bookings/initial',
+    'UPLOAD_CRL_upload': '/controller/upload',
 };
 
 export default API_URL;

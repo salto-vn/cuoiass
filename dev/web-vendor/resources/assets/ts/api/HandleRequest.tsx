@@ -66,10 +66,10 @@ export const Get = async (url: string, queryString?: string, signal?: any, colum
  * @return HandleResponse
  */
 
-export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, exParams?:any, signal?: any, columns?: string[], ) => {
+export const GetList = async (url: string, page: number = 1, limit: number = 10, orderBy?: string, order?: string, search?: string, exParams?: any, signal?: any, columns?: string[], ) => {
     const params: any = { ...exParams, page, limit, orderBy, order, search };
     const queryString = objectToQueryString(params, '=', '&');
-    
+
     const result = await fetch(`${url}?${queryString}`, {
         method: "GET",
         signal: signal,
@@ -94,6 +94,19 @@ export const Store = async (url: string, model: object, signal: any) => {
         body: JSON.stringify(model)
     });
 
+    return HandleResponse(result);
+};
+
+export const Upload = async (url: string, fileList: FileList, signal: any) => {
+    var formData = new FormData();
+    for (var i = 0; i < fileList.length; i++) {
+        formData.append('files[]', fileList[i]);
+    }
+    const result = await fetch(`${url}`, {
+        method: "POST",
+        signal: signal,
+        body: formData
+    });
     return HandleResponse(result);
 };
 

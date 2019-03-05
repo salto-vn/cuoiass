@@ -44,7 +44,8 @@ function CustomInput({ ...props }) {
     helpText,
     multiline,
     center,
-    InputProps
+    InputProps,
+    ref
   } = props;
 
   const labelClasses = classNames({

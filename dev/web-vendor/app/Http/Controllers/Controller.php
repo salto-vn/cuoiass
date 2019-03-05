@@ -26,7 +26,7 @@ class Controller extends BaseController
         $this->api = $api;
 
         //TODO: Vendor id
-        $this->userAuth = ['vendor_id' => '1','staff_id' => '1'];
+        $this->userAuth = ['vendor_id' => '6','staff_id' => '1'];
     }
 
     /**

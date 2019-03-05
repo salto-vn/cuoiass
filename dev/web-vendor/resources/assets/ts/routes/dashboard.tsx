@@ -3,6 +3,7 @@
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import Image from "@material-ui/icons/Image";
 import Person from "@material-ui/icons/Person";
+import Domain from "@material-ui/icons/Domain";
 import RateReview from "@material-ui/icons/RateReview";
 import ShoppingBasket from "@material-ui/icons/ShoppingBasket";
 
@@ -16,6 +17,7 @@ import DashboardPage from "../components/Dashboard/Dashboard";
 import StaffScreen from '../components/Staff/Index';
 import FeedbackScreen from '../components/Feedback/Index';
 import BookingSearchScreen from '../components/Booking/Index';
+import NewProductScreen from '../components/Product/Index';
 import pagesRoutes from './pages';
 // import UserProfile from "views/UserProfile/UserProfile.jsx";
 // import TableList from "views/TableList/TableList.jsx";
@@ -54,6 +56,12 @@ var dashRoutes = [
     name: "Nhân Viên",
     icon: Person,
     component: StaffScreen
+  },
+  {
+    path: "/product",
+    name: "Sản phẩm",
+    icon: Domain,
+    component: NewProductScreen
   },
   {
     path: "/review",

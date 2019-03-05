@@ -9,7 +9,7 @@ import { createStyles } from '@material-ui/core';
 
 const customSelectStyle = createStyles({
   select: {
-    padding: "12px 0 7px",
+    padding: "12px 0 3px",
     fontSize: ".75rem",
     fontWeight: 400,
     lineHeight: "1.42857",

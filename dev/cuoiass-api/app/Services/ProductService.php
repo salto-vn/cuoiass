@@ -73,6 +73,7 @@ class ProductService
      * @param string $schedulePhotos
      * @param string $menu_foods
      * @param string $menu_drinks
+     * @return mixed
      */
     public function create($product, $customizeFields = "", $options = ""
         , $schedulePhotos = "", $menu_foods = "", $menu_drinks = "")

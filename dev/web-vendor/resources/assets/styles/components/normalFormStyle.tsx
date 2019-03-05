@@ -4,7 +4,7 @@
 
 import {
   primaryColor
-  ,grayColor
+  , grayColor
 } from "../material-dashboard-pro-react";
 import { Theme, createStyles } from "@material-ui/core";
 import customCheckboxRadioSwitch from "./customCheckboxRadioSwitch";
@@ -47,11 +47,14 @@ const normalFormStyle = (theme: Theme) => (
       lineHeight: "1.428571429",
       fontWeight: 400,
       marginRight: "0",
+      top: "30%",
+      position: "relative",
+      paddingTop: "5px",
       "@media (min-width: 992px)": {
         float: "right",
-        top: "30%",
-        position: "relative",
-        paddingTop: "5px"
+        // top: "30%",
+        // position: "relative",
+        // paddingTop: "5px"
 
       }
     },
@@ -105,12 +108,12 @@ const normalFormStyle = (theme: Theme) => (
       fontSize: "14px",
     },
     icon: {
-      color:grayColor,
+      color: grayColor,
       "&:hover,&:focus": {
         color: primaryColor
       },
     },
-    
+
 
     money: {
       color: primaryColor,
